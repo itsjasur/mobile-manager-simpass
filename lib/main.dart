@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/pages/home.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
-import 'package:mobile_manager_simpass/models/appbar.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
 import 'package:mobile_manager_simpass/theme.dart';
 import 'package:provider/provider.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationModel()),
-        ChangeNotifierProvider(create: (_) => AppbarModel()),
       ],
       child: const MyApp(),
     ),
@@ -25,8 +25,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/signup',
+      initialRoute: '/home',
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
@@ -34,7 +35,6 @@ class MyApp extends StatelessWidget {
         //protected
         '/home': (context) => const AuthGuard(child: HomePage()),
       },
-      title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
     );
   }

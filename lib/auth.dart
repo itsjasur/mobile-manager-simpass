@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
-import 'package:mobile_manager_simpass/pages/wrapper.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:provider/provider.dart';
 
@@ -12,8 +11,10 @@ class AuthGuard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthenticationModel>(builder: (context, auth, _) {
+      print('AuthGuard rebuild: isAuthenticated = ${auth.isAuthenticated}');
+
       if (auth.isAuthenticated) {
-        return Wrapper(child: child);
+        return child;
       } else {
         return const LoginPage();
       }

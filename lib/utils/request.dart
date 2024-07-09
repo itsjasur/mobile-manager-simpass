@@ -1,5 +1,7 @@
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/main.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -8,6 +10,7 @@ class Request {
   Future<bool> refreshToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? refreshToken = prefs.getString('refreshToken');
+    // print('refresh token called');
 
     try {
       final response = await http.post(
@@ -17,9 +20,11 @@ class Request {
       );
 
       if (response.statusCode != 200) {
-        final auth = AuthenticationModel();
+        print('logged out from refrsh token');
+        // final auth = AuthenticationModel();
+        final auth = Provider.of<AuthenticationModel>(navigatorKey.currentContext!, listen: false);
         await auth.logout();
-        throw 'Could not refresh token';
+        // throw 'Could not refresh token';
       }
 
       var result = json.decode(utf8.decode(response.bodyBytes));
@@ -35,7 +40,7 @@ class Request {
 
   bool _retried = false;
 
-  Future<http.Response> requestWithRefreshToken({required String url, String method = 'POST', required Map<String, dynamic> body}) async {
+  Future<http.Response> requestWithRefreshToken({required String url, String method = 'POST', Map<String, dynamic>? body}) async {
     Uri parsedUrl = Uri.parse(BASEURL + url);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationModel extends ChangeNotifier {
-  bool _isAuthenticated = false;
+  bool _isAuthenticated = true;
 
   bool get isAuthenticated => _isAuthenticated;
 
   Future<void> login(String accessToken, String refreshToken) async {
+    print('login model called');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);
     await prefs.setString('refreshToken', refreshToken);
@@ -16,6 +17,7 @@ class AuthenticationModel extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    print('logout model called');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('accessToken');
     await prefs.remove('refreshToken');

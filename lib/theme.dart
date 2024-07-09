@@ -4,10 +4,20 @@ class AppTheme {
   static ThemeData get lightTheme {
     Color primaryColor = const Color(0xFF006DDA);
 
+    Color backgroundColor = const Color.fromARGB(255, 239, 248, 255);
+
     return ThemeData(
       // scaffoldBackgroundColor: Colors.white,
       // drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
-      // appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+
+      appBarTheme: const AppBarTheme(
+        titleSpacing: 0,
+        centerTitle: false,
+        titleTextStyle: TextStyle(
+          fontSize: 18,
+          color: Colors.black87,
+        ),
+      ),
 
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
@@ -20,9 +30,10 @@ class AppTheme {
         onTertiary: Colors.amber,
 
         onSecondary: Colors.red,
-        background: Colors.white, //whole app background
 
-        surface: Colors.white, //button and all surfaces
+        background: backgroundColor, //whole app background
+        surface: backgroundColor, //button and all surfaces
+
         surfaceTint: Colors.transparent,
         onBackground: Colors.amber,
 

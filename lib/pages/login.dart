@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/main.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:provider/provider.dart';
@@ -67,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                         decoration: const InputDecoration(
                           label: Text('비밀번호'),
                         ),
-                        validator: InputValidator().validatePass,
+                        // validator: InputValidator().validatePass,
                       ),
                       const SizedBox(height: 30),
                       ElevatedButton(
@@ -121,11 +122,12 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 200 && mounted) {
         Map data = jsonDecode(response.body);
-        await Provider.of<AuthenticationModel>(context, listen: false).login(data['accessToken'], data['refreshToken']);
-        return;
-      }
 
-      throw 'Login error';
+        await Provider.of<AuthenticationModel>(context, listen: false).login(data['accessToken'], data['refreshToken']);
+        if (mounted) Navigator.of(context).pushReplacementNamed('/home');
+      } else {
+        throw 'Login error';
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
