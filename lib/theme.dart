@@ -87,6 +87,8 @@ class AppTheme {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
+        fillColor: Colors.white,
+        filled: true,
         hintStyle: const TextStyle(color: Colors.black26),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4),

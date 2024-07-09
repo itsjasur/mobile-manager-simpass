@@ -3,6 +3,7 @@ import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/pages/home.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:mobile_manager_simpass/pages/profile.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
 import 'package:mobile_manager_simpass/theme.dart';
 import 'package:provider/provider.dart';
@@ -27,13 +28,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home',
+      initialRoute: '/profile',
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
 
         //protected
         '/home': (context) => const AuthGuard(child: HomePage()),
+        '/profile': (context) => const AuthGuard(child: ProfilePafe()),
+
+        '/forms': (context) => const AuthGuard(child: HomePage()),
+        '/rental-forms': (context) => const AuthGuard(child: HomePage()),
+        '/applications': (context) => const AuthGuard(child: HomePage()),
+        '/download-forms': (context) => const AuthGuard(child: HomePage()),
       },
       theme: AppTheme.lightTheme,
     );
