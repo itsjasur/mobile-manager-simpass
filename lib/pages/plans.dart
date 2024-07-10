@@ -1,19 +1,21 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
-class FormsPage extends StatefulWidget {
-  const FormsPage({super.key});
+class PlansPage extends StatefulWidget {
+  const PlansPage({super.key});
 
   @override
-  State<FormsPage> createState() => _FormsPageState();
+  State<PlansPage> createState() => _PlansPageState();
 }
 
-class _FormsPageState extends State<FormsPage> {
+class _PlansPageState extends State<PlansPage> {
   final List _types = [
     {'code': 'PO', 'name': '후붛'},
     {'code': 'PR', 'name': '선불'},
@@ -34,6 +36,8 @@ class _FormsPageState extends State<FormsPage> {
   String _selectedCarrier = '';
   String _selectedMvno = '';
 
+  final TextEditingController _searchTextCntr = TextEditingController();
+
   // bool _loading = true;
   // bool _mvnosLoading = true;
   // bool _plansLoading = true;
@@ -45,7 +49,15 @@ class _FormsPageState extends State<FormsPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _searchTextCntr.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    double displayWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       drawer: const SideMenu(),
       appBar: AppBar(title: Text(sideMenuNames[2])),
@@ -62,7 +74,7 @@ class _FormsPageState extends State<FormsPage> {
                     .map(
                       (item) => ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(100, 45),
+                          minimumSize: displayWidth > 600 ? const Size(100, 45) : null,
                           elevation: 0,
                           backgroundColor: _selectedType == item['code'] ? null : Theme.of(context).colorScheme.tertiary,
                         ),
@@ -78,7 +90,7 @@ class _FormsPageState extends State<FormsPage> {
                     .toList(),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Wrap(
@@ -88,7 +100,8 @@ class _FormsPageState extends State<FormsPage> {
                     .map(
                       (item) => ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          minimumSize: const Size(100, 45),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          minimumSize: displayWidth > 600 ? const Size(100, 45) : null,
                           elevation: 0,
                           backgroundColor: _selectedCarrier == item['code'] ? null : Theme.of(context).colorScheme.tertiary,
                         ),
@@ -103,7 +116,7 @@ class _FormsPageState extends State<FormsPage> {
                     .toList(),
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
             SizedBox(
               height: 90,
               child: ListView.separated(
@@ -168,7 +181,20 @@ class _FormsPageState extends State<FormsPage> {
                 },
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              constraints: const BoxConstraints(maxWidth: 400),
+              child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: _searchTextCntr,
+                decoration: const InputDecoration(
+                  label: Text('요금제명을'),
+                ),
+                onChanged: (value) => _fetchPlans(),
+              ),
+            ),
+            const SizedBox(height: 20),
             SizedBox(
               // height: 60,
               child: ListView.separated(
@@ -182,6 +208,7 @@ class _FormsPageState extends State<FormsPage> {
                 },
               ),
             ),
+            const SizedBox(height: 200),
           ],
         ),
       ),
@@ -189,101 +216,141 @@ class _FormsPageState extends State<FormsPage> {
   }
 
   Widget _buildCardWwidget(item) {
+    double displayWidth = MediaQuery.of(context).size.width;
+
+    Widget planNameW = Text(
+      item['usim_plan_nm'],
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 15,
+      ),
+    );
+
+    Widget dataRowW = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.signal_cellular_alt,
+          size: 18,
+          color: Theme.of(context).colorScheme.tertiary,
+        ),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            (item['cell_data'] ?? "") + (item['qos'] ?? ""),
+            style: const TextStyle(
+              // fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    Widget messageRow = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.email,
+          size: 18,
+          color: Theme.of(context).colorScheme.tertiary,
+        ),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            item['message'] ?? "",
+            style: const TextStyle(
+              // fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    Widget voiceRow = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.phone,
+          size: 18,
+          color: Theme.of(context).colorScheme.tertiary,
+        ),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            item['voice'] ?? "",
+            style: const TextStyle(
+              // fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    Widget priceRow = Flexible(
+      child: Text(
+        "${InputFormatter().wonify(item['sales_fee'])} 원/월",
+        style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(6),
       child: Material(
         color: Theme.of(context).colorScheme.onPrimary,
         child: InkWell(
           onTap: () {},
-          child: Padding(
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 60),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      item['usim_plan_nm'],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
+            child: displayWidth < 600
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 200),
+                            child: planNameW,
+                          ),
+                          priceRow,
+                        ],
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    )
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.signal_cellular_alt,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      (item['cell_data'] ?? "") + (item['qos'] ?? ""),
-                      style: const TextStyle(
-                        // fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.phone,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      item['voice'] ?? "",
-                      style: const TextStyle(
-                        // fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.email,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      item['message'] ?? "",
-                      style: const TextStyle(
-                        // fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "${InputFormatter().wonify(item['sales_fee'])} 원/월",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: Theme.of(context).colorScheme.primary,
+                      const SizedBox(height: 10),
+                      dataRowW,
+                      const SizedBox(height: 5),
+                      voiceRow,
+                      const SizedBox(height: 5),
+                      messageRow,
+                      const SizedBox(height: 5),
+                    ],
+                  )
+                : IntrinsicHeight(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 180),
+                          child: planNameW,
+                        ),
+                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
+                        Expanded(child: dataRowW),
+                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
+                        Expanded(child: voiceRow),
+                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
+                        Expanded(child: messageRow),
+                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
+                        priceRow,
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -324,7 +391,7 @@ class _FormsPageState extends State<FormsPage> {
         "carrier_type": _selectedType, // 선불:PR ,후불:PO
         "carrier_cd": _selectedCarrier, // SKT : SK ,KT : KT,LG U+ : LG
         "mvno_cd": _selectedMvno,
-        "usim_plan_nm": ""
+        "usim_plan_nm": _searchTextCntr.text,
       });
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
 

@@ -24,7 +24,7 @@ class Request {
         // final auth = AuthenticationModel();
         final auth = Provider.of<AuthenticationModel>(navigatorKey.currentContext!, listen: false);
         await auth.logout();
-        // throw 'Could not refresh token';
+        throw 'Could not refresh token';
       }
 
       var result = json.decode(utf8.decode(response.bodyBytes));
