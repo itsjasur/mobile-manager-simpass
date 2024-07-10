@@ -23,7 +23,7 @@ class _SideMenuState extends State<SideMenu> {
     {
       'titleIndex': 2,
       'icon': Icons.description_outlined,
-      'path': '/forms',
+      'path': '/plans',
     },
     {
       'titleIndex': 3,

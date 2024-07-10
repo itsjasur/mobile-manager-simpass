@@ -305,7 +305,9 @@ class _PlansPageState extends State<PlansPage> {
       child: Material(
         color: Theme.of(context).colorScheme.onPrimary,
         child: InkWell(
-          onTap: () {},
+          onTap: () async {
+            await Navigator.pushNamed(context, '/form-details');
+          },
           child: Container(
             constraints: const BoxConstraints(minHeight: 60),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
