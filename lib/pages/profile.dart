@@ -1,12 +1,8 @@
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/components/signature_pad.dart';
-import 'package:mobile_manager_simpass/components/signature_pad_popup_content.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
@@ -59,7 +55,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
       decoration: const InputDecoration(
         label: Text('사업자번호'),
       ),
-      initialValue: _data['business_num'],
+      initialValue: InputFormatter().businessNumber.formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: _data['business_num'] ?? "")).text,
       readOnly: true,
     );
     Widget contactW = TextFormField(
@@ -149,24 +145,23 @@ class _ProfilePafeState extends State<ProfilePafe> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 10),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 350),
                       child: SignNaturePad(
                         nameData: _signData,
                         signData: _sealData,
-                        saveData: (nameData, imageData) {
-                          print(nameData);
+                        saveData: (signData, sealData) {
+                          _signData = base64Encode(signData);
+                          _sealData = base64Encode(sealData);
+                          ;
                         },
                       ),
                     ),
                     const SizedBox(height: 30),
                     IntrinsicWidth(
                       child: ElevatedButton(
-                        onPressed: () async {
-                          // showCustomSnackBar('먼저 서명을 해주세요.먼저 서명을 해주세요.먼저 서명을 해주세요.먼저 서명을 해주세요.');
-                          showCustomSnackBar('먼저 서명을 해주세요.');
-                        },
+                        onPressed: _saveSigns,
                         child: const Text('사인 저장'),
                       ),
                     ),
@@ -180,15 +175,6 @@ class _ProfilePafeState extends State<ProfilePafe> {
 
   String? _signData;
   String? _sealData;
-
-  Uint8List _convertBase64ToByte(String base64String) {
-    // removes the data:image/png;base64, prefix if present
-    final cleanedBase64String = base64String.split(',').last;
-    // decods the Base64 string
-    final bytes = base64Decode(cleanedBase64String);
-    // creates an Image widget using the decoded bytes
-    return bytes;
-  }
 
   Future<void> _fetchData() async {
     // print('fetch data called');
@@ -208,12 +194,27 @@ class _ProfilePafeState extends State<ProfilePafe> {
         setState(() {});
       }
     } catch (e) {
-      print(e);
-      // if (mounted) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text(e.toString())),
-      //   );
-      // }
+      // showCustomSnackBar(e.toString());
+    }
+  }
+
+  Future<void> _saveSigns() async {
+    if (_signData == null || _sealData == null) {
+      showCustomSnackBar('저장할 이미지가 없습니다.');
+      return;
+    }
+
+    try {
+      final response = await Request().requestWithRefreshToken(url: 'agent/setActSign', method: 'POST', body: {
+        "partner_sign": 'data:image/png;base64,$_signData',
+        "partner_seal": 'data:image/png;base64,$_sealData',
+      });
+      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+
+      showCustomSnackBar(decodedRes['message']);
+      setState(() {});
+    } catch (e) {
+      showCustomSnackBar(e.toString());
     }
   }
 }

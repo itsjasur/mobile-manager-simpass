@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/signature_pad_popup_content.dart';
+import 'dart:ui' as ui;
 
 class SignNaturePad extends StatefulWidget {
   final String? nameData;
@@ -18,12 +20,20 @@ class SignNaturePad extends StatefulWidget {
 class _SignNaturePadState extends State<SignNaturePad> {
   Uint8List? _nameData;
   Uint8List? _signData;
+  bool _dataLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _nameData = _convertBase64ToByte(widget.nameData);
-    _signData = _convertBase64ToByte(widget.signData);
+
+    _setData();
+  }
+
+  Future<void> _setData() async {
+    _nameData = await _convertBase64ToByte(widget.nameData);
+    _signData = await _convertBase64ToByte(widget.signData);
+    _dataLoaded = true;
+    setState(() {});
   }
 
   @override
@@ -42,7 +52,7 @@ class _SignNaturePadState extends State<SignNaturePad> {
         ),
       ),
       padding: const EdgeInsets.all(5),
-      child: _nameData != null || _signData != null
+      child: _dataLoaded && _nameData != null && _signData != null
           ? Stack(
               children: [
                 Row(
@@ -56,6 +66,7 @@ class _SignNaturePadState extends State<SignNaturePad> {
                                 _nameData!,
                                 // fit: BoxFit.contain,
                                 height: double.infinity,
+                                errorBuilder: (context, error, stackTrace) => const SizedBox(),
                               )
                             : null,
                       ),
@@ -70,6 +81,7 @@ class _SignNaturePadState extends State<SignNaturePad> {
                                 // fit: BoxFit.contain,
                                 height: double.infinity,
                                 width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) => const SizedBox(),
                               )
                             : null,
                       ),
@@ -131,16 +143,21 @@ class _SignNaturePadState extends State<SignNaturePad> {
     );
   }
 
-  Uint8List? _convertBase64ToByte(String? base64String) {
-    if (base64String != null) {
-      // removes the data:image/png;base64, prefix if present
-      final cleanedBase64String = base64String.split(',').last;
-      // decods the Base64 string
+  Future<Uint8List?> _convertBase64ToByte(String? base64String) async {
+    try {
+      final cleanedBase64String = base64String!.split(',').last;
       final bytes = base64Decode(cleanedBase64String);
-      // creates an Image widget using the decoded bytes
-      return bytes;
-    }
 
-    return null;
+      // Attempt to decode the image to check if it's valid
+      await ui.instantiateImageCodec(bytes);
+      // final frame = await codec.getNextFrame();
+      // final image = frame.image;
+
+      // If successful, return the bytes
+      return bytes;
+    } catch (e) {
+      // If any error occurs, return null
+      return null;
+    }
   }
 }

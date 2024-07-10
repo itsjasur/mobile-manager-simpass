@@ -80,4 +80,14 @@ class InputFormatter {
     }
     return dateStr;
   }
+
+  String wonify(integerAmount) {
+    if (integerAmount == null || integerAmount < 0) {
+      integerAmount = 0;
+    }
+
+    String stringAmount = NumberFormat("#,###").format(integerAmount).toString();
+
+    return ('₩ ${stringAmount.toString()}');
+  }
 }

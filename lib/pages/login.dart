@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
-import 'package:mobile_manager_simpass/main.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:provider/provider.dart';
@@ -71,11 +70,14 @@ class _LoginPageState extends State<LoginPage> {
                         // validator: InputValidator().validatePass,
                       ),
                       const SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) _login();
-                        },
-                        child: const Text('로그인'),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) _login();
+                          },
+                          child: const Text('로그인'),
+                        ),
                       ),
                       const Divider(
                         height: 60,
@@ -83,12 +85,17 @@ class _LoginPageState extends State<LoginPage> {
                         endIndent: 10,
                         color: Colors.black12,
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFA927),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFFA927),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/signup');
+                          },
+                          child: const Text('판매점 계약 접수'),
                         ),
-                        onPressed: () {},
-                        child: const Text('판매점 계약 접수'),
                       ),
                       const SizedBox(height: 50),
                       const Text(
