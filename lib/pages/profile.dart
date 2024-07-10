@@ -3,9 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/components/signature_pad.dart';
-import 'package:mobile_manager_simpass/components/signature_pad_popup.dart';
+import 'package:mobile_manager_simpass/components/signature_pad_popup_content.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
@@ -148,85 +149,23 @@ class _ProfilePafeState extends State<ProfilePafe> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                      height: 100,
+                    const SizedBox(height: 30),
+                    ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 350),
-                      // width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.primary,
-                          width: 0.5,
-                        ),
+                      child: SignNaturePad(
+                        nameData: _signData,
+                        signData: _sealData,
+                        saveData: (nameData, imageData) {
+                          print(nameData);
+                        },
                       ),
-                      padding: const EdgeInsets.all(5),
-                      child: _signData != null || _sealData != null
-                          ? Stack(
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
-                                        child: _signData != null
-                                            ? Image.memory(
-                                                _convertBase64ToByte(_signData!),
-                                                fit: BoxFit.contain,
-                                                height: double.infinity,
-                                              )
-                                            : null,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Expanded(
-                                      child: Container(
-                                        color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
-                                        child: _sealData != null
-                                            ? Image.memory(
-                                                _convertBase64ToByte(_sealData!),
-                                                fit: BoxFit.contain,
-                                                height: double.infinity,
-                                              )
-                                            : null,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Positioned(
-                                    right: -6,
-                                    top: -6,
-                                    child: IconButton(
-                                      padding: const EdgeInsets.all(0),
-                                      visualDensity: VisualDensity.compact,
-                                      onPressed: () {
-                                        _sealData = null;
-                                        _signData = null;
-                                        setState(() {});
-                                      },
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                      ),
-                                    ))
-                              ],
-                            )
-                          : SizedBox(
-                              width: double.infinity,
-                              child: Icon(
-                                Icons.draw_outlined,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 22,
-                              ),
-                            ),
                     ),
                     const SizedBox(height: 30),
                     IntrinsicWidth(
                       child: ElevatedButton(
                         onPressed: () async {
-                          await showSignaturePadDialogue(context);
+                          // showCustomSnackBar('먼저 서명을 해주세요.먼저 서명을 해주세요.먼저 서명을 해주세요.먼저 서명을 해주세요.');
+                          showCustomSnackBar('먼저 서명을 해주세요.');
                         },
                         child: const Text('사인 저장'),
                       ),
@@ -270,11 +209,11 @@ class _ProfilePafeState extends State<ProfilePafe> {
       }
     } catch (e) {
       print(e);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      }
+      // if (mounted) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content: Text(e.toString())),
+      //   );
+      // }
     }
   }
 }

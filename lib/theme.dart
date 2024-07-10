@@ -143,6 +143,12 @@ class AppTheme {
           borderRadius: BorderRadius.circular(6),
         ),
       ),
+
+      sliderTheme: SliderThemeData(
+        // trackHeight: 2.0,
+        // minThumbSeparation: 0,
+        overlayShape: SliderComponentShape.noOverlay,
+      ),
     );
   }
 }

@@ -280,12 +280,12 @@ class _HomePageState extends State<HomePage> {
         setState(() {});
       }
     } catch (e) {
-      print(e);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      }
+      // print(e);
+      // if (mounted) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(content: Text(e.toString())),
+      //   );
+      // }
     }
   }
 }
