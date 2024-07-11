@@ -17,12 +17,15 @@ class FormDetailsPage extends StatefulWidget {
 }
 
 class _FormDetailsPageState extends State<FormDetailsPage> {
+  final _formKey = GlobalKey<FormState>();
   final Map _fixedFormsDetails = Map.from(inputFormsList);
+
   @override
   void initState() {
     super.initState();
     for (var form in _fixedFormsDetails.entries) {
       form.value['value'] = TextEditingController();
+      form.value['value'].text = form.value['initial'] ?? "";
     }
 
     _fetchData();
@@ -58,42 +61,95 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // ElevatedButton(onPressed: () {}, child: const Text('Click')),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: _availableForms.entries
-                          .map(
-                            (entry) => entry.value.isNotEmpty
-                                ? Container(
-                                    margin: const EdgeInsets.only(bottom: 20),
-                                    child: Wrap(
-                                      crossAxisAlignment: WrapCrossAlignment.start,
-                                      runAlignment: WrapAlignment.start,
-                                      alignment: WrapAlignment.start,
-                                      spacing: 15,
-                                      runSpacing: 15,
-                                      children: [
-                                        //title
-                                        // const SizedBox(height: 20),
-                                        _titleGenerator(entry.key),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: _availableForms.entries
+                            .map(
+                              (entry) => entry.value.isNotEmpty
+                                  ? Container(
+                                      margin: const EdgeInsets.only(bottom: 20),
+                                      child: Wrap(
+                                        crossAxisAlignment: WrapCrossAlignment.start,
+                                        runAlignment: WrapAlignment.start,
+                                        alignment: WrapAlignment.start,
+                                        spacing: 15,
+                                        runSpacing: 15,
+                                        children: [
+                                          //title
+                                          // const SizedBox(height: 20),
+                                          _titleGenerator(entry.key),
 
-                                        //fields
-                                        ...entry.value.map(
-                                          (formName) {
-                                            if (_fixedFormsDetails[formName]['type'] == 'input') return _createInputField(formName, isTablet);
-                                            if (_fixedFormsDetails[formName]['type'] == 'select') return _createDropDownMenu(formName, isTablet);
+                                          //fields
+                                          ...entry.value.map(
+                                            (formName) {
+                                              if (_fixedFormsDetails[formName]['type'] == 'input') {
+                                                return Container(
+                                                  constraints: isTablet ? BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()) : null,
+                                                  // constraints: BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()),
+                                                  child: CustomTextFormField(
+                                                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                                                    decoration: InputDecoration(
+                                                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                      label: Text(_fixedFormsDetails[formName]['label']),
+                                                      hintText: _fixedFormsDetails[formName]['placeholder'],
+                                                    ),
+                                                    errorText: _errorShower(formName),
+                                                    textCapitalization: _fixedFormsDetails[formName]['capital'] ?? false ? TextCapitalization.characters : null,
+                                                    controller: _fixedFormsDetails[formName]['value'],
+                                                    // initialValue: _fixedFormsDetails[formName]?['initial'],
 
-                                            return const SizedBox.shrink();
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                          )
-                          .toList(),
+                                                    inputFormatters: _fixedFormsDetails[formName]['formatter'],
+                                                    onChanged: (newValue) {
+                                                      if (formName == 'birthday' || formName == 'deputy_birthday' || formName == 'account_birthday') {
+                                                        _fixedFormsDetails[formName]['value'].text = InputFormatter().validateAndCorrectShortDate(newValue);
+                                                        setState(() {});
+                                                      }
+                                                    },
+                                                  ),
+                                                );
+                                              }
+
+                                              if (_fixedFormsDetails[formName]['type'] == 'select') {
+                                                return Container(
+                                                  constraints: isTablet ? BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()) : null,
+                                                  // constraints: BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()),
+                                                  child: CustomDropdownMenu(
+                                                    requestFocusOnTap: true,
+                                                    enableSearch: true,
+                                                    label: Text(_fixedFormsDetails[formName]['label']),
+                                                    expandedInsets: EdgeInsets.zero,
+                                                    initialSelection: _fixedFormsDetails[formName]['value'].text,
+                                                    errorText: _errorShower(formName),
+                                                    dropdownMenuEntries: _fixedFormsDetails[formName]['options'] ?? [],
+                                                    onSelected: (selectedItem) async {
+                                                      _fixedFormsDetails[formName]['value'].text = selectedItem;
+                                                      setState(() {});
+                                                      _generateInitialForms();
+                                                    },
+                                                  ),
+                                                );
+                                              }
+
+                                              return const SizedBox.shrink();
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
+                            )
+                            .toList(),
+                      ),
                     ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) _submit();
+                        },
+                        child: const Text('Submit')),
                     const SizedBox(height: 200),
                   ],
                 ),
@@ -121,57 +177,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       ),
     );
     return txtW;
-  }
-
-  Widget _createInputField(formName, isTablet) {
-    Map formInfo = _fixedFormsDetails[formName];
-
-    print(formInfo['maxwidth'].runtimeType);
-
-    return Container(
-      constraints: isTablet ? BoxConstraints(maxWidth: formInfo['maxwidth'].toDouble()) : null,
-      // constraints: BoxConstraints(maxWidth: formInfo['maxwidth'].toDouble()),
-      child: CustomTextFormField(
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        decoration: InputDecoration(
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          label: Text(formInfo['label']),
-          hintText: formInfo['placeholder'],
-        ),
-        errorText: _errorShower(formName),
-        textCapitalization: formInfo['capital'] ?? false ? TextCapitalization.characters : null,
-        controller: formInfo['value'],
-        inputFormatters: formInfo['formatter'],
-        onChanged: (newValue) {
-          if (formName == 'birthday' || formName == 'deputy_birthday' || formName == 'account_birthday') {
-            formInfo['value'].text = InputFormatter().validateAndCorrectShortDate(newValue);
-            setState(() {});
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _createDropDownMenu(formName, isTablet) {
-    Map formInfo = _fixedFormsDetails[formName];
-    return Container(
-      constraints: isTablet ? BoxConstraints(maxWidth: formInfo['maxwidth'].toDouble()) : null,
-      // constraints: BoxConstraints(maxWidth: formInfo['maxwidth'].toDouble()),
-      child: CustomDropdownMenu(
-        requestFocusOnTap: true,
-        enableSearch: true,
-        label: Text(formInfo['label']),
-        expandedInsets: EdgeInsets.zero,
-        initialSelection: formInfo['value'].text,
-        errorText: _errorShower(formName),
-        dropdownMenuEntries: formInfo['options'] ?? [],
-        onSelected: (selectedItem) async {
-          formInfo['value'].text = selectedItem;
-          setState(() {});
-          _generateInitialForms();
-        },
-      ),
-    );
   }
 
   String? _errorShower(formName) {
@@ -279,13 +284,16 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
         //setting drop down default values
         if (form.value['value'].text.isEmpty && _serverData[form.key][0]['cd'] != null && form.value['hasDefault']) {
           form.value['value'].text = _serverData[form.key][0]['cd'];
-          // form.value['value'].text = 'aasda';
         }
-
-        // form.value['value'].text = 'aasda';
       }
     }
 
     setState(() {});
+  }
+
+  void _submit() {
+    _formsSubmitted = true;
+
+    print('form called');
   }
 }

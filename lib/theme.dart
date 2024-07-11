@@ -42,30 +42,12 @@ class AppTheme {
         vertical: 11,
       ),
 
-      // isDense: true,
+      isDense: true,
       // isCollapsed: true,
       labelStyle: const TextStyle(
         color: Colors.black54,
         fontSize: 15,
       ),
-
-      // errorBorder: OutlineInputBorder(
-      //   borderSide: BorderSide(
-      //     color: Colors.grey.shade500,
-      //     width: 1,
-      //   ),
-      // ),
-      // focusedErrorBorder: OutlineInputBorder(
-      //   borderSide: BorderSide(
-      //     color: primaryColor,
-      //     width: 1.5,
-      //   ),
-      // ),
-      // errorStyle: const TextStyle(
-      //   height: 1,
-      //   fontWeight: FontWeight.w600,
-      //   color: Colors.red,
-      // ),
     );
 
     return ThemeData(
@@ -161,7 +143,17 @@ class AppTheme {
         inputDecorationTheme: inputDecorationTheme,
       ),
 
-      menuButtonTheme: const MenuButtonThemeData(style: ButtonStyle()),
+      menuButtonTheme: MenuButtonThemeData(
+        // style: ButtonStyle(
+        //   textStyle: MaterialStatePropertyAll(TextStyle(fontSize: ))
+        // ),
+
+        style: MenuItemButton.styleFrom(
+          textStyle: const TextStyle(
+            fontSize: 15,
+          ),
+        ),
+      ),
 
       dialogTheme: DialogTheme(
         shape: RoundedRectangleBorder(

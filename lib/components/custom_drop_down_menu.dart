@@ -71,6 +71,7 @@ class _CustomDropdownMenuState extends State<CustomDropdownMenu> {
           expandedInsets: widget.expandedInsets,
           label: widget.label,
           initialSelection: widget.initialSelection,
+          textStyle: const TextStyle(fontSize: 15),
         ),
         if (widget.errorText != null)
           Text(

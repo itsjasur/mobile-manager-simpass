@@ -90,7 +90,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           keyboardType: widget.keyboardType,
           textCapitalization: widget.textCapitalization ?? TextCapitalization.none,
           textInputAction: widget.textInputAction,
-          style: widget.style,
+          style: const TextStyle(fontSize: 15),
           strutStyle: widget.strutStyle,
           autofocus: widget.autofocus,
           readOnly: widget.readOnly ?? false,
