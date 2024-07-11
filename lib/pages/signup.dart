@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/sign_up_waiting_popup.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
@@ -148,7 +149,7 @@ class SignupPageState extends State<SignupPage> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      TextFormField(
+                      CustomTextFormField(
                         enabled: _noEmployeeCode == false,
                         controller: _employeeCodeCntr,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -167,7 +168,7 @@ class SignupPageState extends State<SignupPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
+                      CustomTextFormField(
                         controller: _nameCntr,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: const InputDecoration(
@@ -178,7 +179,7 @@ class SignupPageState extends State<SignupPage> {
                         validator: InputValidator().validateName,
                       ),
                       const SizedBox(height: 30),
-                      TextFormField(
+                      CustomTextFormField(
                         // autovalidateMode: AutovalidateMode.onUserInteraction,
                         autovalidateMode: AutovalidateMode.always,
                         controller: _phoneNumberCntr,
@@ -191,7 +192,7 @@ class SignupPageState extends State<SignupPage> {
                         inputFormatters: [_formatter.phoneNumber],
                       ),
                       const SizedBox(height: 30),
-                      TextFormField(
+                      CustomTextFormField(
                         // autovalidateMode: AutovalidateMode.onUserInteraction,
                         autovalidateMode: AutovalidateMode.always,
                         controller: _birthdayCntr,

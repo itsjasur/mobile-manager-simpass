@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/warning.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
@@ -77,7 +79,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    TextFormField(
+                    CustomTextFormField(
                       controller: _partnerNameCntr,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
@@ -92,24 +94,17 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: TextFormField(
+                          child: CustomTextFormField(
                             controller: _businessNumberCntr,
                             keyboardType: TextInputType.number,
                             autovalidateMode: AutovalidateMode.onUserInteraction,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               floatingLabelBehavior: FloatingLabelBehavior.always,
-                              label: const Text('사업자번호*'),
+                              label: Text('사업자번호*'),
                               hintText: '000-00-00000',
-                              errorStyle: _businessNumberOK
-                                  ? const TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w600,
-                                    )
-                                  : null,
-                              errorText: _businessNumberPrompt,
-                              focusedErrorBorder: _businessNumberOK ? errorBorder : null,
-                              errorBorder: _businessNumberOK ? errorBorder : null,
                             ),
+                            errorText: _businessNumberPrompt,
+                            errorTextStyle: _businessNumberOK ? const TextStyle(color: Colors.green) : null,
                             validator: (v) => InputValidator().validateForNoneEmpty(v, '사업자번호'),
                             inputFormatters: [_formatter.businessNumber],
                             onChanged: (value) {
@@ -129,7 +124,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       readOnly: true,
                       initialValue: widget.phoneNumber,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -137,10 +132,9 @@ class _SecondarySignupState extends State<SecondarySignup> {
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         label: Text('연락 번호*'),
                       ),
-                      inputFormatters: [_formatter.officeNumber],
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       readOnly: true,
                       initialValue: widget.name,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -151,7 +145,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       inputFormatters: [_formatter.officeFax],
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       controller: _emailCntrl,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       keyboardType: TextInputType.emailAddress,
@@ -162,16 +156,17 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       validator: InputValidator().validateEmail,
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       controller: _storeTelCntr,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         label: Text('매장 전화'),
                       ),
+                      inputFormatters: [_formatter.officeNumber],
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       controller: _storeFaxCntr,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
@@ -180,7 +175,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       controller: _addressCntr,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
@@ -190,7 +185,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       validator: (v) => InputValidator().validateForNoneEmpty(v, '주소'),
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       controller: _addressAdditionsxCntr,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
@@ -211,23 +206,16 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: TextFormField(
+                          child: CustomTextFormField(
                             controller: _userNameCntr,
                             autovalidateMode: AutovalidateMode.onUserInteraction,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               floatingLabelBehavior: FloatingLabelBehavior.always,
-                              label: const Text('아이디*'),
+                              label: Text('아이디*'),
                               hintText: 'abc00',
-                              errorStyle: _usernameOK
-                                  ? const TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.w600,
-                                    )
-                                  : null,
-                              errorText: _usernamePrompt,
-                              focusedErrorBorder: _usernameOK ? errorBorder : null,
-                              errorBorder: _usernameOK ? errorBorder : null,
                             ),
+                            errorText: _usernamePrompt,
+                            errorTextStyle: _usernameOK ? const TextStyle(color: Colors.green) : null,
                             onChanged: (value) {
                               _usernameOK = false;
                               _usernamePrompt = null;
@@ -237,16 +225,14 @@ class _SecondarySignupState extends State<SecondarySignup> {
                           ),
                         ),
                         const SizedBox(width: 20),
-                        IntrinsicWidth(
-                          child: ElevatedButton(
-                            onPressed: _checkUsername,
-                            child: const Text('중북체크'),
-                          ),
+                        ElevatedButton(
+                          onPressed: _checkUsername,
+                          child: const Text('중북체크'),
                         )
                       ],
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       obscureText: true,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: _passwordCntr,
@@ -256,7 +242,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                       validator: InputValidator().validatePass,
                     ),
                     const SizedBox(height: 30),
-                    TextFormField(
+                    CustomTextFormField(
                       obscureText: true,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: _passwordCheckCntr,

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
@@ -185,7 +186,7 @@ class _PlansPageState extends State<PlansPage> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               constraints: const BoxConstraints(maxWidth: 400),
-              child: TextFormField(
+              child: CustomTextFormField(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: _searchTextCntr,
                 decoration: const InputDecoration(

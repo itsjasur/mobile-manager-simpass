@@ -11,7 +11,7 @@ class AuthGuard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthenticationModel>(builder: (context, auth, _) {
-      print('AuthGuard rebuild: isAuthenticated = ${auth.isAuthenticated}');
+      // print('AuthGuard rebuild: isAuthenticated = ${auth.isAuthenticated}');
 
       if (auth.isAuthenticated) {
         return child;

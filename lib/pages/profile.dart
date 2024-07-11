@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/components/signature_pad.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
@@ -29,7 +30,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    Widget partnerCdW = TextFormField(
+    Widget partnerCdW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('판매점 아이디'),
       ),
@@ -37,28 +38,28 @@ class _ProfilePafeState extends State<ProfilePafe> {
       readOnly: true,
     );
 
-    Widget partnerNameW = TextFormField(
+    Widget partnerNameW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('판매점 판매점명'),
       ),
       initialValue: _data['partner_nm'],
       readOnly: true,
     );
-    Widget directorNameW = TextFormField(
+    Widget directorNameW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('대표자명'),
       ),
       initialValue: _data['contractor'],
       readOnly: true,
     );
-    Widget busNumW = TextFormField(
+    Widget busNumW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('사업자번호'),
       ),
       initialValue: InputFormatter().businessNumber.formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: _data['business_num'] ?? "")).text,
       readOnly: true,
     );
-    Widget contactW = TextFormField(
+    Widget contactW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('연락처'),
       ),
@@ -67,7 +68,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
       inputFormatters: [InputFormatter().phoneNumber],
     );
 
-    Widget emailW = TextFormField(
+    Widget emailW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('이메일'),
       ),
@@ -75,7 +76,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
       readOnly: true,
     );
 
-    Widget addressW = TextFormField(
+    Widget addressW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('매장주소'),
       ),
@@ -83,7 +84,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
       readOnly: true,
     );
 
-    Widget addressdetailsW = TextFormField(
+    Widget addressdetailsW = CustomTextFormField(
       decoration: const InputDecoration(
         label: Text('매장상세주소'),
       ),

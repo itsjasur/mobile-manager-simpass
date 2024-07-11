@@ -6,6 +6,68 @@ class AppTheme {
 
     Color backgroundColor = const Color.fromARGB(255, 239, 248, 255);
 
+    InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
+      fillColor: Colors.white,
+      filled: true,
+      hintStyle: const TextStyle(color: Colors.black26),
+
+      constraints: const BoxConstraints(
+        maxHeight: 45,
+        minHeight: 44,
+      ),
+
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        // borderSide: BorderSide.none,
+        borderSide: BorderSide(
+          color: Colors.grey.shade400,
+          width: 1,
+        ),
+      ),
+
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.grey.shade500,
+          width: 1,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(
+          color: primaryColor,
+          width: 1.5,
+        ),
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 11,
+      ),
+
+      // isDense: true,
+      // isCollapsed: true,
+      labelStyle: const TextStyle(
+        color: Colors.black54,
+        fontSize: 15,
+      ),
+
+      // errorBorder: OutlineInputBorder(
+      //   borderSide: BorderSide(
+      //     color: Colors.grey.shade500,
+      //     width: 1,
+      //   ),
+      // ),
+      // focusedErrorBorder: OutlineInputBorder(
+      //   borderSide: BorderSide(
+      //     color: primaryColor,
+      //     width: 1.5,
+      //   ),
+      // ),
+      // errorStyle: const TextStyle(
+      //   height: 1,
+      //   fontWeight: FontWeight.w600,
+      //   color: Colors.red,
+      // ),
+    );
+
     return ThemeData(
       // scaffoldBackgroundColor: Colors.white,
       // drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
@@ -79,71 +141,39 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
           ),
-          // minimumSize: const Size(double.infinity, 50),
           minimumSize: const Size(0, 45),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           textStyle: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        fillColor: Colors.white,
-        filled: true,
-        hintStyle: const TextStyle(color: Colors.black26),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          // borderSide: BorderSide.none,
-          borderSide: BorderSide(
-            color: Colors.grey.shade400,
-            width: 1,
-          ),
+      inputDecorationTheme: inputDecorationTheme,
+
+      dropdownMenuTheme: DropdownMenuThemeData(
+        menuStyle: const MenuStyle(
+          padding: MaterialStatePropertyAll(EdgeInsets.zero),
+          // visualDensity: VisualDensity.compact,
+          surfaceTintColor: MaterialStatePropertyAll(Colors.transparent),
+          backgroundColor: MaterialStatePropertyAll(Colors.white),
         ),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.grey.shade500,
-            width: 1,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: primaryColor,
-            width: 1.5,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.grey.shade500,
-            width: 1,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: primaryColor,
-            width: 1.5,
-          ),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 13,
-        ),
-        isDense: true,
-        labelStyle: const TextStyle(
-          color: Colors.black54,
-          fontSize: 15,
-        ),
-        errorStyle: const TextStyle(
-          height: 1,
-          fontWeight: FontWeight.w600,
-          color: Colors.red,
-        ),
+        inputDecorationTheme: inputDecorationTheme,
       ),
+
+      menuButtonTheme: const MenuButtonThemeData(style: ButtonStyle()),
 
       dialogTheme: DialogTheme(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(6),
         ),
       ),
+      // iconButtonTheme: IconButtonThemeData(
+      //   style: IconButton.styleFrom(
+      //     backgroundColor: Colors.green,
+      //     padding: EdgeInsets.all(0),
+      //   ),
+      // ),
 
       sliderTheme: SliderThemeData(
         // trackHeight: 2.0,

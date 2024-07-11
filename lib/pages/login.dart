@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
@@ -51,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      TextFormField(
+                      CustomTextFormField(
                         controller: _userNameCntr,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: const InputDecoration(
@@ -60,14 +61,14 @@ class _LoginPageState extends State<LoginPage> {
                         validator: InputValidator().validateId,
                       ),
                       const SizedBox(height: 30),
-                      TextFormField(
+                      CustomTextFormField(
                         obscureText: true,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         controller: _passwordCntr,
                         decoration: const InputDecoration(
                           label: Text('비밀번호'),
                         ),
-                        // validator: InputValidator().validatePass,
+                        validator: InputValidator().validatePass,
                       ),
                       const SizedBox(height: 30),
                       SizedBox(

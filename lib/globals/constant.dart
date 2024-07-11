@@ -1,4 +1,7 @@
 // ignore: constant_identifier_names
+import 'package:flutter/services.dart';
+import 'package:mobile_manager_simpass/utils/formatters.dart';
+
 const BASEURL = 'http://192.168.0.251:8091/api/';
 // const BASEURL = 'https://ta.simpass.co.kr/api/';
 
@@ -270,11 +273,12 @@ List plansFormsInfo = [
 ];
 
 Map inputFormsList = {
-  //USIM INFO
+  //PAYMENT INFO
   "paid_transfer_cd": {
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '결제구분 선택하세요.',
     "placeholder": '결제구분 선택하세요',
     "label": '결제구분',
@@ -284,24 +288,25 @@ Map inputFormsList = {
   },
 
   "account_name": {
-    "value": null,
+    "value": null, "formatter": null,
     // "value": 'TEST 예금주명',
     "type": 'input',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '예금주명 입력하세요.',
     "placeholder": '홍길동',
     "label": '예금주명',
     "hasDefault": false,
     "required": true,
     "errorMessage": null,
+    "capital": true,
   },
 
   "account_birthday": {
     "value": null,
     // "value": '91-01-31',
-    "type": 'cleave',
-    // pattern: cleavePatterns.birthdayPattern,
-    "maxwidth": '200px',
+    "type": 'input',
+    "formatter": [InputFormatter().birthdayShort],
+    "maxwidth": 200,
     "error": '생년월일 입력하세요.',
     "placeholder": '91-01-31',
     "label": '예금주 생년월일',
@@ -311,10 +316,10 @@ Map inputFormsList = {
   },
 
   "account_agency": {
-    "value": null,
+    "value": null, "formatter": null,
     // "value": 'TEST AGENCY',
     "type": 'input',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '은행(카드사)명 입력하세요.',
     "placeholder": '하나은행',
     "label": '은행(카드사)명',
@@ -325,9 +330,11 @@ Map inputFormsList = {
 
   "account_number": {
     "value": null,
+    "formatter": [FilteringTextInputFormatter.digitsOnly],
+
     // "value": '289347298372',
     "type": 'input',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '계좌번호(카드번호) 입력하세요.',
     "placeholder": '1234567890',
     "label": '계좌번호(카드번호)',
@@ -338,13 +345,9 @@ Map inputFormsList = {
 
   "card_yy_mm": {
     "value": null,
-    "type": 'cleave',
-    // pattern: {
-    //   date: true,
-    //   datePattern: ['m', 'y'],
-    //   dateMin: '06/24',
-    // },
-    "maxwidth": '200px',
+    "type": 'input',
+    "formatter": [InputFormatter().cardYYMM],
+    "maxwidth": 200,
     "error": '카드유효기간을 정확하게 입력하세요.',
     "placeholder": '11/29',
     "label": '카드유효기간',
@@ -357,8 +360,9 @@ Map inputFormsList = {
   "usim_plan_nm": {
     //
     "value": null,
+    "formatter": null,
     "type": 'input',
-    "maxwidth": '400px',
+    "maxwidth": 400,
     "error": '요금제을 선택하세요.',
     "placeholder": '요금제 선택하세요.',
     "label": '요금제',
@@ -369,8 +373,9 @@ Map inputFormsList = {
 
   "usim_model_list": {
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": 'USIM 모델명을 선택하세요.',
     "placeholder": '모델명을 선택하세요',
     "hasDefault": false,
@@ -380,10 +385,10 @@ Map inputFormsList = {
   },
 
   "usim_no": {
-    "value": null,
+    "value": null, "formatter": null,
     // "value": '12312312',
     "type": 'input',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '일련번호 입력하세요.',
     "placeholder": '00000000',
     "hasDefault": false,
@@ -393,8 +398,9 @@ Map inputFormsList = {
   },
   "usim_fee_cd": {
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '유심비용청구을 선택하세요',
     "placeholder": '유심비용청구을 선택하세요',
     "hasDefault": true,
@@ -405,8 +411,9 @@ Map inputFormsList = {
 
   "extra_service_cd": {
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '부가서비스 선택하세요',
     "placeholder": '부가서비스을 선택하세요',
     "hasDefault": true,
@@ -417,9 +424,10 @@ Map inputFormsList = {
 
   "data_block_cd": {
     "value": null,
+    "formatter": null,
     "label": '데이터차단',
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '데이터 차단 서비스 선택하세요.',
     "placeholder": '데이터 차단 서비스 선택하세요',
     "hasDefault": true,
@@ -429,9 +437,10 @@ Map inputFormsList = {
 
   "data_roming_block_cd": {
     "value": null,
+    "formatter": null,
     "label": '해외데이터로밍',
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '해외데이터로밍을 선택하세요.',
     "placeholder": '해외데이터로밍을 선택하세요',
     "hasDefault": true,
@@ -442,8 +451,9 @@ Map inputFormsList = {
   "plan_fee_cd": {
     "label": '가입비',
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '가입비을 선택하세요.',
     "placeholder": '가입비을 선택하세요',
     "hasDefault": true,
@@ -453,8 +463,9 @@ Map inputFormsList = {
   "phone_bill_block_cd": {
     "label": '휴대폰결제',
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '휴대폰결제을 선택하세요.',
     "placeholder": '휴대폰결제을 선택하세요',
     "hasDefault": true,
@@ -464,8 +475,9 @@ Map inputFormsList = {
   "usim_act_cd": {
     "label": '개통구분',
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '개통구분을 선택하세요.',
     "placeholder": '개통구분을 선택하세요',
     "hasDefault": true,
@@ -476,8 +488,9 @@ Map inputFormsList = {
   "wish_number": {
     "label": '희망번호',
     "value": null,
-    "type": 'cleave',
-    "maxwidth": '300px',
+    "formatter": [InputFormatter().wishNumbmer3],
+    "type": 'input',
+    "maxwidth": 300,
     "error": null,
     "placeholder": '희망번호',
     "hasDefault": false,
@@ -488,8 +501,9 @@ Map inputFormsList = {
   "mnp_carrier_type": {
     "label": '이동 유형',
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '이동 유형을 선택하세요.',
     "placeholder": '선불',
     "hasDefault": true,
@@ -499,14 +513,9 @@ Map inputFormsList = {
 
   "phone_number": {
     "value": null,
-    "type": 'cleave',
-    // pattern: {
-    //   prefix: '010-',
-    //   phone: true,
-    //   phoneRegionCode: 'KR',
-    //   delimiter: '-',
-    // },
-    "maxwidth": '300px',
+    "type": 'input',
+    "formatter": [InputFormatter().phoneNumber010],
+    "maxwidth": 300,
     "error": '가입/이동 전화번호을 입력하세요.',
     "placeholder": '010-0000-0000',
     "label": '가입/이동 전화번호',
@@ -518,8 +527,9 @@ Map inputFormsList = {
   "mnp_pre_carrier": {
     "label": '이전통신사',
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '이전통신사을 선택하세요.',
     "placeholder": '선불',
     "hasDefault": true,
@@ -529,8 +539,9 @@ Map inputFormsList = {
 
   "mnp_pre_carrier_nm": {
     "value": null,
+    "formatter": null,
     "type": 'input',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '이전 통신사 기타명을 입력하세요.',
     "placeholder": '이전 통신사 기타명',
     "label": '이전 통신사 기타명',
@@ -541,8 +552,9 @@ Map inputFormsList = {
 
   "cust_type_cd": {
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '200px',
+    "maxwidth": 200,
     "error": '고객유형 선택하세요.',
     "placeholder": '고객유형 선택하세요',
     "hasDefault": true,
@@ -553,14 +565,10 @@ Map inputFormsList = {
 
   "contact": {
     "value": null,
-    // "value": '010-1234-1234',
-    "type": 'cleave',
-    // pattern: {
-    //   phone: true,
-    //   phoneRegionCode: 'KR',
-    //   delimiter: '-',
-    // },
-    "maxwidth": '200px',
+    "type": 'input',
+    "formatter": [InputFormatter().phoneNumber],
+    "initial": '010-',
+    "maxwidth": 200,
     "error": '연락처 입력하세요.',
     "placeholder": '010-0000-0000',
     "label": '개통번호외 연락번호',
@@ -571,23 +579,24 @@ Map inputFormsList = {
 
   "country": {
     "type": 'input',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": '국적 선택하세요.',
     "placeholder": '대한민국',
     "hasDefault": true,
     "required": true,
     "errorMessage": null,
     "value": null,
+    "formatter": null,
     "label": '국적',
   },
 
   "id_no": {
     //
     "type": 'input',
-    "maxwidth": '200px',
+    "maxwidth": 200,
     "error": '신분증번호/여권번호 입력하세요.',
     "placeholder": '910131-0000000',
-    "value": null,
+    "value": null, "formatter": null,
     // "value": '123214323',
     "hasDefault": true,
     "required": true,
@@ -598,36 +607,37 @@ Map inputFormsList = {
   "name": {
     //
     "type": 'input',
-    "maxwidth": '400px',
+    "maxwidth": 400,
     "error": '가입자명 입력하세요.',
     "placeholder": '홍길동',
     "hasDefault": true,
     "required": true,
     "errorMessage": null,
     "label": '가입자명',
-    "value": null,
+    "value": null, "formatter": null,
+    "capital": true,
     // "value": 'TEST NAME',
   },
 
   "birthday": {
     //
-    "type": 'cleave',
-    // pattern: cleavePatterns.birthdayPattern,
-    "maxwidth": '200px',
+    "type": 'input',
+    "formatter": [InputFormatter().birthdayShort],
+    "maxwidth": 200,
     "hasDefault": true,
     "required": true,
     "errorMessage": null,
     "error": '생년월일 입력하세요.',
     "placeholder": '91-01-31',
     "value": null,
-    // "value": '99-01-12',
     "label": '생년월일',
   },
 
   "gender_cd": {
     "value": null,
+    "formatter": null,
     "type": 'select',
-    "maxwidth": '100px',
+    "maxwidth": 100,
     "error": '성별 입력하세요.',
     "placeholder": '남',
     "hasDefault": true,
@@ -638,9 +648,9 @@ Map inputFormsList = {
 
   "address": {
     //
-    "value": null,
+    "value": null, "formatter": null,
     "type": 'input',
-    "maxwidth": '400px',
+    "maxwidth": 400,
     "error": '주소 입력하세요.',
     "hasDefault": true,
     "required": true,
@@ -651,12 +661,12 @@ Map inputFormsList = {
 
   "addressdetail": {
     //
-    "value": null,
+    "value": null, "formatter": null,
     "hasDefault": false,
     "required": false,
     "errorMessage": null,
     "type": 'input',
-    "maxwidth": '300px',
+    "maxwidth": 300,
     "error": null,
     "placeholder": '우림이비지센터 1차 1210호',
     "label": '상세주소',
@@ -665,19 +675,21 @@ Map inputFormsList = {
   "deputy_name": {
     "label": '법정대리인 이름',
     "value": null,
+    "formatter": null,
     "type": 'input',
-    "maxwidth": '400px',
+    "maxwidth": 400,
     "error": '법정대리인 이름 입력하세요.',
     "placeholder": '법정대리인 이름',
     "hasDefault": false,
     "required": true,
     "errorMessage": null,
+    "capital": true,
   },
 
   "deputy_birthday": {
-    "type": 'cleave',
-    // pattern: cleavePatterns.birthdayPattern,
-    "maxwidth": '200px',
+    "type": 'input',
+    "formatter": [InputFormatter().birthdayShort],
+    "maxwidth": 200,
     "hasDefault": true,
     "required": true,
     "errorMessage": null,
@@ -689,9 +701,9 @@ Map inputFormsList = {
 
   "relationship_cd": {
     //
-    "value": null,
+    "value": null, "formatter": null,
     "type": 'select',
-    "maxwidth": '100px',
+    "maxwidth": 100,
     "error": '관계 선택하세요.',
     "placeholder": '부',
     "hasDefault": true,
@@ -702,13 +714,9 @@ Map inputFormsList = {
 
   "deputy_contact": {
     "value": null,
-    "type": 'cleave',
-    // pattern: {
-    //   phone: true,
-    //   phoneRegionCode: 'KR',
-    //   delimiter: '-',
-    // },
-    "maxwidth": '200px',
+    "type": 'input',
+    "formatter": null,
+    "maxwidth": 200,
     "error": '대리인 연락처 입력하세요.',
     "placeholder": '010-0000-0000',
     "label": '대리인 연락처',
