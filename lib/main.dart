@@ -8,12 +8,15 @@ import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/pages/profile.dart';
 import 'package:mobile_manager_simpass/pages/secondary_signup.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
+import 'package:mobile_manager_simpass/pages/test.dart';
 import 'package:mobile_manager_simpass/theme.dart';
 import 'package:provider/provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(
     MultiProvider(
       providers: [
@@ -31,10 +34,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/secondary-signup',
+      // initialRoute: '/test',
+      initialRoute: '/form-details',
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
+        '/test': (context) => const TestPage(),
         '/secondary-signup': (context) => const SecondarySignup(name: 'name', phoneNumber: '01012312312', receiptId: '34523423432', certType: 'KAKAO', birthday: '19950534', employeeCode: 'asd'),
 
         //protected
@@ -42,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const AuthGuard(child: ProfilePafe()),
 
         '/plans': (context) => const AuthGuard(child: PlansPage()),
-        '/form-details': (context) => const AuthGuard(child: FormDetailsPage()),
+        '/form-details': (context) => const AuthGuard(child: FormDetailsPage(planId: 4, typeCd: 'PO', carrierCd: 'KT', mvnoCd: 'KTM', searchText: '')),
         '/rental-forms': (context) => const AuthGuard(child: HomePage()),
         '/applications': (context) => const AuthGuard(child: HomePage()),
         '/download-forms': (context) => const AuthGuard(child: HomePage()),

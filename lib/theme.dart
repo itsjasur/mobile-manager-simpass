@@ -100,13 +100,11 @@ class AppTheme {
       ),
       checkboxTheme: CheckboxThemeData(
         visualDensity: VisualDensity.compact,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(2),
         ),
-        side: const BorderSide(
-          color: Colors.black26,
-        ),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: const BorderSide(color: Colors.black26),
       ),
       radioTheme: RadioThemeData(
         visualDensity: VisualDensity.compact,
@@ -160,12 +158,18 @@ class AppTheme {
           borderRadius: BorderRadius.circular(6),
         ),
       ),
-      // iconButtonTheme: IconButtonThemeData(
-      //   style: IconButton.styleFrom(
-      //     backgroundColor: Colors.green,
-      //     padding: EdgeInsets.all(0),
-      //   ),
-      // ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          // iconSize: 20,
+          // backgroundColor: Colors.green,
+          // iconSize: 10,
+          // maximumSize: const Size(25, 25),
+          // minimumSize: const Size(20, 20),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+        ),
+      ),
 
       sliderTheme: SliderThemeData(
         // trackHeight: 2.0,

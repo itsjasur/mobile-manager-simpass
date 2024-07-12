@@ -18,6 +18,15 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library for picking images.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera for taking photos.</string>
+	
+	<key>io.flutter.embedded_views_preview</key>
+	<string>YES</string>
+
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>

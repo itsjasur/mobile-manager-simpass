@@ -139,23 +139,15 @@ class _ProfilePafeState extends State<ProfilePafe> {
                     const SizedBox(height: 20),
                     rowBuilder(addressW, addressdetailsW),
                     const SizedBox(height: 20),
-                    const Text(
-                      '판매자 서명',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 350),
-                      child: SignNaturePad(
-                        nameData: _signData,
-                        signData: _sealData,
-                        saveData: (signData, sealData) {
+                      child: SignatureContainer(
+                        padTitle: '판매자 서명',
+                        signData: _signData,
+                        sealData: _sealData,
+                        saveSigns: (signData, sealData) {
                           _signData = base64Encode(signData);
                           _sealData = base64Encode(sealData);
-                          ;
                         },
                       ),
                     ),
