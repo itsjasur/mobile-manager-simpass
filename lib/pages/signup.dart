@@ -35,9 +35,9 @@ class SignupPageState extends State<SignupPage> {
   @override
   void initState() {
     super.initState();
-    _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
-    _birthdayCntr.text = '1995-08-18';
-    _phoneNumberCntr.text = '010-5818-9352';
+    // _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
+    // _birthdayCntr.text = '1995-08-18';
+    // _phoneNumberCntr.text = '010-5818-9352';
   }
 
   @override
@@ -154,7 +154,6 @@ class SignupPageState extends State<SignupPage> {
                     CustomTextFormField(
                       enabled: _noEmployeeCode == false,
                       controller: _employeeCodeCntr,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
                         label: Text('영업사원코드'),
                       ),
@@ -173,7 +172,6 @@ class SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 20),
                     CustomTextFormField(
                       controller: _nameCntr,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
                         label: Text('이름'),
                         hintText: '홍길동',
@@ -185,7 +183,6 @@ class SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 30),
                     CustomTextFormField(
                       // autovalidateMode: AutovalidateMode.onUserInteraction,
-                      autovalidateMode: AutovalidateMode.always,
                       controller: _phoneNumberCntr,
                       decoration: const InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -199,7 +196,6 @@ class SignupPageState extends State<SignupPage> {
                     const SizedBox(height: 30),
                     CustomTextFormField(
                       // autovalidateMode: AutovalidateMode.onUserInteraction,
-                      autovalidateMode: AutovalidateMode.always,
                       controller: _birthdayCntr,
                       decoration: const InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -298,7 +294,14 @@ class SignupPageState extends State<SignupPage> {
                         _submitted = true;
                         setState(() {});
 
-                        if ((!_noEmployeeCode ? _employeeCodeCntr.text.isNotEmpty : true) && _nameCntr.text.isNotEmpty && _phoneNumberCntr.text.isNotEmpty && _birthdayCntr.text.isNotEmpty) _submit();
+                        bool allFiled = [
+                          (!_noEmployeeCode ? InputValidator().validateEmployeeCode(_employeeCodeCntr.text) == null : true),
+                          InputValidator().validateName(_nameCntr.text) == null,
+                          InputValidator().validatePhoneNumber(_phoneNumberCntr.text) == null,
+                          InputValidator().validateDate(_birthdayCntr.text) == null,
+                        ].every((element) => element == true);
+
+                        if (allFiled) _submit();
                       },
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -329,7 +332,7 @@ class SignupPageState extends State<SignupPage> {
   }
 
   Future<void> _submit() async {
-    print('submit clicked');
+    // print('submit clicked');
     if (!_agreementChecked) {
       showCustomSnackBar('개인정보 보호 약관에 동의해주세요.');
       return;
@@ -374,7 +377,7 @@ class SignupPageState extends State<SignupPage> {
         }
       }
     } catch (e) {
-      if (mounted) showCustomSnackBar(e.toString());
+      showCustomSnackBar(e.toString());
     }
   }
 }

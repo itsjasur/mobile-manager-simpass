@@ -150,6 +150,9 @@ class InputValidator {
         return "잘못된 날짜 일";
       }
     }
+    if (value.length < 8) {
+      return "전체 날짜를 입력하세요.";
+    }
 
     return null;
   }

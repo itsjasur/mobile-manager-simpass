@@ -18,9 +18,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _userNameCntr = TextEditingController(text: 'SM00001');
   final TextEditingController _passwordCntr = TextEditingController(text: 'SM00001');
-  final _formKey = GlobalKey<FormState>();
 
   bool _submitted = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +54,6 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 30),
                     CustomTextFormField(
                       controller: _userNameCntr,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
                         label: Text('판매점 아이디'),
                       ),
@@ -64,12 +63,11 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 30),
                     CustomTextFormField(
                       obscureText: true,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: _passwordCntr,
                       decoration: const InputDecoration(
                         label: Text('비밀번호'),
                       ),
-                      errorText: _submitted ? InputValidator().validatePass(_passwordCntr.text) : null,
+                      // errorText: _submitted ? InputValidator().validatePass(_passwordCntr.text) : null,
                       onChanged: (p0) => setState(() {}),
                     ),
                     const SizedBox(height: 30),
@@ -79,7 +77,8 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           _submitted = true;
                           setState(() {});
-                          if (_userNameCntr.text.isNotEmpty && _passwordCntr.text.isNotEmpty) _login();
+                          // if (InputValidator().validatePass(_passwordCntr.text) == null && InputValidator().validateId(_userNameCntr.text) == null) _login();
+                          _login();
                         },
                         child: const Text('로그인'),
                       ),
@@ -140,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
         throw 'Login error';
       }
     } catch (e) {
-      if (mounted) showCustomSnackBar(e.toString());
+      showCustomSnackBar(e.toString());
     }
   }
 }
