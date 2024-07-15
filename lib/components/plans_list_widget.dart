@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
+import 'package:mobile_manager_simpass/pages/form_details.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
@@ -165,7 +166,8 @@ class _PlansListWidgetState extends State<PlansListWidget> {
             if (widget.asPopup) {
               Navigator.pop(context, item);
             } else {
-              await Navigator.pushNamed(context, '/form-details');
+              // await Navigator.pushNamed(context, '/form-details');
+              Navigator.push(context, MaterialPageRoute(builder: (context) => FormDetailsPage(searchText: _searchTextCntr.text, planId: item['id'])));
             }
           },
           child: Container(

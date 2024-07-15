@@ -15,6 +15,7 @@ class SignatureContainer extends StatefulWidget {
   final String? errorText;
   final String? type;
   final Function(Uint8List, Uint8List)? saveSigns;
+
   final Function(Uint8List)? saveAgree;
 
   const SignatureContainer({
@@ -24,7 +25,7 @@ class SignatureContainer extends StatefulWidget {
     this.saveSigns,
     this.overlayName,
     this.padTitle,
-    this.type = 'signs',
+    this.type,
     this.saveAgree,
     this.errorText,
   });
@@ -143,8 +144,11 @@ class _SignatureContainerState extends State<SignatureContainer> {
                           context: context,
                           builder: (context) => const AgreeDrawPad(),
                         );
-                        if (widget.saveSigns != null) await widget.saveAgree!(agreeData);
+
                         _signData = agreeData;
+                        if (widget.saveAgree != null) {
+                          await widget.saveAgree!(agreeData);
+                        }
                       } else {
                         final [signData, sealData] = await showDialog(
                           barrierDismissible: false,
@@ -154,7 +158,9 @@ class _SignatureContainerState extends State<SignatureContainer> {
 
                         _signData = signData;
                         _sealData = sealData;
-                        if (widget.saveSigns != null) await widget.saveSigns!(signData, sealData);
+                        if (widget.saveSigns != null) {
+                          await widget.saveSigns!(signData, sealData);
+                        }
                       }
 
                       setState(() {});

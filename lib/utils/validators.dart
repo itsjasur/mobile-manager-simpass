@@ -156,4 +156,32 @@ class InputValidator {
 
     return null;
   }
+
+  String? validateShortDate(String? value) {
+    value = value?.replaceAll('-', '');
+
+    // checking if the field is empty
+    if (value == null || value.isEmpty) {
+      return "날짜 입력하세요";
+    }
+
+    if (value.length >= 4) {
+      int mm = int.parse(value.substring(2, 4));
+      if (mm < 01 || mm > 12) {
+        return "잘못된 날짜 월";
+      }
+    }
+
+    if (value.length == 6) {
+      int dd = int.parse(value.substring(4, 6));
+      if (dd < 01 || dd > 31) {
+        return "잘못된 날짜 일";
+      }
+    }
+    if (value.length > 6 || value.length < 6) {
+      return "전체 날짜를 입력하세요.";
+    }
+
+    return null;
+  }
 }

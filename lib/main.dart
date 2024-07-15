@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/auth.dart';
-import 'package:mobile_manager_simpass/pages/form_details.dart';
 import 'package:mobile_manager_simpass/pages/plans.dart';
 import 'package:mobile_manager_simpass/pages/home.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
@@ -35,7 +34,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       // initialRoute: '/test',
-      initialRoute: '/form-details',
+      initialRoute: '/plans',
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
@@ -47,7 +46,6 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const AuthGuard(child: ProfilePafe()),
 
         '/plans': (context) => const AuthGuard(child: PlansPage()),
-        '/form-details': (context) => const AuthGuard(child: FormDetailsPage(planId: 88, typeCd: 'PO', carrierCd: 'KT', mvnoCd: 'KTM', searchText: '')),
         '/rental-forms': (context) => const AuthGuard(child: HomePage()),
         '/applications': (context) => const AuthGuard(child: HomePage()),
         '/download-forms': (context) => const AuthGuard(child: HomePage()),

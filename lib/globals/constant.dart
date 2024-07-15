@@ -1,10 +1,11 @@
 // ignore: constant_identifier_names
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 
-// const BASEURL = 'http://192.168.0.251:8091/api/';
-const BASEURL = 'https://ta.simpass.co.kr/api/';
+const BASEURL = 'http://192.168.0.251:8091/api/';
+// const BASEURL = 'https://ta.simpass.co.kr/api/';
 
 final sideMenuNames = [
   '홈',
@@ -569,7 +570,7 @@ Map inputFormsList = {
     "value": null,
     "type": 'input',
     "formatter": InputFormatter().phoneNumber,
-    "initial": null,
+    "initial": '010-1234-1234',
     "maxwidth": 200,
     "error": '연락처 입력하세요.',
     "placeholder": '010-0000-0000',
@@ -625,6 +626,7 @@ Map inputFormsList = {
     //
     "type": 'input',
     "formatter": InputFormatter().birthdayShort,
+    "initial": '99-01-31',
     "maxwidth": 200,
     "hasDefault": true,
     "required": true,
@@ -656,6 +658,7 @@ Map inputFormsList = {
     "error": '주소 입력하세요.',
     "hasDefault": true,
     "required": true,
+    "initial": 'test temp address',
     "errorMessage": null,
     "placeholder": '서울시 구로구 디지털로33길 28',
     "label": '주소',
@@ -717,7 +720,7 @@ Map inputFormsList = {
   "deputy_contact": {
     "value": null,
     "type": 'input',
-    "formatter": null,
+    "formatter": InputFormatter().phoneNumber,
     "maxwidth": 200,
     "error": '대리인 연락처 입력하세요.',
     "placeholder": '010-0000-0000',
@@ -728,20 +731,58 @@ Map inputFormsList = {
   }
 };
 
+// class forms {
+//   late dynamic paid_transfer_cd;
+//   late dynamic account_name;
+//   late dynamic account_birthday;
+//   late dynamic account_agency;
+//   late dynamic account_number;
+//   late dynamic card_yy_mm;
+//   late dynamic usim_plan_nm;
+//   late dynamic usim_model_list;
+//   late dynamic usim_no;
+//   late dynamic usim_fee_cd;
+//   late dynamic extra_service_cd;
+//   late dynamic data_block_cd;
+//   late dynamic data_roming_block_cd;
+//   late dynamic plan_fee_cd;
+//   late dynamic phone_bill_block_cd;
+//   late dynamic usim_act_cd;
+//   late dynamic wish_number;
+//   late dynamic mnp_carrier_type;
+//   late dynamic phone_number;
+//   late dynamic mnp_pre_carrier;
+//   late dynamic mnp_pre_carrier_nm;
+//   late dynamic cust_type_cd;
+//   late dynamic contact;
+//   late dynamic country;
+//   late dynamic id_no;
+//   late dynamic name;
+//   late dynamic birthday;
+//   late dynamic gender_cd;
+//   late dynamic address;
+//   late dynamic addressdetail;
+//   late dynamic deputy_name;
+//   late dynamic deputy_birthday;
+//   late dynamic relationship_cd;
+//   late dynamic deputy_contact;
+// }
+
 class FormStructure {
-  final TextEditingController? value;
-  final String type;
-  final InputFormatter? formatter;
-  final int maxwidth;
-  final String error;
-  final String placeholder;
-  final String label;
-  final bool hasDefault;
-  final bool required;
-  final String? errorMessage;
+  TextEditingController value;
+  String type;
+  dynamic formatter;
+  String placeholder;
+  String label;
+  bool? required;
+  int maxwidth;
+  String? error;
+  bool? hasDefault;
+  bool? capital;
+  String? errorMessage;
 
   FormStructure({
-    this.value,
+    required this.value,
     required this.type,
     this.formatter,
     required this.maxwidth,
@@ -751,17 +792,48 @@ class FormStructure {
     required this.hasDefault,
     required this.required,
     this.errorMessage,
+    this.capital,
   });
+
+  // Factory constructor to create a FormStructure from a Map
+  factory FormStructure.fromMap(Map<String, dynamic> map) {
+    return FormStructure(
+      value: map['value'] as TextEditingController,
+      type: map['type'],
+      formatter: map['formatter'],
+      maxwidth: map['maxwidth'],
+      error: map['error'],
+      placeholder: map['placeholder'],
+      label: map['label'],
+      hasDefault: map['hasDefault'],
+      required: map['required'],
+      errorMessage: map['errorMessage'],
+      capital: map['capital'],
+    );
+  }
 }
 
+// class InputFormsList {
+//   final Map<String, FormStructure> structure;
+
+//   InputFormsList(this.structure);
+
+//   // Custom getter to access the FormStructure map using the name as a key
+//   FormStructure? operator [](String key) {
+//     return structure[key];
+//   }
+// }
+
 class InputFormsList {
-  final Map<String, FormStructure> formElements;
+  final Map<String, Map<String, dynamic>> structure;
 
-  InputFormsList({required this.formElements});
+  InputFormsList(this.structure);
 
-  void dispose() {
-    for (var element in formElements.values) {
-      element.value?.dispose();
+  // Custom getter to access the FormStructure map using the name as a key
+  FormStructure? operator [](String key) {
+    if (structure.containsKey(key)) {
+      return FormStructure.fromMap(structure[key]!);
     }
+    return null;
   }
 }
