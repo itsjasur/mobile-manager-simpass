@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => const AuthGuard(child: ProfilePafe()),
 
         '/plans': (context) => const AuthGuard(child: PlansPage()),
-        '/form-details': (context) => const AuthGuard(child: FormDetailsPage(planId: 4, typeCd: 'PO', carrierCd: 'KT', mvnoCd: 'KTM', searchText: '')),
+        '/form-details': (context) => const AuthGuard(child: FormDetailsPage(planId: 88, typeCd: 'PO', carrierCd: 'KT', mvnoCd: 'KTM', searchText: '')),
         '/rental-forms': (context) => const AuthGuard(child: HomePage()),
         '/applications': (context) => const AuthGuard(child: HomePage()),
         '/download-forms': (context) => const AuthGuard(child: HomePage()),

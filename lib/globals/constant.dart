@@ -1,9 +1,10 @@
 // ignore: constant_identifier_names
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 
-const BASEURL = 'http://192.168.0.251:8091/api/';
-// const BASEURL = 'https://ta.simpass.co.kr/api/';
+// const BASEURL = 'http://192.168.0.251:8091/api/';
+const BASEURL = 'https://ta.simpass.co.kr/api/';
 
 final sideMenuNames = [
   '홈',
@@ -305,7 +306,7 @@ Map inputFormsList = {
     "value": null,
     // "value": '91-01-31',
     "type": 'input',
-    "formatter": [InputFormatter().birthdayShort],
+    "formatter": InputFormatter().birthdayShort,
     "maxwidth": 200,
     "error": '생년월일 입력하세요.',
     "placeholder": '91-01-31',
@@ -330,7 +331,7 @@ Map inputFormsList = {
 
   "account_number": {
     "value": null,
-    "formatter": [FilteringTextInputFormatter.digitsOnly],
+    "formatter": FilteringTextInputFormatter.digitsOnly,
 
     // "value": '289347298372',
     "type": 'input',
@@ -346,7 +347,7 @@ Map inputFormsList = {
   "card_yy_mm": {
     "value": null,
     "type": 'input',
-    "formatter": [InputFormatter().cardYYMM],
+    "formatter": InputFormatter().cardYYMM,
     "maxwidth": 200,
     "error": '카드유효기간을 정확하게 입력하세요.',
     "placeholder": '11/29',
@@ -488,7 +489,7 @@ Map inputFormsList = {
   "wish_number": {
     "label": '희망번호',
     "value": null,
-    "formatter": [InputFormatter().wishNumbmer3],
+    "formatter": InputFormatter().wishNumbmer3,
     "type": 'input',
     "maxwidth": 300,
     "error": null,
@@ -514,7 +515,7 @@ Map inputFormsList = {
   "phone_number": {
     "value": null,
     "type": 'input',
-    "formatter": [InputFormatter().phoneNumber010],
+    "formatter": InputFormatter().phoneNumber010,
     "initial": '010-',
     "maxwidth": 300,
     "error": '가입/이동 전화번호을 입력하세요.',
@@ -567,7 +568,7 @@ Map inputFormsList = {
   "contact": {
     "value": null,
     "type": 'input',
-    "formatter": [InputFormatter().phoneNumber],
+    "formatter": InputFormatter().phoneNumber,
     "initial": null,
     "maxwidth": 200,
     "error": '연락처 입력하세요.',
@@ -623,7 +624,7 @@ Map inputFormsList = {
   "birthday": {
     //
     "type": 'input',
-    "formatter": [InputFormatter().birthdayShort],
+    "formatter": InputFormatter().birthdayShort,
     "maxwidth": 200,
     "hasDefault": true,
     "required": true,
@@ -689,7 +690,7 @@ Map inputFormsList = {
 
   "deputy_birthday": {
     "type": 'input',
-    "formatter": [InputFormatter().birthdayShort],
+    "formatter": InputFormatter().birthdayShort,
     "maxwidth": 200,
     "hasDefault": true,
     "required": true,
@@ -726,3 +727,41 @@ Map inputFormsList = {
     "errorMessage": null,
   }
 };
+
+class FormStructure {
+  final TextEditingController? value;
+  final String type;
+  final InputFormatter? formatter;
+  final int maxwidth;
+  final String error;
+  final String placeholder;
+  final String label;
+  final bool hasDefault;
+  final bool required;
+  final String? errorMessage;
+
+  FormStructure({
+    this.value,
+    required this.type,
+    this.formatter,
+    required this.maxwidth,
+    required this.error,
+    required this.placeholder,
+    required this.label,
+    required this.hasDefault,
+    required this.required,
+    this.errorMessage,
+  });
+}
+
+class InputFormsList {
+  final Map<String, FormStructure> formElements;
+
+  InputFormsList({required this.formElements});
+
+  void dispose() {
+    for (var element in formElements.values) {
+      element.value?.dispose();
+    }
+  }
+}

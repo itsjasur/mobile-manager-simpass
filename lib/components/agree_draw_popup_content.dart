@@ -1,9 +1,7 @@
 import 'dart:typed_data';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
-import 'package:mobile_manager_simpass/components/title_header.dart';
+import 'package:mobile_manager_simpass/components/popup_header.dart';
 import 'package:signature/signature.dart';
 
 class AgreeDrawPad extends StatefulWidget {
@@ -146,7 +144,7 @@ class _AgreeDrawPadState extends State<AgreeDrawPad> {
                     ),
                   ),
                 ),
-                const TitleHeader(title: '서명'),
+                const PopupHeader(title: '서명'),
               ],
             ),
           ),

@@ -60,12 +60,9 @@ class _ImagePickerContainerState extends State<ImagePickerContainer> {
 
         // converts XFile list to File list
         List<File> files = xFiles.map((xFile) => File(xFile.path)).toList();
-        widget.getImages?.call(files);
 
-        // Process your images here
-        // for (var image in xFiles) {
-        //   File file = File(image.path);
-        // }
+        widget.getImages?.call(files);
+        // if (widget.getImages != null) widget.getImages!(files);
       } else {
         print('No images selected');
       }

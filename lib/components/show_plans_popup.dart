@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/plans_list_widget.dart';
-import 'package:mobile_manager_simpass/components/title_header.dart';
+import 'package:mobile_manager_simpass/components/popup_header.dart';
 
 Future<int> showPlansPopup(BuildContext context, typeCd, carrierCd, mvnoCd, searchText) async {
   final selectedItem = await showDialog(
@@ -25,7 +25,7 @@ Future<int> showPlansPopup(BuildContext context, typeCd, carrierCd, mvnoCd, sear
                   ),
                 ),
               ),
-              const TitleHeader(title: '요금제선택'),
+              const PopupHeader(title: '요금제선택'),
             ],
           ),
         ),

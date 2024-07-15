@@ -15,10 +15,7 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(4),
-      onTap: () {
-        widget.onChanged(!widget.value);
-        setState(() {});
-      },
+      onTap: () => widget.onChanged(!widget.value),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -29,7 +26,6 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
                 width: 22,
                 child: Checkbox(
                   value: widget.value,
-                  // onChanged: widget.onChanged,
                   onChanged: (value) {},
                 ),
               ),
