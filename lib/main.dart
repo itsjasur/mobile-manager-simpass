@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      // initialRoute: '/test',
-      initialRoute: '/applications',
+      initialRoute: '/home',
+      // initialRoute: '/applications',
       // initialRoute: '/plans',
       routes: {
         '/login': (context) => const LoginPage(),
