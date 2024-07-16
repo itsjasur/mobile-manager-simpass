@@ -1,16 +1,15 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_drop_down_menu.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
+import 'package:mobile_manager_simpass/components/global_loading.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
-import 'package:mobile_manager_simpass/utils/validators.dart';
 
 class ApplicationsPage extends StatefulWidget {
   const ApplicationsPage({super.key});
@@ -20,11 +19,11 @@ class ApplicationsPage extends StatefulWidget {
 }
 
 class _ApplicationsPageState extends State<ApplicationsPage> {
-  List _dataList = [];
+  final List _dataList = [];
   List _statuses = [];
 
   int _pageNumber = 1;
-  int _perPage = 10;
+  final int _perPage = 10;
 
   final TextEditingController _searchText = TextEditingController();
 
@@ -64,12 +63,15 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         ],
         onSelected: (newValue) async {
           _selectedFilterType = newValue ?? "status";
-          if (dialogueSetState != null) dialogueSetState(() {});
-          setState(() {});
+          if (dialogueSetState != null) {
+            dialogueSetState(() {});
+          } else {
+            if (mounted) setState(() {});
+          }
         },
       );
 
-  Widget statusW() => CustomDropdownMenu(
+  Widget statusW(StateSetter? dialogueSetState) => CustomDropdownMenu(
         requestFocusOnTap: true,
         enableSearch: true,
         label: const Text('상태'),
@@ -81,7 +83,12 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         ],
         onSelected: (newValue) async {
           _selectedStatus = newValue ?? "";
-          setState(() {});
+
+          if (dialogueSetState != null) {
+            dialogueSetState(() {});
+          } else {
+            if (mounted) setState(() {});
+          }
         },
       );
 
@@ -121,14 +128,6 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         child: const Text('조희'),
       );
 
-  Widget _loadMoreButton() => ElevatedButton(
-        onPressed: () {
-          _pageNumber++;
-          _fetchData();
-        },
-        child: const Text('더보기'),
-      );
-
   @override
   Widget build(BuildContext context) {
     double displayWidth = MediaQuery.of(context).size.width;
@@ -143,6 +142,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
           await _fetchData();
         },
         child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -161,7 +161,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                       if (_selectedFilterType == 'status')
                         Container(
                           constraints: const BoxConstraints(maxWidth: 150),
-                          child: statusW(),
+                          child: statusW(null),
                         ),
                       if (_selectedFilterType != 'status')
                         Container(
@@ -204,7 +204,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                                         spacing: 20,
                                         children: [
                                           _typeW(setState),
-                                          if (_selectedFilterType == 'status') statusW(),
+                                          if (_selectedFilterType == 'status') statusW(setState),
                                           if (_selectedFilterType != 'status') _fromdateW(),
                                           if (_selectedFilterType != 'status') _todateW(),
                                           SizedBox(
@@ -231,17 +231,14 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                     ),
                   ),
                 const SizedBox(height: 20),
-                SizedBox(
-                  // height: 60,
-                  child: ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    separatorBuilder: (context, index) => const SizedBox(height: 15),
-                    itemCount: _dataList.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      return _buildCardWwidget(_dataList[index]);
-                    },
-                  ),
+                ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  separatorBuilder: (context, index) => const SizedBox(height: 15),
+                  itemCount: _dataList.length,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return _buildCardWwidget(_dataList[index]);
+                  },
                 ),
                 Align(
                   alignment: Alignment.center,
@@ -267,7 +264,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 200),
+                const SizedBox(height: 400),
               ],
             ),
           ),
@@ -339,7 +336,17 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         padding: const EdgeInsets.all(0),
         backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       ),
-      onPressed: () {},
+      onPressed: () async {
+        showGlobalLoading(true);
+
+        // await Future.delayed(const Duration(seconds: 3));
+
+        await _fetchBase64Images(item['act_no']);
+
+        showGlobalLoading(false);
+        //fetch images here
+        // if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
+      },
       icon: Icon(
         Icons.folder_open,
         size: 23,
@@ -366,7 +373,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                       statusW,
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -488,16 +495,31 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         },
       );
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-
       // print(decodedRes);
-
-      // if (decodedRes['statusCode'] != 200) throw decodedRes['message'] ?? 'Fetch data error';
-
       _dataList.addAll(decodedRes['data']['act_list']);
       _statuses = decodedRes['data']['usim_act_status_code'];
 
       // print(_dataList);
       setState(() {});
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    }
+  }
+
+  Future<void> _fetchBase64Images(String actNo) async {
+    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final response = await Request().requestWithRefreshToken(
+        url: 'agent/actForms',
+        method: 'POST',
+        body: {"act_no": actNo},
+      );
+      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+      if (decodedRes['result'] == 'SUCCESS' && decodedRes['data'].isNotEmpty) {
+        if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
+        return;
+      }
+      throw 'No image found';
     } catch (e) {
       showCustomSnackBar(e.toString());
     }

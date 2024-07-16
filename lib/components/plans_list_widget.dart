@@ -67,7 +67,7 @@ class _PlansListWidgetState extends State<PlansListWidget> {
             },
           ),
         ),
-        const SizedBox(height: 200),
+        const SizedBox(height: 400),
       ],
     );
   }
@@ -188,38 +188,40 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                       const SizedBox(height: 5),
                     ],
                   )
-                : LayoutBuilder(builder: (context, constraints) {
-                    double w = constraints.maxWidth;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: w * 0.25,
-                          child: planNameW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.2,
-                          child: dataRowW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.2,
-                          child: voiceRow,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.15,
-                          child: messageRow,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.15,
-                          child: priceRow,
-                        ),
-                      ],
-                    );
-                  }),
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      double w = constraints.maxWidth;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: w * 0.25,
+                            child: planNameW,
+                          ),
+                          SizedBox(width: w * 0.01),
+                          SizedBox(
+                            width: w * 0.2,
+                            child: dataRowW,
+                          ),
+                          SizedBox(width: w * 0.01),
+                          SizedBox(
+                            width: w * 0.2,
+                            child: voiceRow,
+                          ),
+                          SizedBox(width: w * 0.01),
+                          SizedBox(
+                            width: w * 0.15,
+                            child: messageRow,
+                          ),
+                          SizedBox(width: w * 0.01),
+                          SizedBox(
+                            width: w * 0.15,
+                            child: priceRow,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
           ),
         ),
       ),

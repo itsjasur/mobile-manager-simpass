@@ -24,22 +24,25 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Wrap(
-              runSpacing: 30,
-              children: widget.base64Images.map((base64Image) {
-                return ZoomableImage(base64Image: base64Image);
-              }).toList(),
+      body: SizedBox(
+        height: double.infinity,
+        child: Stack(
+          children: [
+            Center(
+              child: ListView.separated(
+                shrinkWrap: true,
+                separatorBuilder: (context, index) => const SizedBox(height: 20),
+                padding: const EdgeInsets.only(top: 30, bottom: 100, right: 0, left: 0),
+                itemCount: widget.base64Images.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ZoomableImage(base64Image: widget.base64Images[index]);
+                },
+              ),
             ),
-          ),
-          Positioned(
-            // bottom: 0,
-            bottom: 10,
-            right: 20,
-            child: SizedBox(
-              width: 200,
+            Positioned(
+              // bottom: 0,
+              bottom: 20,
+              right: 20,
               child: ElevatedButton(
                 onPressed: _printing ? null : _printImages,
                 child: _printing
@@ -69,8 +72,8 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
                       ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -125,27 +128,21 @@ class _ZoomableImageState extends State<ZoomableImage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 50, top: 30),
-      child: GestureDetector(
-        onDoubleTap: () {
-          if (_controller.value != Matrix4.identity()) {
-            _controller.value = Matrix4.identity();
+    return GestureDetector(
+      onDoubleTap: () {
+        if (_controller.value != Matrix4.identity()) {
+          _controller.value = Matrix4.identity();
 
-            setState(() {});
-          } else {
-            // You can set a specific zoom level here if you want
-            // For example, to zoom to 2x on double tap when not already zoomed:
-            // _controller.value = Matrix4.identity()..scale(2.0);
-          }
-        },
-        child: InteractiveViewer(
-          transformationController: _controller,
-          minScale: 0.5,
-          maxScale: 4,
-          child: Image.memory(
-            base64.decode(widget.base64Image),
-          ),
+          setState(() {});
+        } else {}
+      },
+      child: InteractiveViewer(
+        panEnabled: true,
+        transformationController: _controller,
+        minScale: 0.5,
+        maxScale: 4,
+        child: Image.memory(
+          base64.decode(widget.base64Image),
         ),
       ),
     );

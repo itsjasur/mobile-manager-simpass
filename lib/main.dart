@@ -7,7 +7,6 @@ import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/pages/profile.dart';
 import 'package:mobile_manager_simpass/pages/rental_forms.dart';
-import 'package:mobile_manager_simpass/pages/secondary_signup.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
 import 'package:mobile_manager_simpass/pages/test.dart';
 import 'package:mobile_manager_simpass/theme.dart';
@@ -36,8 +35,8 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       // initialRoute: '/test',
-      // initialRoute: '/applications',
-      initialRoute: '/plans',
+      initialRoute: '/applications',
+      // initialRoute: '/plans',
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),

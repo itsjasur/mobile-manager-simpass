@@ -1,7 +1,6 @@
 // ignore: constant_identifier_names
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 
 const BASEURL = 'http://192.168.0.251:8091/api/';

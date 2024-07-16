@@ -36,9 +36,6 @@ class _AgreeDrawPadState extends State<AgreeDrawPad> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    //mobile
-
     return Align(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
@@ -270,8 +271,7 @@ class _HomePageState extends State<HomePage> {
       final response = await Request().requestWithRefreshToken(url: 'agent/actCntStatus', method: 'GET');
 
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-
-      print(decodedRes);
+      // print(decodedRes);
 
       if (decodedRes['statusCode'] == 200) {
         _dataList = decodedRes['data']['act_status_cnt'];
@@ -280,12 +280,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {});
       }
     } catch (e) {
-      // print(e);
-      // if (mounted) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(content: Text(e.toString())),
-      //   );
-      // }
+      showCustomSnackBar(e.toString());
     }
   }
 }
