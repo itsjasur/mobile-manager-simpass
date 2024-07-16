@@ -754,7 +754,10 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       final respStr = await response.stream.bytesToString();
       Map decodedRes = await jsonDecode(respStr);
 
-      if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
+      if (decodedRes['data'] != null && decodedRes['data']['apply_forms_list'] != null) {
+        if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
+      }
+
       showCustomSnackBar(decodedRes['message']);
 
       print(respStr);

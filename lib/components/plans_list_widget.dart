@@ -96,7 +96,6 @@ class _PlansListWidgetState extends State<PlansListWidget> {
           child: Text(
             (item['cell_data'] ?? "") + (item['qos'] ?? ""),
             style: const TextStyle(
-              // fontWeight: FontWeight.w600,
               fontSize: 15,
             ),
           ),
@@ -117,7 +116,6 @@ class _PlansListWidgetState extends State<PlansListWidget> {
           child: Text(
             item['message'] ?? "",
             style: const TextStyle(
-              // fontWeight: FontWeight.w600,
               fontSize: 15,
             ),
           ),
@@ -138,7 +136,6 @@ class _PlansListWidgetState extends State<PlansListWidget> {
           child: Text(
             item['voice'] ?? "",
             style: const TextStyle(
-              // fontWeight: FontWeight.w600,
               fontSize: 15,
             ),
           ),
@@ -146,14 +143,12 @@ class _PlansListWidgetState extends State<PlansListWidget> {
       ],
     );
 
-    Widget priceRow = Flexible(
-      child: Text(
-        "${InputFormatter().wonify(item['sales_fee'])} 원/월",
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 15,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+    Widget priceRow = Text(
+      "${InputFormatter().wonify(item['sales_fee'])} 원/월",
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 15,
+        color: Theme.of(context).colorScheme.primary,
       ),
     );
 
@@ -180,11 +175,8 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 200),
-                            child: planNameW,
-                          ),
-                          priceRow,
+                          Flexible(child: planNameW),
+                          Flexible(child: priceRow),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -196,25 +188,38 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                       const SizedBox(height: 5),
                     ],
                   )
-                : IntrinsicHeight(
-                    child: Row(
+                : LayoutBuilder(builder: (context, constraints) {
+                    double w = constraints.maxWidth;
+                    return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 180),
+                        SizedBox(
+                          width: w * 0.25,
                           child: planNameW,
                         ),
-                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
-                        Expanded(child: dataRowW),
-                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
-                        Expanded(child: voiceRow),
-                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
-                        Expanded(child: messageRow),
-                        VerticalDivider(color: Theme.of(context).colorScheme.tertiary, width: 10),
-                        priceRow,
+                        SizedBox(width: w * 0.01),
+                        SizedBox(
+                          width: w * 0.2,
+                          child: dataRowW,
+                        ),
+                        SizedBox(width: w * 0.01),
+                        SizedBox(
+                          width: w * 0.2,
+                          child: voiceRow,
+                        ),
+                        SizedBox(width: w * 0.01),
+                        SizedBox(
+                          width: w * 0.15,
+                          child: messageRow,
+                        ),
+                        SizedBox(width: w * 0.01),
+                        SizedBox(
+                          width: w * 0.15,
+                          child: priceRow,
+                        ),
                       ],
-                    ),
-                  ),
+                    );
+                  }),
           ),
         ),
       ),
