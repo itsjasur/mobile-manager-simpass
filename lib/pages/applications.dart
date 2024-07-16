@@ -33,7 +33,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
   final TextEditingController _fromDateCntr = TextEditingController(text: InputFormatter().formatDate(DateTime.now().subtract(const Duration(days: 30)).toString()));
   final TextEditingController _toDateCntr = TextEditingController(text: InputFormatter().formatDate(DateTime.now().toString()));
 
-  InputFormatter _formatter = InputFormatter();
+  final InputFormatter _formatter = InputFormatter();
 
   @override
   void initState() {
@@ -50,28 +50,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
     super.dispose();
   }
 
-  Widget _typeW(StateSetter? dialogueSetState) => CustomDropdownMenu(
-        requestFocusOnTap: true,
-        enableSearch: true,
-        label: const Text('검색 선택'),
-        expandedInsets: EdgeInsets.zero,
-        initialSelection: _selectedFilterType,
-        dropdownMenuEntries: const [
-          DropdownMenuEntry(value: 'status', label: '상태'),
-          DropdownMenuEntry(value: 'apply_date', label: '접수일자'),
-          DropdownMenuEntry(value: 'regis_date', label: '개통일자'),
-        ],
-        onSelected: (newValue) async {
-          _selectedFilterType = newValue ?? "status";
-          if (dialogueSetState != null) {
-            dialogueSetState(() {});
-          } else {
-            if (mounted) setState(() {});
-          }
-        },
-      );
-
-  Widget statusW(StateSetter? dialogueSetState) => CustomDropdownMenu(
+  Widget statusW() => CustomDropdownMenu(
         requestFocusOnTap: true,
         enableSearch: true,
         label: const Text('상태'),
@@ -83,12 +62,6 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         ],
         onSelected: (newValue) async {
           _selectedStatus = newValue ?? "";
-
-          if (dialogueSetState != null) {
-            dialogueSetState(() {});
-          } else {
-            if (mounted) setState(() {});
-          }
         },
       );
 
@@ -156,12 +129,27 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                     children: [
                       Container(
                         constraints: const BoxConstraints(maxWidth: 150),
-                        child: _typeW(null),
+                        child: CustomDropdownMenu(
+                          requestFocusOnTap: true,
+                          enableSearch: true,
+                          label: const Text('검색 선택'),
+                          expandedInsets: EdgeInsets.zero,
+                          initialSelection: _selectedFilterType,
+                          dropdownMenuEntries: const [
+                            DropdownMenuEntry(value: 'status', label: '상태'),
+                            DropdownMenuEntry(value: 'apply_date', label: '접수일자'),
+                            DropdownMenuEntry(value: 'regis_date', label: '개통일자'),
+                          ],
+                          onSelected: (newValue) async {
+                            _selectedFilterType = newValue ?? "status";
+                            setState(() {});
+                          },
+                        ),
                       ),
                       if (_selectedFilterType == 'status')
                         Container(
                           constraints: const BoxConstraints(maxWidth: 150),
-                          child: statusW(null),
+                          child: statusW(),
                         ),
                       if (_selectedFilterType != 'status')
                         Container(
@@ -203,8 +191,24 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                                         runSpacing: 20,
                                         spacing: 20,
                                         children: [
-                                          _typeW(setState),
-                                          if (_selectedFilterType == 'status') statusW(setState),
+                                          CustomDropdownMenu(
+                                            requestFocusOnTap: true,
+                                            enableSearch: true,
+                                            label: const Text('검색 선택'),
+                                            expandedInsets: EdgeInsets.zero,
+                                            initialSelection: _selectedFilterType,
+                                            dropdownMenuEntries: const [
+                                              DropdownMenuEntry(value: 'status', label: '상태'),
+                                              DropdownMenuEntry(value: 'apply_date', label: '접수일자'),
+                                              DropdownMenuEntry(value: 'regis_date', label: '개통일자'),
+                                            ],
+                                            onSelected: (newValue) async {
+                                              setState(() {
+                                                _selectedFilterType = newValue ?? "status";
+                                              });
+                                            },
+                                          ),
+                                          if (_selectedFilterType == 'status') statusW(),
                                           if (_selectedFilterType != 'status') _fromdateW(),
                                           if (_selectedFilterType != 'status') _todateW(),
                                           SizedBox(
@@ -338,14 +342,8 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
       ),
       onPressed: () async {
         showGlobalLoading(true);
-
-        // await Future.delayed(const Duration(seconds: 3));
-
         await _fetchBase64Images(item['act_no']);
-
         showGlobalLoading(false);
-        //fetch images here
-        // if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
       },
       icon: Icon(
         Icons.folder_open,
@@ -475,7 +473,6 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
   }
 
   Future<void> _fetchData() async {
-    print('plan fetched');
     if (_pageNumber == 1) _dataList.clear();
 
     try {

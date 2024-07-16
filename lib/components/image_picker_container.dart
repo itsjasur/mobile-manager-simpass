@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 
 class ImagePickerContainer extends StatefulWidget {
   final Function(List<File>)? getImages;
@@ -56,18 +57,16 @@ class _ImagePickerContainerState extends State<ImagePickerContainer> {
     try {
       final List<XFile> xFiles = await picker.pickMultiImage();
       if (xFiles.isNotEmpty) {
-        print('Selected ${xFiles.length} images');
-
         // converts XFile list to File list
         List<File> files = xFiles.map((xFile) => File(xFile.path)).toList();
 
         widget.getImages?.call(files);
         // if (widget.getImages != null) widget.getImages!(files);
       } else {
-        print('No images selected');
+        showCustomSnackBar('No images selected');
       }
     } catch (e) {
-      print('Error picking images: $e');
+      showCustomSnackBar('Error picking images: $e');
     }
   }
 

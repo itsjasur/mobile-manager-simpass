@@ -229,7 +229,6 @@ class _PlansListWidgetState extends State<PlansListWidget> {
   }
 
   Future<void> _fetchPlans() async {
-    print('plan fetched');
     _plans.clear();
 
     try {

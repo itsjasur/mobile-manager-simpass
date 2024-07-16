@@ -170,65 +170,61 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(title: Text(sideMenuNames[2])),
       body: RefreshIndicator(
         onRefresh: _fetchData,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          height: double.infinity,
-          width: double.infinity,
-          child: !_pageLoaded
-              ? const SizedBox()
-              : Container(
-                  alignment: isTablet ? Alignment.center : null,
-                  height: MediaQuery.of(context).size.height,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        if (!isTablet)
-                          Column(
+        child: !_pageLoaded
+            ? const SizedBox()
+            : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                alignment: isTablet ? Alignment.center : null,
+                height: MediaQuery.of(context).size.height,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (!isTablet)
+                        Column(
+                          children: [
+                            topbarContainerW,
+                            const SizedBox(height: 20),
+                            _buttonGenerate(_buttonsInfo[0]),
+                            const SizedBox(height: 10),
+                            _buttonGenerate(_buttonsInfo[1]),
+                            const SizedBox(height: 10),
+                            _buttonGenerate(_buttonsInfo[2]),
+                            const SizedBox(height: 10),
+                            _buttonGenerate(_buttonsInfo[3]),
+                          ],
+                        ),
+                      if (isTablet)
+                        SizedBox(
+                          width: 600,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               topbarContainerW,
                               const SizedBox(height: 20),
-                              _buttonGenerate(_buttonsInfo[0]),
-                              const SizedBox(height: 10),
-                              _buttonGenerate(_buttonsInfo[1]),
-                              const SizedBox(height: 10),
-                              _buttonGenerate(_buttonsInfo[2]),
-                              const SizedBox(height: 10),
-                              _buttonGenerate(_buttonsInfo[3]),
+                              Row(
+                                children: [
+                                  Expanded(child: _buttonGenerate(_buttonsInfo[0])),
+                                  const SizedBox(width: 15),
+                                  Expanded(child: _buttonGenerate(_buttonsInfo[1])),
+                                ],
+                              ),
+                              const SizedBox(height: 15),
+                              Row(
+                                children: [
+                                  Expanded(child: _buttonGenerate(_buttonsInfo[2])),
+                                  const SizedBox(width: 15),
+                                  Expanded(child: _buttonGenerate(_buttonsInfo[3])),
+                                ],
+                              ),
                             ],
                           ),
-                        if (isTablet)
-                          SizedBox(
-                            width: 600,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                topbarContainerW,
-                                const SizedBox(height: 20),
-                                Row(
-                                  children: [
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[0])),
-                                    const SizedBox(width: 15),
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[1])),
-                                  ],
-                                ),
-                                const SizedBox(height: 15),
-                                Row(
-                                  children: [
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[2])),
-                                    const SizedBox(width: 15),
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[3])),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        const SizedBox(height: 40),
-                      ],
-                    ),
+                        ),
+                      const SizedBox(height: 40),
+                    ],
                   ),
                 ),
-        ),
+              ),
       ),
     );
   }
@@ -271,7 +267,9 @@ class _HomePageState extends State<HomePage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: InkWell(
         borderRadius: BorderRadius.circular(6),
-        onTap: () {},
+        onTap: () {
+          Navigator.pushReplacementNamed(context, info['route'], result: true);
+        },
         child: isTablet
             ? Container(
                 height: 150,
@@ -313,21 +311,25 @@ class _HomePageState extends State<HomePage> {
       'image': 'lib/assets/icons/sim.png',
       'title': '후불/선불유심',
       'contentText': '가입신청서',
+      'route': '/plans',
     },
     {
       'image': 'lib/assets/icons/docs.png',
       'title': '정책보기',
       'contentText': null,
+      'route': '/plans',
     },
     {
       'image': 'lib/assets/icons/handshake.png',
       'title': '거래요청',
       'contentText': null,
+      'route': '/plans',
     },
     {
       'image': 'lib/assets/icons/store.png',
       'title': '후불/선불유심',
       'contentText': null,
+      'route': '/plans',
     },
   ];
   List<dynamic> _dataList = [{}];

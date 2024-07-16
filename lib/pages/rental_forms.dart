@@ -282,13 +282,12 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
   }
 
   Future<void> _submit() async {
-    print('submit called');
-    _submitted = true;
-    _submitting = true;
-
-    setState(() {});
-
     try {
+      _submitted = true;
+      _submitting = true;
+
+      setState(() {});
+
       final url = Uri.parse('${BASEURL}agent/rentalApply');
 
       var request = http.MultipartRequest('POST', url);
@@ -316,10 +315,10 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
       request.fields['address'] = _addressCntr.text + _addressAdditionsCntr.text;
       request.fields['usim_no'] = _usimNumberCntr.text;
 
-      // Print fields
-      request.fields.forEach((key, value) {
-        print('Key: $key, Value: $value');
-      });
+      // // Print fields
+      // request.fields.forEach((key, value) {
+      //   print('Key: $key, Value: $value');
+      // });
 
       var response = await request.send();
       final respStr = await response.stream.bytesToString();
@@ -330,8 +329,6 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
       }
 
       showCustomSnackBar(decodedRes['message']);
-
-      print(respStr);
 
       setState(() {});
     } catch (e) {

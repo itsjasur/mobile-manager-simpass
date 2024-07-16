@@ -145,7 +145,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                                       final selectedItem = await showPlansPopup(context, _serverData['usim_plan_info']['carrier_type'], _serverData['usim_plan_info']['carrier_cd'],
                                                           _serverData['usim_plan_info']['mvno_cd'], widget.searchText);
                                                       await _fetchData(selectedItem);
-                                                      print(selectedItem);
                                                     }
 
                                                     //selecting addrss
@@ -474,7 +473,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   final Map<String, List> _availableForms = {"usim": [], "customer": [], "deputy": [], "payment": []};
 
   Future<void> _fetchData(planId) async {
-    print('fetch data called');
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/applyInit', method: 'POST', body: {
         "usim_plan_id": planId,
@@ -634,43 +632,35 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   bool _submitting = false;
 
   Future<void> _submit() async {
-    print('submit called');
-    _submitted = true;
-    _submitting = true;
-
-    setState(() {});
-
-    List currentAvailableFormNames = [];
-
-    for (var formsList in _availableForms.entries) {
-      currentAvailableFormNames.addAll(formsList.value);
-    }
-
-    for (var forms in _fixedFormsDetails.entries) {
-      String formName = forms.key;
-
-      if (currentAvailableFormNames.contains(formName) && _errorShower(formName) != null) {
-        showCustomSnackBar('There is unfilled forms');
-        return;
-      }
-    }
-
-    if (['account', 'partner', 'deputy', 'agree'].any((el) {
-      if (_hasErrorInPad(el)) {
-        showCustomSnackBar(_getErrorMessageForPad(el) ?? 'Pad error');
-        return false;
-      }
-      return true;
-    })) ;
-
-    for (var i in ['account', 'payeer', 'partner', 'deputy', 'agree']) {
-      if (_hasErrorInPad(i)) {
-        showCustomSnackBar(_getErrorMessageForPad(i) ?? 'Pad error');
-        return;
-      }
-    }
-
     try {
+      _submitted = true;
+      _submitting = true;
+
+      setState(() {});
+
+      List currentAvailableFormNames = [];
+
+      for (var formsList in _availableForms.entries) {
+        currentAvailableFormNames.addAll(formsList.value);
+      }
+
+      for (var forms in _fixedFormsDetails.entries) {
+        String formName = forms.key;
+
+        if (currentAvailableFormNames.contains(formName) && _errorShower(formName) != null) {
+          showCustomSnackBar('There is unfilled forms');
+          return;
+        }
+      }
+
+      for (var i in ['account', 'payeer', 'partner', 'deputy', 'agree']) {
+        if (_hasErrorInPad(i)) {
+          showCustomSnackBar(_getErrorMessageForPad(i) ?? 'Pad error');
+          return;
+        }
+      }
+      // return;
+
       final url = Uri.parse('${BASEURL}agent/actApply');
 
       var request = http.MultipartRequest('POST', url);
@@ -745,9 +735,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       request.fields['agree_sign'] = _agreePadData ?? "";
 
       // Print fields
-      request.fields.forEach((key, value) {
-        print('Key: $key, Value: $value');
-      });
+      // request.fields.forEach((key, value) {
+      //   print('Key: $key, Value: $value');
+      // });
 
       var response = await request.send();
       final respStr = await response.stream.bytesToString();
@@ -758,8 +748,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       }
 
       showCustomSnackBar(decodedRes['message']);
-
-      print(respStr);
 
       setState(() {});
     } catch (e) {

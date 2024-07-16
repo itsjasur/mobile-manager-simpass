@@ -20,7 +20,7 @@ class Request {
       );
 
       if (response.statusCode != 200) {
-        print('logged out from refrsh token');
+        // print('logged out from refrsh token');
         // final auth = AuthenticationModel();
         final auth = Provider.of<AuthenticationModel>(navigatorKey.currentContext!, listen: false);
         await auth.logout();

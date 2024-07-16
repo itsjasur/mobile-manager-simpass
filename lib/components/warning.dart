@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 Future<bool> showWarningDailogue(BuildContext context, String? title, List<String> content) async {
   bool result = false;
-  print('warning dialoged called');
-  var res = await showDialog(
+
+  // var res =
+  await showDialog(
     //  barrierDismissible: false,
     useRootNavigator: true,
     context: context,
@@ -46,6 +47,5 @@ Future<bool> showWarningDailogue(BuildContext context, String? title, List<Strin
     ),
   );
 
-  print(res);
   return result;
 }
