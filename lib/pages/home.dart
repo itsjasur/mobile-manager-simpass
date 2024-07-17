@@ -73,37 +73,46 @@ class _HomePageState extends State<HomePage> {
                         );
                       } else {
                         final dataIndex = index ~/ 2;
-                        return Column(
-                          children: [
-                            Text(
-                              _dataList[dataIndex]['usim_act_status_nm'] ?? "",
-                              style: TextStyle(
-                                color: colorScheme.onPrimary,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            onTap: () {
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ApplicationsPage(status: _dataList[dataIndex]['usim_act_status'])));
+                            },
+                            child: Column(
                               children: [
                                 Text(
-                                  _dataList[dataIndex]['cnt'].toString(),
+                                  _dataList[dataIndex]['usim_act_status_nm'] ?? "",
                                   style: TextStyle(
                                     color: colorScheme.onPrimary,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 17,
+                                    fontSize: 14,
                                   ),
                                 ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  "건",
-                                  style: TextStyle(
-                                    color: colorScheme.onPrimary,
-                                    fontSize: 15,
-                                  ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      _dataList[dataIndex]['cnt'].toString(),
+                                      style: TextStyle(
+                                        color: colorScheme.onPrimary,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      "건",
+                                      style: TextStyle(
+                                        color: colorScheme.onPrimary,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         );
                       }
                     },
@@ -138,7 +147,6 @@ class _HomePageState extends State<HomePage> {
                     elevation: 0,
                     shape: const CircleBorder(),
                     onPressed: () {
-                      // Navigator.pushNamed(context, '/applications', arguments: 'A');
                       Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplicationsPage(status: 'A')));
                     },
                     child: Icon(
@@ -259,7 +267,7 @@ class _HomePageState extends State<HomePage> {
       child: InkWell(
         borderRadius: BorderRadius.circular(6),
         onTap: () {
-          Navigator.pushReplacementNamed(context, info['route'], result: true);
+          if (info['route'] != null) Navigator.pushReplacementNamed(context, info['route'], result: true);
         },
         child: isTablet
             ? Container(
@@ -308,13 +316,13 @@ class _HomePageState extends State<HomePage> {
       'image': 'lib/assets/icons/docs.png',
       'title': '정책보기',
       'contentText': null,
-      'route': '/plans',
+      'route': null,
     },
     {
       'image': 'lib/assets/icons/handshake.png',
       'title': '거래요청',
       'contentText': null,
-      'route': '/plans',
+      'route': '/partner-request',
     },
     {
       'image': 'lib/assets/icons/store.png',

@@ -145,7 +145,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
                                                     setState(() {});
                                                   },
-                                                  readOnly: formName == 'usim_plan_nm' || formName == 'address',
+                                                  readOnly: redOnlyChecker(formName),
                                                   onTap: () async {
                                                     //selecting plan
                                                     if (formName == 'usim_plan_nm') {
@@ -402,6 +402,13 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
               ),
             ),
     );
+  }
+
+//this check is used to return readonly for inputField
+  bool redOnlyChecker(formName) {
+    if (formName == 'usim_plan_nm' || formName == 'address') return true;
+    if (_theSameAsPayeerCheck && ['account_name', 'account_birthday', 'account_birthday_full'].contains(formName)) return true;
+    return false;
   }
 
   bool _signAllAfterPrint = false;

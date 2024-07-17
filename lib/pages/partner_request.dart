@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
 class PartnerRequestPage extends StatefulWidget {
@@ -24,20 +25,29 @@ class _PartnerRequestPageState extends State<PartnerRequestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(title: const Text('거래요청')),
+      body: Container(),
+    );
   }
+
+  List _partners = [];
 
   Future<void> _fetchData() async {
     // print('fetch data called');
     try {
-      final response = await Request().requestWithRefreshToken(url: 'agent/partnerInfo', method: 'GET');
+      final response = await Request().requestWithRefreshToken(url: 'agent/getAgentInfo', method: 'GET');
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+
+      if (decodedRes['data']?.length > 0) throw 'Fetch get Agent info error';
+
+      _partners = decodedRes['data'];
 
       // print(decodedRes);
 
       setState(() {});
     } catch (e) {
-      // showCustomSnackBar(e.toString());
+      showCustomSnackBar(e.toString());
     }
   }
 }

@@ -37,12 +37,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home',
+      // initialRoute: '/home',
       // initialRoute: '/applications',
       // initialRoute: '/plans',
       // initialRoute: '/download-forms',
       // initialRoute: '/form-details',
-      // initialRoute: '/partner-request',
+      initialRoute: '/partner-request',
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
