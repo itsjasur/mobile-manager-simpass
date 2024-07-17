@@ -3,6 +3,7 @@ import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/pages/download_forms.dart';
 import 'package:mobile_manager_simpass/pages/form_details.dart';
+import 'package:mobile_manager_simpass/pages/partner_request.dart';
 import 'package:mobile_manager_simpass/pages/plans.dart';
 import 'package:mobile_manager_simpass/pages/home.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
@@ -17,7 +18,7 @@ import 'package:provider/provider.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
     MultiProvider(
@@ -36,11 +37,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      // initialRoute: '/home',
+      initialRoute: '/home',
       // initialRoute: '/applications',
       // initialRoute: '/plans',
       // initialRoute: '/download-forms',
-      initialRoute: '/form-details',
+      // initialRoute: '/form-details',
+      // initialRoute: '/partner-request',
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
@@ -56,6 +58,8 @@ class MyApp extends StatelessWidget {
         '/rental-forms': (context) => const AuthGuard(child: RentalFormsPage()),
         '/applications': (context) => const AuthGuard(child: ApplicationsPage()),
         '/download-forms': (context) => const AuthGuard(child: DownloadFormsPage()),
+
+        '/partner-request': (context) => const AuthGuard(child: PartnerRequestPage()),
       },
       theme: AppTheme.lightTheme,
     );

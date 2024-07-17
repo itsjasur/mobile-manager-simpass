@@ -44,7 +44,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       form.value['value'] = TextEditingController();
       form.value['value'].text = form.value['initial'] ?? "";
     }
-
     //plan id to fetch data from server
     _fetchData(widget.planId);
   }
@@ -121,10 +120,11 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                                   controller: _fixedFormsDetails[formName]['value'],
                                                   inputFormatters: _fixedFormsDetails[formName]?['formatter'] != null ? [_fixedFormsDetails[formName]['formatter']] : null,
                                                   onChanged: (newValue) {
-                                                    if (_theSameAsPayeerCheck && (formName == 'name' || formName == 'birthday')) {
+                                                    if (_theSameAsPayeerCheck && (formName == 'name' || formName == 'birthday' || formName == 'birthday_full')) {
                                                       // if (_theSameAsPayeerCheck) {
                                                       _fixedFormsDetails['account_name']['value'].text = _fixedFormsDetails['name']['value'].text;
                                                       _fixedFormsDetails['account_birthday']['value'].text = _fixedFormsDetails['birthday']['value'].text;
+                                                      _fixedFormsDetails['account_birthday_full']['value'].text = _fixedFormsDetails['birthday_full']['value'].text;
                                                     }
 
                                                     // birthday date validation
@@ -133,6 +133,14 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                                       _fixedFormsDetails['birthday']['value'].text = formatter(_fixedFormsDetails['birthday']['value'].text);
                                                       _fixedFormsDetails['deputy_birthday']['value'].text = formatter(_fixedFormsDetails['deputy_birthday']['value'].text);
                                                       _fixedFormsDetails['account_birthday']['value'].text = formatter(_fixedFormsDetails['account_birthday']['value'].text);
+                                                    }
+
+                                                    // full birthday date validation
+                                                    if (formName == 'birthday_full' || formName == 'deputy_birthday_full' || formName == 'account_birthday_full') {
+                                                      final formatter = InputFormatter().validateAndCorrectDate;
+                                                      _fixedFormsDetails['birthday_full']['value'].text = formatter(_fixedFormsDetails['birthday_full']['value'].text);
+                                                      _fixedFormsDetails['deputy_birthday_full']['value'].text = formatter(_fixedFormsDetails['deputy_birthday_full']['value'].text);
+                                                      _fixedFormsDetails['account_birthday_full']['value'].text = formatter(_fixedFormsDetails['account_birthday_full']['value'].text);
                                                     }
 
                                                     setState(() {});
@@ -397,7 +405,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   }
 
   bool _signAllAfterPrint = false;
-  bool _theSameAsPayeerCheck = false;
+  bool _theSameAsPayeerCheck = true;
 
   bool _showFileUploadChecked = false;
 
@@ -449,9 +457,11 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
               if (newValue ?? false) {
                 _fixedFormsDetails['account_name']['value'].text = _fixedFormsDetails['name']['value'].text;
                 _fixedFormsDetails['account_birthday']['value'].text = _fixedFormsDetails['birthday']['value'].text;
+                _fixedFormsDetails['account_birthday_full']['value'].text = _fixedFormsDetails['birthday_full']['value'].text;
               } else {
                 _fixedFormsDetails['account_name']['value'].text = '';
                 _fixedFormsDetails['account_birthday']['value'].text = '';
+                _fixedFormsDetails['account_birthday_full']['value'].text = '';
               }
             }),
             text: '가입자와 동일',
@@ -508,6 +518,8 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       error = InputValidator().validatePhoneNumber(_fixedFormsDetails[formName]['value'].text);
     } else if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formName)) {
       error = InputValidator().validateShortDate(_fixedFormsDetails[formName]['value'].text);
+    } else if (['birthday_full', 'account_birthday_full', 'deputy_birthday_full'].contains(formName)) {
+      error = InputValidator().validateDate(_fixedFormsDetails[formName]['value'].text);
     } else {
       if (_fixedFormsDetails[formName]['required'] && _fixedFormsDetails[formName]['value'].text.isEmpty) {
         error = _fixedFormsDetails[formName]['error'];
@@ -602,6 +614,19 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
     _fixedFormsDetails['country']['value'].text = '';
     if (_fixedFormsDetails['cust_type_cd']['value'].text != 'MEA') _fixedFormsDetails['country']['value'].text = '대한민국';
 
+    //removing gender if not underage for HVS
+    if (_serverData['usim_plan_info']['mvno_cd'] == 'HVS') {
+      if (_fixedFormsDetails['cust_type_cd']['value'].text != 'COL') _availableForms['customer']!.remove('gender_cd');
+    }
+
+    if (_serverData['usim_plan_info']['mvno_cd'] == 'SVM') {
+      final index = _availableForms['payment']!.indexOf('account_birthday');
+      if (index != -1) _availableForms['payment']![index] = 'account_birthday_full';
+
+      final index1 = _availableForms['deputy']!.indexOf('deputy_birthday');
+      if (index1 != -1) _availableForms['deputy']![index1] = 'deputy_birthday_full';
+    }
+
     _dataLoading = false;
     setState(() {});
   }
@@ -672,9 +697,16 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       // adding other form fields
       request.fields['carrier_type'] = _serverData['usim_plan_info']['carrier_type'];
       request.fields['carrier_cd'] = _serverData['usim_plan_info']['carrier_cd'];
+      request.fields['mvno_cd'] = _serverData['usim_plan_info']['mvno_cd'];
       request.fields['usim_plan_id'] = _serverData['usim_plan_info']['id'].toString();
 
       for (var formName in currentAvailableFormNames) {
+        request.fields[formName] = _fixedFormsDetails[formName]?['value']?.text;
+
+        if (['birthday', 'deputy_birthday', 'account_birthday', 'deputy_contact', 'contact', 'phone_number'].contains(formName)) {
+          request.fields[formName] = _fixedFormsDetails[formName]?['value']?.text?.replaceAll('-', '');
+        }
+
         //adding wishlists
         if (formName == 'wish_number') {
           List? wishList = _fixedFormsDetails['wish_number']['value'].text.split(' / ');
@@ -683,36 +715,41 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
               request.fields['request_no_$i'] = wishList[i];
             }
           }
-          continue;
         }
 
         if (formName == 'country') {
           request.fields['country_cd'] = _fixedFormsDetails[formName]['value'].text;
-          continue;
         }
         if (formName == 'usim_model_list') {
           request.fields['usim_model_no'] = _fixedFormsDetails[formName]['value'].text;
-          continue;
         }
         if (formName == 'data_roming_block_cd') {
           request.fields['data_roming_block'] = _fixedFormsDetails[formName]['value'].text;
-          continue;
+        }
+        if (formName == 'gender_cd') {
+          request.fields['gender'] = _fixedFormsDetails[formName]['value'].text;
         }
         if (formName == 'data_block_cd') {
           request.fields['data_block'] = _fixedFormsDetails[formName]['value'].text;
-          continue;
         }
         if (formName == 'phone_bill_block_cd') {
           request.fields['phone_bill_block'] = _fixedFormsDetails[formName]['value'].text;
-          continue;
         }
         if (formName == 'extra_service_cd') {
           request.fields['extra_service'] = _fixedFormsDetails[formName]['value'].text;
-          continue;
         }
-        if (currentAvailableFormNames.contains(formName)) {
-          request.fields[formName] = _fixedFormsDetails[formName]['value'].text;
-          continue;
+
+        if (formName == 'birthday_full') {
+          request.fields['birthday'] = _fixedFormsDetails[formName]?['value']?.text?.replaceAll('-', '');
+          request.fields.remove('birthday_full');
+        }
+        if (formName == 'deputy_birthday_full') {
+          request.fields['deputy_birthday'] = _fixedFormsDetails[formName]?['value']?.text?.replaceAll('-', '');
+          request.fields.remove('deputy_birthday_full');
+        }
+        if (formName == 'account_birthday_full') {
+          request.fields['account_birthday'] = _fixedFormsDetails[formName]?['value']?.text?.replaceAll('-', '');
+          request.fields.remove('account_birthday_full');
         }
       }
 
@@ -748,8 +785,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       }
 
       showCustomSnackBar(decodedRes['message']);
-
-      setState(() {});
     } catch (e) {
       showCustomSnackBar(e.toString());
     } finally {

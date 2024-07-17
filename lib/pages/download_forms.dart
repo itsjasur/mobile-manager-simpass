@@ -169,7 +169,6 @@ class _DownloadFormsPageState extends State<DownloadFormsPage> {
       );
 
   Future<void> _fetchData() async {
-    await Future.delayed(const Duration(seconds: 1));
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/applyForms', method: 'GET');
 
@@ -184,6 +183,8 @@ class _DownloadFormsPageState extends State<DownloadFormsPage> {
       throw 'Fetch issue found';
     } catch (e) {
       showCustomSnackBar(e.toString());
+    } finally {
+      showGlobalLoading(false);
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,36 +28,23 @@ class _HomePageState extends State<HomePage> {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isTablet = screenWidth > 600;
 
-    Widget topbarItemsW = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    Widget topbarItemsW = Row(
       children: [
-        Row(
-          children: [
-            Text(
-              '진행상태',
-              style: TextStyle(
-                color: colorScheme.onPrimary,
-                fontSize: 17,
-                // fontSize: screenWidth * 0.035,
-              ),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              '진행상태',
-              style: TextStyle(
-                color: colorScheme.onPrimary,
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
         Text(
-          'Progress',
+          '가입접수',
           style: TextStyle(
             color: colorScheme.onPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontSize: 17,
+            // fontSize: screenWidth * 0.035,
+          ),
+        ),
+        const SizedBox(width: 5),
+        Text(
+          '진행상태',
+          style: TextStyle(
+            color: colorScheme.onPrimary,
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ],
@@ -149,7 +137,10 @@ class _HomePageState extends State<HomePage> {
                     backgroundColor: colorScheme.onPrimary,
                     elevation: 0,
                     shape: const CircleBorder(),
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navigator.pushNamed(context, '/applications', arguments: 'A');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplicationsPage(status: 'A')));
+                    },
                     child: Icon(
                       Icons.east,
                       color: colorScheme.primary,

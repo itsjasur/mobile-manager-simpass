@@ -12,7 +12,8 @@ import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
 class ApplicationsPage extends StatefulWidget {
-  const ApplicationsPage({super.key});
+  final String? status;
+  const ApplicationsPage({super.key, this.status});
 
   @override
   State<ApplicationsPage> createState() => _ApplicationsPageState();
@@ -38,6 +39,9 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
   @override
   void initState() {
     super.initState();
+    _selectedStatus = widget.status ?? "";
+    print('widget status');
+    print(widget.status);
     _fetchData();
   }
 
