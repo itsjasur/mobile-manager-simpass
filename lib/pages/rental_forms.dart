@@ -184,18 +184,22 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    ImagePickerContainer(
-                      getImages: (imageList) {
-                        _extraAttachFiles.addAll(imageList);
-                        setState(() {});
-                      },
+                    SizedBox(
+                      height: 100,
+                      width: 140,
+                      child: ImagePickerContainer(
+                        getImages: (imageList) {
+                          _extraAttachFiles.addAll(imageList);
+                          setState(() {});
+                        },
+                      ),
                     ),
                     ...List.generate(
                       _extraAttachFiles.length,
                       (index) => Stack(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(4),
                             child: Container(
                               color: Theme.of(context).colorScheme.onPrimary,
                               child: Image.file(

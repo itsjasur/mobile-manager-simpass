@@ -1,18 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
-import 'package:mobile_manager_simpass/components/show_partner_request_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
-class PartnerRequestPage extends StatefulWidget {
-  const PartnerRequestPage({super.key});
+class PartnerRequestResultsPage extends StatefulWidget {
+  const PartnerRequestResultsPage({super.key});
 
   @override
-  State<PartnerRequestPage> createState() => _PartnerRequestPageState();
+  State<PartnerRequestResultsPage> createState() => _PartnerRequestResultsPageState();
 }
 
-class _PartnerRequestPageState extends State<PartnerRequestPage> {
+class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
   @override
   void initState() {
     super.initState();
@@ -40,7 +39,7 @@ class _PartnerRequestPageState extends State<PartnerRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const SideMenu(),
-      appBar: AppBar(title: const Text('거래요청')),
+      appBar: AppBar(title: const Text('거래요청 상태')),
       body: RefreshIndicator(
         onRefresh: _fetchData,
         child: SingleChildScrollView(
@@ -56,11 +55,18 @@ class _PartnerRequestPageState extends State<PartnerRequestPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text(
-                              '모든 대리점에 대해 거래요청 및 거래완료가 되었습니다.',
+                              '거래가 진행중인 대리점이 존재하지 않습니다.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 18,
                               ),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pushNamedAndRemoveUntil(context, '/partner-request', (route) => false);
+                              },
+                              child: const Text('거래요청으로 가기'),
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
@@ -88,6 +94,25 @@ class _PartnerRequestPageState extends State<PartnerRequestPage> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
+                                        Center(
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: agent['status'] == 'W' ? Colors.orange : Theme.of(context).colorScheme.primary,
+                                              borderRadius: BorderRadius.circular(50),
+                                            ),
+                                            child: Text(
+                                              agent['status_nm'] ?? "",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: Theme.of(context).colorScheme.onPrimary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
                                         Row(
                                           children: [
                                             ClipRRect(
@@ -229,15 +254,6 @@ class _PartnerRequestPageState extends State<PartnerRequestPage> {
                                                 : const SizedBox.shrink();
                                           },
                                         ),
-                                        Center(
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              await showPartnerRequestPopup(context, agent['agent_cd']);
-                                              _fetchData();
-                                            },
-                                            child: const Text('거래요청'),
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -260,7 +276,7 @@ class _PartnerRequestPageState extends State<PartnerRequestPage> {
 
     // print('fetch data called');
     try {
-      final response = await Request().requestWithRefreshToken(url: 'agent/getAgentInfo', method: 'GET');
+      final response = await Request().requestWithRefreshToken(url: 'agent/getContractAgentInfo', method: 'GET');
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
 
       if (decodedRes['data'] == null || decodedRes['data']?.length < 0) throw (decodedRes['message'] ?? 'No agent found');

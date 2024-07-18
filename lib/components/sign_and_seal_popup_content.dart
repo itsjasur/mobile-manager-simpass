@@ -78,150 +78,143 @@ class _SingNaturePadsState extends State<SingNaturePads> {
       }
     }
 
-    return Align(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Material(
-            child: Stack(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      // mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 60),
-                        //name pad
-                        Text(
-                          '서명(Name)란',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            if (widget.overlayName != null && widget.overlayName != '')
-                              Center(
-                                child: Text(
-                                  widget.overlayName!,
-                                  style: TextStyle(
-                                    fontSize: _nameTextSize,
-                                    color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: _nameTextSpacing,
-                                  ),
-                                ),
-                              ),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: Signature(
-                                key: const Key('signature'),
-                                controller: _nameController,
-                                height: 300,
-                                backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 40),
-
-                        //sign pad
-                        Text(
-                          '사인(Sign)란',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 400),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Signature(
-                              key: const Key('signature'),
-                              controller: _signController,
-                              height: 300,
-                              backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 30),
-                        Text(
-                          '펜 잉크 멀미: $_pencilWidth',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Slider(
-                          label: _pencilWidth.toString(),
-                          divisions: 7,
-                          value: _pencilWidth,
-                          min: 1,
-                          max: 8,
-                          onChanged: (double value) => setState(() {
-                            _pencilWidth = value;
-                            _initializeControllers();
-                          }),
-                        ),
-                        const SizedBox(height: 30),
-                        Row(
-                          children: [
-                            IntrinsicWidth(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Theme.of(context).colorScheme.tertiary,
-                                ),
-                                child: const Text('지우기'),
-                                onPressed: () {
-                                  _nameController.clear();
-                                  _signController.clear();
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 20),
-                            IntrinsicWidth(
-                              child: ElevatedButton(
-                                child: const Text('서명 저장'),
-                                onPressed: () async {
-                                  if (_nameController.isNotEmpty && _signController.isNotEmpty) {
-                                    Uint8List? signpng = await _nameController.toPngBytes();
-                                    Uint8List? sealpng = await _signController.toPngBytes();
-                                    // widget.saveData(signpng!, sealpng!);
-                                    if (context.mounted) Navigator.pop(context, [signpng, sealpng]);
-                                  } else {
-                                    showCustomSnackBar('먼저 서명을 해주세요.');
-                                  }
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 60),
-                      ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+            child: SingleChildScrollView(
+              child: Column(
+                // mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 60),
+                  //name pad
+                  Text(
+                    '서명(Name)란',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
-                const PopupHeader(title: '서명'),
-              ],
+                  const SizedBox(height: 5),
+
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (widget.overlayName != null && widget.overlayName != '')
+                        Center(
+                          child: Text(
+                            widget.overlayName!,
+                            style: TextStyle(
+                              fontSize: _nameTextSize,
+                              color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: _nameTextSpacing,
+                            ),
+                          ),
+                        ),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Signature(
+                          key: const Key('signature'),
+                          controller: _nameController,
+                          height: 300,
+                          backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  //sign pad
+                  Text(
+                    '사인(Sign)란',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Signature(
+                        key: const Key('signature'),
+                        controller: _signController,
+                        height: 300,
+                        backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+                  Text(
+                    '펜 잉크 멀미: $_pencilWidth',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Slider(
+                    label: _pencilWidth.toString(),
+                    divisions: 7,
+                    value: _pencilWidth,
+                    min: 1,
+                    max: 8,
+                    onChanged: (double value) => setState(() {
+                      _pencilWidth = value;
+                      _initializeControllers();
+                    }),
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    children: [
+                      IntrinsicWidth(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).colorScheme.tertiary,
+                          ),
+                          child: const Text('지우기'),
+                          onPressed: () {
+                            _nameController.clear();
+                            _signController.clear();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      IntrinsicWidth(
+                        child: ElevatedButton(
+                          child: const Text('서명 저장'),
+                          onPressed: () async {
+                            if (_nameController.isNotEmpty && _signController.isNotEmpty) {
+                              Uint8List? signpng = await _nameController.toPngBytes();
+                              Uint8List? sealpng = await _signController.toPngBytes();
+                              // widget.saveData(signpng!, sealpng!);
+                              if (context.mounted) Navigator.pop(context, [signpng, sealpng]);
+                            } else {
+                              showCustomSnackBar('먼저 서명을 해주세요.');
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 60),
+                ],
+              ),
             ),
           ),
-        ),
+          const PopupHeader(title: '서명'),
+        ],
       ),
     );
   }

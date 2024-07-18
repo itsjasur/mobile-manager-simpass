@@ -103,11 +103,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
         );
       } else {
         return Column(
-          children: [
-            item1,
-            const SizedBox(height: 20),
-            item2,
-          ],
+          children: [item1, const SizedBox(height: 20), item2],
         );
       }
     }
@@ -187,7 +183,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
         setState(() {});
       }
     } catch (e) {
-      // showCustomSnackBar(e.toString());
+      showCustomSnackBar(e.toString());
     }
   }
 

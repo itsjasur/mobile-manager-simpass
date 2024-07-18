@@ -4,18 +4,16 @@ class AppTheme {
   static ThemeData get lightTheme {
     Color primaryColor = const Color(0xFF006DDA);
 
-    Color backgroundColor = const Color.fromARGB(255, 239, 248, 255);
+    Color backgroundColor = const Color.fromARGB(255, 245, 251, 255);
 
     InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
       fillColor: Colors.white,
       filled: true,
       hintStyle: const TextStyle(color: Colors.black26),
-
       constraints: const BoxConstraints(
         maxHeight: 45,
         minHeight: 44,
       ),
-
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
         // borderSide: BorderSide.none,
@@ -24,7 +22,6 @@ class AppTheme {
           width: 1,
         ),
       ),
-
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: Colors.grey.shade500,
@@ -41,12 +38,16 @@ class AppTheme {
         horizontal: 10,
         vertical: 11,
       ),
-
       isDense: true,
       // isCollapsed: true,
+
       labelStyle: const TextStyle(
         color: Colors.black54,
         fontSize: 15,
+        height: 1,
+      ),
+      floatingLabelStyle: const TextStyle(
+        fontSize: 16,
       ),
     );
 
@@ -73,7 +74,7 @@ class AppTheme {
         tertiary: Colors.black26,
         onTertiary: Colors.amber,
 
-        onSecondary: Colors.red,
+        // onSecondary: Colors.red,
 
         background: backgroundColor, //whole app background
         surface: backgroundColor, //button and all surfaces
@@ -82,8 +83,8 @@ class AppTheme {
         onBackground: Colors.amber,
 
         // onSurface: Colors.red,
-        outline: Colors.red,
-        outlineVariant: Colors.pink,
+        // outline: primaryColor, //outlined button color
+        // outlineVariant: Colors.pink,
 
         primaryContainer: Colors.red,
       ),
@@ -116,18 +117,38 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4),
-            ),
-            minimumSize: const Size(0, 45),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            textStyle: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-            disabledBackgroundColor: const Color.fromARGB(255, 163, 177, 192)),
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          minimumSize: const Size(0, 45),
+          // visualDensity: VisualDensity.compact,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+          disabledBackgroundColor: const Color.fromARGB(255, 163, 177, 192),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primaryColor,
+          // padding: EdgeInsets.zero,
+          side: BorderSide(color: primaryColor),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          minimumSize: const Size(0, 45),
+          // visualDensity: VisualDensity.compact,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+          // disabledBackgroundColor: const Color.fromARGB(255, 163, 177, 192),
+        ),
       ),
 
       inputDecorationTheme: inputDecorationTheme,
@@ -146,7 +167,6 @@ class AppTheme {
         // style: ButtonStyle(
         //   textStyle: MaterialStatePropertyAll(TextStyle(fontSize: ))
         // ),
-
         style: MenuItemButton.styleFrom(
           textStyle: const TextStyle(
             fontSize: 15,
@@ -156,7 +176,7 @@ class AppTheme {
 
       dialogTheme: DialogTheme(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: BorderRadius.circular(8),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(

@@ -172,14 +172,18 @@ class InputFormatter {
 
   String? formatDate(String? dateTimeString) {
     if (dateTimeString != null) {
-      // parsing the string into a DateTime object
-      DateTime dateTime = DateTime.parse(dateTimeString);
+      try {
+        // parsing the string into a DateTime object
+        DateTime dateTime = DateTime.parse(dateTimeString);
 
-      //  output format for a more readable date and time
-      DateFormat outputFormat = DateFormat("yyyy-MM-dd");
-      //  the DateTime object using the output format
-      String formattedDateTime = outputFormat.format(dateTime);
-      return formattedDateTime;
+        //  output format for a more readable date and time
+        DateFormat outputFormat = DateFormat("yyyy-MM-dd");
+        //  the DateTime object using the output format
+        String formattedDateTime = outputFormat.format(dateTime);
+        return formattedDateTime;
+      } catch (e) {
+        return null;
+      }
     }
 
     return null;

@@ -6,28 +6,26 @@ Future<int> showPlansPopup(BuildContext context, typeCd, carrierCd, mvnoCd, sear
   final selectedItem = await showDialog(
     context: context,
     // barrierDismissible: false,
-    builder: (context) => Container(
-      margin: const EdgeInsets.all(20),
+    builder: (context) => Dialog(
+      insetPadding: const EdgeInsets.all(20),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: Material(
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.only(top: 55),
-                  child: PlansListWidget(
-                    typeCd: typeCd,
-                    carrierCd: carrierCd,
-                    mvnoCd: mvnoCd,
-                    searchText: searchText,
-                    asPopup: true,
-                  ),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.only(top: 55),
+                child: PlansListWidget(
+                  typeCd: typeCd,
+                  carrierCd: carrierCd,
+                  mvnoCd: mvnoCd,
+                  searchText: searchText,
+                  asPopup: true,
                 ),
               ),
-              const PopupHeader(title: '요금제선택'),
-            ],
-          ),
+            ),
+            const PopupHeader(title: '요금제선택'),
+          ],
         ),
       ),
     ),

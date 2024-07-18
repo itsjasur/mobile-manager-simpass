@@ -326,9 +326,9 @@ class _HomePageState extends State<HomePage> {
     },
     {
       'image': 'lib/assets/icons/store.png',
-      'title': '후불/선불유심',
+      'title': '거래대리점',
       'contentText': null,
-      'route': '/plans',
+      'route': '/partner-request-results',
     },
   ];
   List<dynamic> _dataList = [{}];

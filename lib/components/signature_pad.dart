@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/agree_draw_popup_content.dart';
@@ -67,114 +68,118 @@ class _SignatureContainerState extends State<SignatureContainer> {
             ),
           ),
         const SizedBox(height: 8),
-        Container(
-          height: 100,
-          width: double.infinity,
-          constraints: const BoxConstraints(maxWidth: 350),
-          // width: double.infinity,
-          decoration: BoxDecoration(
+        DottedBorder(
+          borderType: BorderType.RRect,
+          radius: const Radius.circular(4),
+          strokeWidth: 2,
+          dashPattern: const [4],
+          color: Theme.of(context).colorScheme.primary,
+          child: Container(
+            height: 100,
+            width: double.infinity,
+            constraints: const BoxConstraints(maxWidth: 350),
             color: Theme.of(context).colorScheme.onPrimary,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.primary,
-              width: 0.5,
-            ),
-          ),
-          padding: const EdgeInsets.all(5),
-          child: _dataLoaded && _signData != null || _sealData != null
-              ? Stack(
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        if (_signData != null)
-                          Expanded(
-                            child: Container(
-                                color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
-                                child: Image.memory(
-                                  _signData!,
-                                  // fit: BoxFit.contain,
-                                  height: double.infinity,
-                                  errorBuilder: (context, error, stackTrace) => const SizedBox(),
-                                )),
+            padding: const EdgeInsets.all(5),
+            child: _dataLoaded && _signData != null || _sealData != null
+                ? Stack(
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          if (_signData != null)
+                            Expanded(
+                              child: Container(
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
+                                  child: Image.memory(
+                                    _signData!,
+                                    // fit: BoxFit.contain,
+                                    height: double.infinity,
+                                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                                  )),
+                            ),
+                          const SizedBox(width: 5),
+                          if (_sealData != null)
+                            Expanded(
+                              child: Container(
+                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
+                                  child: Image.memory(
+                                    _sealData!,
+                                    // fit: BoxFit.contain,
+                                    height: double.infinity,
+                                    width: double.infinity,
+                                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                                  )),
+                            ),
+                        ],
+                      ),
+                      Positioned(
+                        right: -6,
+                        top: -6,
+                        child: IconButton(
+                          padding: const EdgeInsets.all(0),
+                          visualDensity: VisualDensity.compact,
+                          onPressed: () {
+                            setState(() {
+                              _signData = null;
+                              _sealData = null;
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
                           ),
-                        const SizedBox(width: 5),
-                        if (_sealData != null)
-                          Expanded(
-                            child: Container(
-                                color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
-                                child: Image.memory(
-                                  _sealData!,
-                                  // fit: BoxFit.contain,
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  errorBuilder: (context, error, stackTrace) => const SizedBox(),
-                                )),
-                          ),
-                      ],
-                    ),
-                    Positioned(
-                      right: -6,
-                      top: -6,
-                      child: IconButton(
-                        padding: const EdgeInsets.all(0),
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () {
-                          setState(() {
-                            _signData = null;
-                            _sealData = null;
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  )
+                : Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(4),
+                      onTap: () async {
+                        if (widget.type == 'agree') {
+                          final agreeData = await showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) => const AgreeDrawPad(),
+                          );
+
+                          _signData = agreeData;
+                          if (widget.saveAgree != null) {
+                            await widget.saveAgree!(agreeData);
+                          }
+                        } else {
+                          final [signData, sealData] = await showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context) => Dialog(
+                              insetPadding: const EdgeInsets.all(20),
+                              child: SingNaturePads(
+                                overlayName: widget.overlayName,
+                              ),
+                            ),
+                          );
+
+                          _signData = signData;
+                          _sealData = sealData;
+                          if (widget.saveSigns != null) {
+                            await widget.saveSigns!(signData, sealData);
+                          }
+                        }
+
+                        setState(() {});
+                      },
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: Icon(
+                          Icons.draw_outlined,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 22,
                         ),
                       ),
                     ),
-                  ],
-                )
-              : Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(4),
-                    onTap: () async {
-                      if (widget.type == 'agree') {
-                        final agreeData = await showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) => const AgreeDrawPad(),
-                        );
-
-                        _signData = agreeData;
-                        if (widget.saveAgree != null) {
-                          await widget.saveAgree!(agreeData);
-                        }
-                      } else {
-                        final [signData, sealData] = await showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) => SingNaturePads(overlayName: widget.overlayName),
-                        );
-
-                        _signData = signData;
-                        _sealData = sealData;
-                        if (widget.saveSigns != null) {
-                          await widget.saveSigns!(signData, sealData);
-                        }
-                      }
-
-                      setState(() {});
-                    },
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Icon(
-                        Icons.draw_outlined,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 22,
-                      ),
-                    ),
                   ),
-                ),
+          ),
         ),
         if (widget.errorText != null)
           Padding(
