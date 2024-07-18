@@ -55,7 +55,7 @@ class AppTheme {
       // drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
 
       appBarTheme: const AppBarTheme(
-        titleSpacing: 0,
+        // titleSpacing: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
           fontSize: 18,
