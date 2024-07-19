@@ -295,9 +295,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                               sealData: _accountSealData,
                               overlayName: _fixedFormsDetails['name']['value'].text,
                               errorText: _getErrorMessageForPad('account'),
-                              saveSigns: (signData, sealData) {
-                                _accountSignData = base64Encode(signData);
-                                _accountSealData = base64Encode(sealData);
+                              updateSignSeal: (signData, sealData) {
+                                _accountSignData = signData != null ? base64Encode(signData) : null;
+                                _accountSealData = sealData != null ? base64Encode(sealData) : null;
                                 setState(() {});
                               },
                             ),
@@ -314,9 +314,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 sealData: _payeerSealData,
                                 errorText: _getErrorMessageForPad('payeer'),
                                 overlayName: _fixedFormsDetails['account_name']['value'].text,
-                                saveSigns: (signData, sealData) {
-                                  _payeerSignData = base64Encode(signData);
-                                  _payeerSealData = base64Encode(sealData);
+                                updateSignSeal: (signData, sealData) {
+                                  _payeerSignData = signData != null ? base64Encode(signData) : null;
+                                  _payeerSealData = sealData != null ? base64Encode(sealData) : null;
                                   setState(() {});
                                 },
                               ),
@@ -333,9 +333,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 sealData: _deputySealData,
                                 overlayName: _fixedFormsDetails['deputy_name']['value'].text,
                                 errorText: _getErrorMessageForPad('deputy'),
-                                saveSigns: (signData, sealData) {
-                                  _deputySignData = base64Encode(signData);
-                                  _deputySealData = base64Encode(sealData);
+                                updateSignSeal: (signData, sealData) {
+                                  _deputySignData = signData != null ? base64Encode(signData) : null;
+                                  _deputySealData = sealData != null ? base64Encode(sealData) : null;
                                   setState(() {});
                                 },
                               ),
@@ -351,9 +351,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 signData: _partnerSignData,
                                 sealData: _partnerSealData,
                                 errorText: _getErrorMessageForPad('partner'),
-                                saveSigns: (signData, sealData) {
-                                  _partnerSignData = base64Encode(signData);
-                                  _partnerSealData = base64Encode(sealData);
+                                updateSignSeal: (signData, sealData) {
+                                  _partnerSignData = signData != null ? base64Encode(signData) : null;
+                                  _partnerSealData = sealData != null ? base64Encode(sealData) : null;
                                   setState(() {});
                                 },
                               ),
@@ -370,8 +370,8 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 errorText: _getErrorMessageForPad('agree'),
                                 sealData: null,
                                 type: 'agree',
-                                saveAgree: (agreeData) {
-                                  _agreePadData = base64Encode(agreeData);
+                                updateAgree: (agreeData) {
+                                  _agreePadData = agreeData != null ? base64Encode(agreeData) : null;
                                   setState(() {});
                                 },
                               ),

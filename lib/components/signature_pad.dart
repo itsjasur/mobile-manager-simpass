@@ -15,20 +15,19 @@ class SignatureContainer extends StatefulWidget {
   final String? padTitle;
   final String? errorText;
   final String? type;
-  final Function(Uint8List, Uint8List)? saveSigns;
-
-  final Function(Uint8List)? saveAgree;
+  final Function(Uint8List?, Uint8List?)? updateSignSeal;
+  final Function(Uint8List?)? updateAgree;
 
   const SignatureContainer({
     super.key,
     this.sealData,
     this.signData,
-    this.saveSigns,
     this.overlayName,
     this.padTitle,
     this.type,
-    this.saveAgree,
     this.errorText,
+    this.updateSignSeal,
+    this.updateAgree,
   });
 
   @override
@@ -38,19 +37,18 @@ class SignatureContainer extends StatefulWidget {
 class _SignatureContainerState extends State<SignatureContainer> {
   Uint8List? _signData;
   Uint8List? _sealData;
-  bool _dataLoaded = false;
+  bool _imagesConverted = false;
 
   @override
   void initState() {
     super.initState();
-
     _setData();
   }
 
   Future<void> _setData() async {
     _signData = await _convertBase64ToByte(widget.signData);
     _sealData = await _convertBase64ToByte(widget.sealData);
-    _dataLoaded = true;
+    _imagesConverted = true;
     setState(() {});
   }
 
@@ -80,7 +78,7 @@ class _SignatureContainerState extends State<SignatureContainer> {
             constraints: const BoxConstraints(maxWidth: 350),
             color: Theme.of(context).colorScheme.onPrimary,
             padding: const EdgeInsets.all(5),
-            child: _dataLoaded && _signData != null || _sealData != null
+            child: _imagesConverted && _signData != null || _sealData != null
                 ? Stack(
                     children: [
                       Row(
@@ -89,26 +87,28 @@ class _SignatureContainerState extends State<SignatureContainer> {
                           if (_signData != null)
                             Expanded(
                               child: Container(
-                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
-                                  child: Image.memory(
-                                    _signData!,
-                                    // fit: BoxFit.contain,
-                                    height: double.infinity,
-                                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
-                                  )),
+                                color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
+                                child: Image.memory(
+                                  _signData!,
+                                  // fit: BoxFit.contain,
+                                  height: double.infinity,
+                                  errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                                ),
+                              ),
                             ),
                           const SizedBox(width: 5),
                           if (_sealData != null)
                             Expanded(
                               child: Container(
-                                  color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
-                                  child: Image.memory(
-                                    _sealData!,
-                                    // fit: BoxFit.contain,
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
-                                  )),
+                                color: Theme.of(context).colorScheme.secondary.withOpacity(0.01),
+                                child: Image.memory(
+                                  _sealData!,
+                                  // fit: BoxFit.contain,
+                                  height: double.infinity,
+                                  width: double.infinity,
+                                  errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                                ),
+                              ),
                             ),
                         ],
                       ),
@@ -118,11 +118,13 @@ class _SignatureContainerState extends State<SignatureContainer> {
                         child: IconButton(
                           padding: const EdgeInsets.all(0),
                           visualDensity: VisualDensity.compact,
-                          onPressed: () {
-                            setState(() {
-                              _signData = null;
-                              _sealData = null;
-                            });
+                          onPressed: () async {
+                            _signData = null;
+                            _sealData = null;
+                            setState(() {});
+
+                            await widget.updateAgree?.call(null);
+                            await widget.updateSignSeal?.call(null, null);
                           },
                           icon: const Icon(
                             Icons.delete_outline,
@@ -143,11 +145,9 @@ class _SignatureContainerState extends State<SignatureContainer> {
                             context: context,
                             builder: (context) => const AgreeDrawPad(),
                           );
-
                           _signData = agreeData;
-                          if (widget.saveAgree != null) {
-                            await widget.saveAgree!(agreeData);
-                          }
+                          setState(() {});
+                          await widget.updateAgree?.call(agreeData);
                         } else {
                           final [signData, sealData] = await showDialog(
                             barrierDismissible: false,
@@ -162,15 +162,11 @@ class _SignatureContainerState extends State<SignatureContainer> {
                               ),
                             ),
                           );
-
                           _signData = signData;
                           _sealData = sealData;
-                          if (widget.saveSigns != null) {
-                            await widget.saveSigns!(signData, sealData);
-                          }
+                          setState(() {});
+                          await widget.updateSignSeal?.call(signData, sealData);
                         }
-
-                        setState(() {});
                       },
                       child: SizedBox(
                         width: double.infinity,

@@ -252,9 +252,9 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
                     sealData: _accountSealData,
                     overlayName: _nameCntrl.text,
                     errorText: _submitted && (_accountSealData == null || _accountSignData == null) ? "판매자서명을 하지 않았습니다." : null,
-                    saveSigns: (signData, sealData) {
-                      _accountSignData = base64Encode(signData);
-                      _accountSealData = base64Encode(sealData);
+                    updateSignSeal: (signData, sealData) {
+                      _accountSignData = signData != null ? base64Encode(signData) : null;
+                      _accountSealData = sealData != null ? base64Encode(sealData) : null;
                       setState(() {});
                     },
                   ),
@@ -290,11 +290,20 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
     try {
       _submitted = true;
       _submitting = true;
-
       setState(() {});
 
-      final url = Uri.parse('${BASEURL}agent/rentalApply');
+      List<bool> allFiled = [
+        InputValidator().validateForNoneEmpty(_nameCntrl.text, '가입자명') == null,
+        InputValidator().validateShortDate(_birthdayCntr.text) == null,
+        InputValidator().validatePhoneNumber(_phoneNumberCntr.text) == null,
+        InputValidator().validateForNoneEmpty(_addressCntr.text, '주소') == null,
+        InputValidator().validateForNoneEmpty(_usimNumberCntr.text, 'USIM 일련번호') == null,
+      ];
 
+      if (allFiled.any((element) => !element)) return;
+      if (_accountSealData == null || _accountSignData == null) return;
+
+      final url = Uri.parse('${BASEURL}agent/rentalApply');
       var request = http.MultipartRequest('POST', url);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();

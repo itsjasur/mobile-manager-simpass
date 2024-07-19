@@ -55,7 +55,6 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
                         ),
                       )
                     : const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.print_outlined,
@@ -66,6 +65,7 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
                             '줄력',
                             style: TextStyle(
                               fontSize: 16,
+                              height: 1,
                             ),
                           ),
                         ],

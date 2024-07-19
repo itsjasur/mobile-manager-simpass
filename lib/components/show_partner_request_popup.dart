@@ -306,9 +306,10 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                       padTitle: '판매자 서명',
                       signData: _signData,
                       sealData: _sealData,
-                      saveSigns: (signData, sealData) {
-                        _signData = base64Encode(signData);
-                        _sealData = base64Encode(sealData);
+                      updateSignSeal: (signData, sealData) {
+                        _signData = signData != null ? base64Encode(signData) : null;
+                        _sealData = sealData != null ? base64Encode(sealData) : null;
+                        setState(() {});
                       },
                     ),
                   ),

@@ -308,7 +308,17 @@ class _SecondarySignupState extends State<SecondarySignup> {
       if (data['result'] == 'SUCCESS') {
         await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
-          bool? res = await showWarningDailogue(context, '등록이 성공적으로 완료되었습니다', ['아이디와 비밀번호로 로그인해주세요.']);
+          bool res = false;
+          if (data['data']['status'] == 'W') {
+            res = await showWarningDailogue(context, '판매점가입 접수완료', [
+              '가입내용 검토 후 신속하게 승인 처리 진행하도록 하겠습니다.',
+              '승인완료시 인증휴대폰번호로 승인완료 문자를 전송합니다.',
+              '이용해 주셔서 감사합니다.',
+            ]);
+          } else {
+            res = await showWarningDailogue(context, '등록이 성공적으로 완료되었습니다', ['아이디와 비밀번호로 로그인해주세요.']);
+          }
+
           if (res && mounted) Navigator.pushNamed(context, '/login');
           return;
         }
