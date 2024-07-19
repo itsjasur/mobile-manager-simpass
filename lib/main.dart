@@ -11,6 +11,7 @@ import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/pages/profile.dart';
 import 'package:mobile_manager_simpass/pages/rental_forms.dart';
+import 'package:mobile_manager_simpass/pages/secondary_signup.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
 
 import 'package:mobile_manager_simpass/theme.dart';
@@ -19,7 +20,7 @@ import 'package:provider/provider.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
     MultiProvider(
@@ -35,36 +36,39 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      debugShowCheckedModeBanner: false,
-      // initialRoute: '/home',
-      // initialRoute: '/applications',
-      // initialRoute: '/plans',
-      // initialRoute: '/download-forms',
-      // initialRoute: '/form-details',
-      // initialRoute: '/partner-request',
-      initialRoute: '/partner-request-results',
-      routes: {
-        '/login': (context) => const LoginPage(),
-        '/signup': (context) => const SignupPage(),
-        // '/test': (context) => const TestPage(),
-        '/form-details': (context) => const FormDetailsPage(planId: 4, searchText: ''),
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+      child: MaterialApp(
+        navigatorKey: navigatorKey,
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/home',
+        // initialRoute: '/login',
+        // initialRoute: '/secondary-signup',
+        // initialRoute: '/applications',
+        // initialRoute: '/plans',
+        // initialRoute: '/download-forms',
+        // initialRoute: '/form-details',
+        // initialRoute: '/partner-request',
+        // initialRoute: '/partner-request-results',
+        routes: {
+          '/login': (context) => const LoginPage(),
+          '/signup': (context) => const SignupPage(),
+          // '/secondary-signup': (context) => const SecondarySignup(name: 'name', phoneNumber: '01012312312', receiptId: '34523423432', certType: 'KAKAO', birthday: '19950534', employeeCode: 'asd'),
 
-        // '/secondary-signup': (context) => const SecondarySignup(name: 'name', phoneNumber: '01012312312', receiptId: '34523423432', certType: 'KAKAO', birthday: '19950534', employeeCode: 'asd'),
+          //protected
+          // '/form-details': (context) => const FormDetailsPage(planId: 4, searchText: ''),
+          '/home': (context) => const AuthGuard(child: HomePage()),
+          '/profile': (context) => const AuthGuard(child: ProfilePafe()),
+          '/plans': (context) => const AuthGuard(child: PlansPage()),
+          '/rental-forms': (context) => const AuthGuard(child: RentalFormsPage()),
+          '/applications': (context) => const AuthGuard(child: ApplicationsPage()),
+          '/download-forms': (context) => const AuthGuard(child: DownloadFormsPage()),
 
-        //protected
-        '/home': (context) => const AuthGuard(child: HomePage()),
-        '/profile': (context) => const AuthGuard(child: ProfilePafe()),
-        '/plans': (context) => const AuthGuard(child: PlansPage()),
-        '/rental-forms': (context) => const AuthGuard(child: RentalFormsPage()),
-        '/applications': (context) => const AuthGuard(child: ApplicationsPage()),
-        '/download-forms': (context) => const AuthGuard(child: DownloadFormsPage()),
-
-        '/partner-request': (context) => const AuthGuard(child: PartnerRequestPage()),
-        '/partner-request-results': (context) => const AuthGuard(child: PartnerRequestResultsPage()),
-      },
-      theme: AppTheme.lightTheme,
+          '/partner-request': (context) => const AuthGuard(child: PartnerRequestPage()),
+          '/partner-request-results': (context) => const AuthGuard(child: PartnerRequestResultsPage()),
+        },
+        theme: AppTheme.lightTheme,
+      ),
     );
   }
 }

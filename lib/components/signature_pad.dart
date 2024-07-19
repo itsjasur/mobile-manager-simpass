@@ -154,8 +154,11 @@ class _SignatureContainerState extends State<SignatureContainer> {
                             context: context,
                             builder: (context) => Dialog(
                               insetPadding: const EdgeInsets.all(20),
-                              child: SingNaturePads(
-                                overlayName: widget.overlayName,
+                              child: Container(
+                                constraints: const BoxConstraints(maxWidth: 800),
+                                child: SingNaturePads(
+                                  overlayName: widget.overlayName,
+                                ),
                               ),
                             ),
                           );

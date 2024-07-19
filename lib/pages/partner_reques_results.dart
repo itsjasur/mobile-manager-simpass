@@ -42,43 +42,42 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
       appBar: AppBar(title: const Text('거래요청 상태')),
       body: RefreshIndicator(
         onRefresh: _fetchData,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            height: MediaQuery.of(context).size.height,
-            child: Center(
-              child: _dataLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _agents.isEmpty
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              '거래가 진행중인 대리점이 존재하지 않습니다.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Center(
+            child: _dataLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _agents.isEmpty
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            '거래가 진행중인 대리점이 존재하지 않습니다.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
                             ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamedAndRemoveUntil(context, '/partner-request', (route) => false);
-                              },
-                              child: const Text('거래요청으로 가기'),
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                              },
-                              child: const Text('홈으로 가기'),
-                            ),
-                          ],
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(bottom: 200, top: 20),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamedAndRemoveUntil(context, '/partner-request', (route) => false);
+                            },
+                            child: const Text('거래요청으로 가기'),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                            },
+                            child: const Text('홈으로 가기'),
+                          ),
+                        ],
+                      )
+                    : SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Container(
+                          margin: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 200),
                           child: Wrap(
                             spacing: 30,
                             runSpacing: 30,
@@ -96,9 +95,14 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
                                       children: [
                                         Center(
                                           child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                            constraints: const BoxConstraints(minWidth: 150),
+                                            padding: const EdgeInsets.all(10),
                                             decoration: BoxDecoration(
-                                              color: agent['status'] == 'W' ? Colors.orange : Theme.of(context).colorScheme.primary,
+                                              color: agent['status'] == 'W'
+                                                  ? Colors.orange
+                                                  : agent['status'] == 'N'
+                                                      ? Theme.of(context).colorScheme.tertiary
+                                                      : Theme.of(context).colorScheme.primary,
                                               borderRadius: BorderRadius.circular(50),
                                             ),
                                             child: Text(
@@ -262,7 +266,7 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
                             ],
                           ),
                         ),
-            ),
+                      ),
           ),
         ),
       ),

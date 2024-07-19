@@ -197,6 +197,12 @@ class AppTheme {
         // minThumbSeparation: 0,
         overlayShape: SliderComponentShape.noOverlay,
       ),
+
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 }

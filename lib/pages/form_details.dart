@@ -49,7 +49,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   }
 
   bool _dataLoading = true;
-  bool _submitted = true;
+  bool _submitted = false;
 
   @override
   void dispose() {

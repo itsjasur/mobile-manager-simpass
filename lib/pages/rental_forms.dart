@@ -31,7 +31,7 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
   final TextEditingController _addressAdditionsCntr = TextEditingController();
   final TextEditingController _usimNumberCntr = TextEditingController();
 
-  bool _submitted = true;
+  bool _submitted = false;
   bool _submitting = false;
 
   final List<File> _extraAttachFiles = [];
@@ -129,6 +129,7 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
                       ),
                       errorText: _submitted ? InputValidator().validateForNoneEmpty(_addressCntr.text, '주소') : null,
                       onChanged: (p0) => setState(() {}),
+                      readOnly: true,
                       onTap: () async {
                         final model = await showAddressSelect(context);
                         _addressCntr.text = (model.addressType == 'R' ? model.roadAddress : model.jibunAddress) ?? "";
@@ -179,7 +180,7 @@ class _RentalFormsPageState extends State<RentalFormsPage> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
-                margin: const EdgeInsets.only(left: 20),
+                margin: const EdgeInsets.only(left: 20, right: 20),
                 child: Wrap(
                   spacing: 10,
                   runSpacing: 10,

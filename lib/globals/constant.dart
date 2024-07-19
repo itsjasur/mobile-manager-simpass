@@ -2,10 +2,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
+import 'package:flutter/foundation.dart';
 
-// ignore: constant_identifier_names
-const BASEURL = 'http://192.168.0.251:8091/api/';
-// const BASEURL = 'https://ta.simpass.co.kr/api/';
+// ignore: non_constant_identifier_names
+String BASEURL = kReleaseMode ? "https://ta.simpass.co.kr/api/" : "http://192.168.0.251:8091/api/";
 
 final sideMenuNames = [
   '홈',

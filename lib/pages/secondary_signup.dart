@@ -51,7 +51,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
       body: SingleChildScrollView(
         child: Align(
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 600),
+            constraints: const BoxConstraints(maxWidth: 500),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -253,7 +253,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 300),
+                const SizedBox(height: 200),
               ],
             ),
           ),

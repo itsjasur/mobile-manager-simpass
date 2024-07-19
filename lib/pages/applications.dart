@@ -258,6 +258,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                           return _buildCardWwidget(_dataList[index]);
                         },
                       ),
+                      const SizedBox(height: 20),
                       Align(
                         alignment: Alignment.center,
                         child: ElevatedButton(

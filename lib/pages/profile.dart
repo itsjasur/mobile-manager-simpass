@@ -116,6 +116,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
           : SingleChildScrollView(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
+                constraints: const BoxConstraints(maxWidth: 1000),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

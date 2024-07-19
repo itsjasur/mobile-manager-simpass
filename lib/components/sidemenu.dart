@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:provider/provider.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
@@ -54,7 +56,6 @@ class _SideMenuState extends State<SideMenu> {
         },
         child: Container(
           padding: const EdgeInsets.all(10),
-          width: double.infinity,
           decoration: currentPath == menuItems[index]['path']
               ? BoxDecoration(
                   color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.1),
@@ -89,16 +90,58 @@ class _SideMenuState extends State<SideMenu> {
     // ignore: prefer_const_constructors
     return Drawer(
       backgroundColor: const Color.fromARGB(255, 34, 34, 34),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 50),
-              ...List.generate(menuItems.length, (index) => itemBuilder(index)),
-            ],
-          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 70),
+                    Image.asset(
+                      'lib/assets/logo.png',
+                      width: 200,
+                    ),
+                    const SizedBox(height: 30),
+                    ...List.generate(menuItems.length, (index) => itemBuilder(index)),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: () async {
+                  await Provider.of<AuthenticationModel>(context, listen: false).logout();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.logout_outlined,
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        size: 22,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        '로그 아웃',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

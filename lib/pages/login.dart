@@ -4,6 +4,7 @@ import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -16,101 +17,99 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _userNameCntr = TextEditingController(text: 'SM00001');
-  final TextEditingController _passwordCntr = TextEditingController(text: 'SM00001');
+  // final TextEditingController _userNameCntr = TextEditingController();
+  // final TextEditingController _passwordCntr = TextEditingController();
+  final TextEditingController _userNameCntr = TextEditingController(text: MYPASS__);
+  final TextEditingController _passwordCntr = TextEditingController(text: MYPASS__);
 
   bool _submitted = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-            child: Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 500),
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 30),
-                    const Text(
-                      '로그인',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height,
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 450),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 30),
+                  const Text(
+                    '로그인',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Text(
+                    '판매점 아이디 와 비밀번호를 입력하세요',
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  CustomTextFormField(
+                    controller: _userNameCntr,
+                    decoration: const InputDecoration(
+                      label: Text('판매점 아이디'),
+                    ),
+                    errorText: _submitted ? InputValidator().validateId(_userNameCntr.text) : null,
+                    onChanged: (p0) => setState(() {}),
+                  ),
+                  const SizedBox(height: 30),
+                  CustomTextFormField(
+                    obscureText: true,
+                    controller: _passwordCntr,
+                    decoration: const InputDecoration(
+                      label: Text('비밀번호'),
+                    ),
+                    // errorText: _submitted ? InputValidator().validatePass(_passwordCntr.text) : null,
+                    onChanged: (p0) => setState(() {}),
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _submitted = true;
+                        setState(() {});
+                        // if (InputValidator().validatePass(_passwordCntr.text) == null && InputValidator().validateId(_userNameCntr.text) == null) _login();
+                        _login();
+                      },
+                      child: const Text('로그인'),
+                    ),
+                  ),
+                  const Divider(
+                    height: 60,
+                    indent: 10,
+                    endIndent: 10,
+                    color: Colors.black12,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFA927),
                       ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/signup');
+                      },
+                      child: const Text('판매점 계약 접수'),
                     ),
-                    const Text(
-                      '판매점 아이디 와 비밀번호를 입력하세요',
-                      style: TextStyle(
-                        fontSize: 15,
-                      ),
+                  ),
+                  const SizedBox(height: 50),
+                  const Text(
+                    """상호 : 심패스(Simpass) | 대표 : 김익태 | 대표전화 : 02-2108-3121 | FAX : 02-2108-3120 사업자등록번호 : 343-18-00713 | 통신판매신고번호 : 제 2021-서울구로-1451 호 서울시 구로구 디지털로33길 28, 우림이비지센터 1차 1210호""",
+                    style: TextStyle(
+                      fontSize: 14,
                     ),
-                    const SizedBox(height: 30),
-                    CustomTextFormField(
-                      controller: _userNameCntr,
-                      decoration: const InputDecoration(
-                        label: Text('판매점 아이디'),
-                      ),
-                      errorText: _submitted ? InputValidator().validateId(_userNameCntr.text) : null,
-                      onChanged: (p0) => setState(() {}),
-                    ),
-                    const SizedBox(height: 30),
-                    CustomTextFormField(
-                      obscureText: true,
-                      controller: _passwordCntr,
-                      decoration: const InputDecoration(
-                        label: Text('비밀번호'),
-                      ),
-                      // errorText: _submitted ? InputValidator().validatePass(_passwordCntr.text) : null,
-                      onChanged: (p0) => setState(() {}),
-                    ),
-                    const SizedBox(height: 30),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _submitted = true;
-                          setState(() {});
-                          // if (InputValidator().validatePass(_passwordCntr.text) == null && InputValidator().validateId(_userNameCntr.text) == null) _login();
-                          _login();
-                        },
-                        child: const Text('로그인'),
-                      ),
-                    ),
-                    const Divider(
-                      height: 60,
-                      indent: 10,
-                      endIndent: 10,
-                      color: Colors.black12,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFA927),
-                        ),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/signup');
-                        },
-                        child: const Text('판매점 계약 접수'),
-                      ),
-                    ),
-                    const SizedBox(height: 50),
-                    const Text(
-                      """상호 : 심패스(Simpass) | 대표 : 김익태 | 대표전화 : 02-2108-3121 | FAX : 02-2108-3120 사업자등록번호 : 343-18-00713 | 통신판매신고번호 : 제 2021-서울구로-1451 호 서울시 구로구 디지털로33길 28, 우림이비지센터 1차 1210호""",
-                      style: TextStyle(
-                        fontSize: 14,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
           ),
@@ -130,13 +129,14 @@ class _LoginPageState extends State<LoginPage> {
         }),
       );
 
-      if (response.statusCode == 200 && mounted) {
-        Map data = jsonDecode(response.body);
+      // print(decodedRes);
 
-        await Provider.of<AuthenticationModel>(context, listen: false).login(data['accessToken'], data['refreshToken']);
+      if (response.statusCode == 200 && mounted) {
+        Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+        if (mounted) await Provider.of<AuthenticationModel>(context, listen: false).login(decodedRes['accessToken'], decodedRes['refreshToken']);
         if (mounted) Navigator.of(context).pushReplacementNamed('/home');
       } else {
-        throw 'Login error';
+        throw '로그인 또는 비밀번호가 잘못되었습니다.';
       }
     } catch (e) {
       showCustomSnackBar(e.toString());
