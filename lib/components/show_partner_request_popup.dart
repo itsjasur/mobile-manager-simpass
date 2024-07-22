@@ -6,6 +6,7 @@ import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/image_picker_container.dart';
+import 'package:mobile_manager_simpass/components/partners_contract.viewer.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
 import 'package:mobile_manager_simpass/components/signature_pad.dart';
@@ -26,7 +27,7 @@ showPartnerRequestPopup(BuildContext context, String agentCode) async {
         child: Stack(
           children: [
             PartnerRequestPopupContent(agentCd: agentCode),
-            const PopupHeader(title: '요금제선택'),
+            const PopupHeader(title: '판매점 계약 동의 및 계약내용 확인'),
           ],
         ),
       ),
@@ -221,7 +222,7 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                       ),
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(visualDensity: VisualDensity.compact),
-                        onPressed: () {},
+                        onPressed: () => showPartnerContract(context, widget.agentCd, _data['partner_nm']),
                         child: const Text('계약서 확인'),
                       ),
                     ],
@@ -421,7 +422,7 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                     ),
                   ),
 
-                  const SizedBox(height: 100),
+                  const SizedBox(height: 50),
                 ],
               ),
       ),
@@ -440,7 +441,7 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
       final response = await Request().requestWithRefreshToken(url: 'agent/partnerInfo', method: 'GET');
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
 
-      print(decodedRes);
+      // print(decodedRes);
 
       if (decodedRes['statusCode'] == 200 && decodedRes['data']['result'] == 'SUCCESS') {
         _data = decodedRes['data']['info'];
@@ -539,9 +540,9 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
       request.fields['partner_seal'] = _data['partner_seal'];
 
       // Print fields
-      request.fields.forEach((key, value) {
-        print('Key: $key, Value: $value');
-      });
+      // request.fields.forEach((key, value) {
+      //   print('Key: $key, Value: $value');
+      // });
 
       var response = await request.send();
 
@@ -558,7 +559,7 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
 
       setState(() {});
     } catch (e) {
-      print(e);
+      // print(e);
       showCustomSnackBar(e.toString());
     } finally {
       _submitting = false;

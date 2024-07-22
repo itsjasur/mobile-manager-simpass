@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
@@ -148,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                     elevation: 0,
                     shape: const CircleBorder(),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ApplicationsPage(status: 'A')));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AuthGuard(child: ApplicationsPage(status: 'A'))));
                     },
                     child: Icon(
                       Icons.east,
@@ -308,25 +309,25 @@ class _HomePageState extends State<HomePage> {
 
   final List<dynamic> _buttonsInfo = [
     {
-      'image': 'lib/assets/icons/sim.png',
+      'image': 'assets/icons/sim.png',
       'title': '후불/선불유심',
       'contentText': '가입신청서',
       'route': '/plans',
     },
     {
-      'image': 'lib/assets/icons/docs.png',
+      'image': 'assets/icons/docs.png',
       'title': '정책보기',
       'contentText': null,
       'route': null,
     },
     {
-      'image': 'lib/assets/icons/handshake.png',
+      'image': 'assets/icons/handshake.png',
       'title': '거래요청',
       'contentText': null,
       'route': '/partner-request',
     },
     {
-      'image': 'lib/assets/icons/store.png',
+      'image': 'assets/icons/store.png',
       'title': '거래대리점',
       'contentText': null,
       'route': '/partner-request-results',

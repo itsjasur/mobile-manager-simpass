@@ -71,7 +71,7 @@ class _AgreeDrawPadState extends State<AgreeDrawPad> {
                               alignment: Alignment.center,
                               children: [
                                 Image.asset(
-                                  'lib/assets/umobile_agree_seal.png',
+                                  'assets/umobile_agree_seal.png',
                                 ),
                                 Signature(
                                   key: const Key('signature'),

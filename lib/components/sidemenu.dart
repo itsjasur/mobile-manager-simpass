@@ -102,7 +102,7 @@ class _SideMenuState extends State<SideMenu> {
                   children: [
                     const SizedBox(height: 70),
                     Image.asset(
-                      'lib/assets/logo.png',
+                      'assets/logo.png',
                       width: 200,
                     ),
                     const SizedBox(height: 30),

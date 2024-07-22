@@ -21,9 +21,9 @@ class _PlansPageState extends State<PlansPage> {
 
   final List _carriers = [
     {'code': '', 'name': '전체', 'url': null},
-    {'code': 'KT', 'name': 'KT', 'url': 'lib/assets/logos/kt.png'},
-    {'code': 'SK', 'name': 'SKT', 'url': 'lib/assets/logos/skt.png'},
-    {'code': 'LG', 'name': 'LG U+', 'url': 'lib/assets/logos/lgu.png'},
+    {'code': 'KT', 'name': 'KT', 'url': 'assets/logos/kt.png'},
+    {'code': 'SK', 'name': 'SKT', 'url': 'assets/logos/skt.png'},
+    {'code': 'LG', 'name': 'LG U+', 'url': 'assets/logos/lgu.png'},
   ];
 
   List _mvnos = [];

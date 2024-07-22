@@ -221,7 +221,7 @@ class SignupPageState extends State<SignupPage> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(50),
                                 child: Image.asset(
-                                  'lib/assets/logos/kakao.png',
+                                  'assets/logos/kakao.png',
                                   height: 60,
                                 ),
                               ),
@@ -250,7 +250,7 @@ class SignupPageState extends State<SignupPage> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(50),
                                 child: Image.asset(
-                                  'lib/assets/logos/pass.png',
+                                  'assets/logos/pass.png',
                                   height: 60,
                                 ),
                               ),
