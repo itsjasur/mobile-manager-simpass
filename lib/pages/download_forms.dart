@@ -225,6 +225,7 @@ class _DownloadFormsPageState extends State<DownloadFormsPage> {
       Uint8List? bytes = await _fetchPdf(filename);
       if (bytes != null) {
         final directory = await getTemporaryDirectory();
+
         final filePath = '${directory.path}/$filename.pdf';
         final file = File(filePath);
         await file.writeAsBytes(bytes);

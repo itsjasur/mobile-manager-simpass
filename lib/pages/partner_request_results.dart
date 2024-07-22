@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/components/global_loading.dart';
 import 'package:mobile_manager_simpass/components/show_partners_sign_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PartnerRequestResultsPage extends StatefulWidget {
   const PartnerRequestResultsPage({super.key});
@@ -17,6 +22,7 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
   void initState() {
     super.initState();
     _fetchData();
+    _fetchPartnerInfo();
   }
 
   @override
@@ -259,16 +265,33 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
                                                 : const SizedBox.shrink();
                                           },
                                         ),
-                                        // if (agent['status'] == 'P')
-                                        Center(
-                                          child: ElevatedButton(
-                                            onPressed: () async {
-                                              await showPartnerSignPopup(context, agent['agent_cd']);
-                                              _fetchData();
-                                            },
-                                            child: const Text('거래요청'),
+                                        if (agent['status'] == 'P')
+                                          Center(
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                await showPartnerSignPopup(context, agent['agent_cd']);
+                                                _fetchData();
+                                              },
+                                              child: const Text('거래요청'),
+                                            ),
                                           ),
-                                        ),
+                                        if (agent['status'] == 'Y')
+                                          Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(top: 20),
+                                              child: ElevatedButton(
+                                                onPressed: () => _fetchPdf(agent['agent_cd']),
+                                                child: const Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.print_outlined),
+                                                    SizedBox(width: 5),
+                                                    Text('계약서 출력'),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ),
@@ -307,6 +330,19 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
     }
   }
 
+  Map _partnerInfo = {};
+
+  Future<void> _fetchPartnerInfo() async {
+    try {
+      final response = await Request().requestWithRefreshToken(url: 'agent/partnerInfo', method: 'GET');
+      if (response.statusCode != 200) throw 'Fetch data error';
+      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+      _partnerInfo = decodedRes['data']['info'];
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    }
+  }
+
   Map _generateCarrierList(List list) {
     Map<String, List<dynamic>> carriers = {'KT': [], 'SK': [], 'LG': []};
 
@@ -319,5 +355,33 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
     }
 
     return carriers;
+  }
+
+  Future<void> _fetchPdf(agentCd) async {
+    try {
+      showGlobalLoading(true);
+      final response = await Request().requestWithRefreshToken(url: 'agent/viewContract', method: 'POST', body: {
+        "agent_cd": agentCd,
+        "partner_cd": _partnerInfo['partner_cd'],
+      });
+      Uint8List bytes = response.bodyBytes;
+
+      if (bytes.isEmpty) throw 'Empty';
+
+      final directory = await getTemporaryDirectory();
+
+      final filePath = '${directory.path}/contract.pdf';
+      final file = File(filePath);
+      await file.writeAsBytes(bytes);
+      final result = await OpenFile.open(filePath);
+
+      if (result.type != ResultType.done) {
+        showCustomSnackBar('Failed to open PDF: ${result.message}');
+      }
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    } finally {
+      showGlobalLoading(false);
+    }
   }
 }
