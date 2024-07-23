@@ -73,7 +73,7 @@ class _PartnerRequestPageState extends State<PartnerRequestPage> {
                       : SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           child: Container(
-                            margin: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 200),
+                            margin: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 20),
                             child: Wrap(
                               spacing: 30,
                               runSpacing: 30,

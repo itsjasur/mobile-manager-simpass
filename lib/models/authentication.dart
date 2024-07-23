@@ -15,10 +15,14 @@ class AuthenticationModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  //saving login and password in shared preferences is stupid idea. well what can i do? i was told to do so!
+  //logout clears login and password saved in the sharedprefernces
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('accessToken');
     await prefs.remove('refreshToken');
+    await prefs.remove('username');
+    await prefs.remove('password');
 
     _isAuthenticated = false;
     notifyListeners();

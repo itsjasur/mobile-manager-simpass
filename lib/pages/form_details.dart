@@ -76,6 +76,35 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (_serverData['chk_agent_role_info'] != 'Y')
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(4)),
+                      child: Column(
+                        children: [
+                          Text(
+                            _serverData['agent_role_message_1'] ?? "",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            _serverData['agent_role_message_2'] ?? "",
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/partner-request');
+                            },
+                            child: const Text('거래요청 상태으로 가기'),
+                          )
+                        ],
+                      ),
+                    ),
                   Form(
                     key: _formKey,
                     child: Column(

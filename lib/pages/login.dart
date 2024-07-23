@@ -8,6 +8,7 @@ import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -129,15 +130,15 @@ class _LoginPageState extends State<LoginPage> {
         }),
       );
 
-      // print(decodedRes);
+      if (response.statusCode != 200) throw '로그인 또는 비밀번호가 잘못되었습니다.';
 
-      if (response.statusCode == 200 && mounted) {
-        Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-        if (mounted) await Provider.of<AuthenticationModel>(context, listen: false).login(decodedRes['accessToken'], decodedRes['refreshToken']);
-        if (mounted) Navigator.of(context).pushReplacementNamed('/home');
-      } else {
-        throw '로그인 또는 비밀번호가 잘못되었습니다.';
-      }
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('username', _userNameCntr.text);
+      await prefs.setString('password', _passwordCntr.text);
+
+      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+      if (mounted) await Provider.of<AuthenticationModel>(context, listen: false).login(decodedRes['accessToken'], decodedRes['refreshToken']);
+      if (mounted) Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       showCustomSnackBar(e.toString());
     }

@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/components/show_home_page_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
-import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchData();
+    _fetchHomeInfo();
   }
 
   bool _pageLoaded = false;
@@ -168,7 +169,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       drawer: const SideMenu(),
-      appBar: AppBar(title: Text(sideMenuNames[2])),
+      appBar: AppBar(title: const Text('홈')),
       body: RefreshIndicator(
         onRefresh: _fetchData,
         child: !_pageLoaded
@@ -244,11 +245,14 @@ class _HomePageState extends State<HomePage> {
     );
 
     Widget contentTextW = info['contentText'] != null
-        ? Text(
-            info['contentText'] ?? "",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.secondary,
-              fontSize: 15,
+        ? Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: Text(
+              info['contentText'] ?? "",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontSize: 15,
+              ),
             ),
           )
         : const SizedBox.shrink();
@@ -281,7 +285,6 @@ class _HomePageState extends State<HomePage> {
                     imageW,
                     const SizedBox(height: 10),
                     titleW,
-                    const SizedBox(height: 5),
                     contentTextW,
                   ],
                 ),
@@ -296,7 +299,6 @@ class _HomePageState extends State<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         titleW,
-                        const SizedBox(height: 5),
                         contentTextW,
                       ],
                     ),
@@ -340,14 +342,39 @@ class _HomePageState extends State<HomePage> {
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/actCntStatus', method: 'GET');
 
+      if (response.statusCode != 200) throw 'Home request error';
+
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-      // print(decodedRes);
+      _dataList = decodedRes['data']['act_status_cnt'];
+      _pageLoaded = true;
+      setState(() {});
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    }
+  }
 
-      if (decodedRes['statusCode'] == 200) {
-        _dataList = decodedRes['data']['act_status_cnt'];
+  Map homeInfo = {};
 
-        _pageLoaded = true;
-        setState(() {});
+  Future<void> _fetchHomeInfo() async {
+    try {
+      final response = await Request().requestWithRefreshToken(url: 'agent/homeInfo', method: 'GET');
+
+      if (response.statusCode != 200) throw 'Home info request error';
+
+      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+      homeInfo = decodedRes['data'];
+      _pageLoaded = true;
+      setState(() {});
+
+      if (homeInfo['contract_status'] == 'P' || homeInfo['contract_status'] == 'N') {
+        if (mounted) {
+          await showHomePagePopup(
+            context,
+            // homeInfo['contract_status'],
+            'N',
+            homeInfo['agent_info_list'] ?? [],
+          );
+        }
       }
     } catch (e) {
       showCustomSnackBar(e.toString());
