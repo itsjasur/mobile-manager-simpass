@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
 
 Future<void> showHomePagePopup(BuildContext context, String contractStatus, List agentsInfo) async {
-  print(contractStatus);
   await showDialog(
     context: context,
     // barrierDismissible: false,

@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_drop_down_menu.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
@@ -43,9 +41,6 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
   void initState() {
     super.initState();
     _selectedStatus = widget.status ?? "";
-    print('widget status');
-    print(widget.status);
-
     _fetchData();
   }
 
@@ -122,171 +117,175 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
           _pageNumber = 1;
           await _fetchData();
         },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: _dataLoading
-              ? SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ))
-              : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      if (isTablet)
-                        Wrap(
-                          spacing: 15,
-                          runSpacing: 15,
-                          children: [
-                            Container(
-                              constraints: const BoxConstraints(maxWidth: 150),
-                              child: CustomDropdownMenu(
-                                requestFocusOnTap: true,
-                                enableSearch: true,
-                                label: const Text('검색 선택'),
-                                expandedInsets: EdgeInsets.zero,
-                                initialSelection: _selectedFilterType,
-                                dropdownMenuEntries: const [
-                                  DropdownMenuEntry(value: 'status', label: '상태'),
-                                  DropdownMenuEntry(value: 'apply_date', label: '접수일자'),
-                                  DropdownMenuEntry(value: 'regis_date', label: '개통일자'),
-                                ],
-                                onSelected: (newValue) async {
-                                  _selectedFilterType = newValue ?? "status";
-                                  setState(() {});
-                                },
-                              ),
-                            ),
-                            if (_selectedFilterType == 'status')
-                              Container(
-                                constraints: const BoxConstraints(maxWidth: 150),
-                                child: statusW(),
-                              ),
-                            if (_selectedFilterType != 'status')
-                              Container(
-                                constraints: const BoxConstraints(maxWidth: 150),
-                                child: _fromdateW(),
-                              ),
-                            if (_selectedFilterType != 'status')
-                              Container(
-                                constraints: const BoxConstraints(maxWidth: 150),
-                                child: _todateW(),
-                              ),
-                            SizedBox(
-                              width: 100,
-                              child: _searchbuttonW(false),
-                            ),
-                          ],
-                        ),
-                      if (!isTablet)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: SizedBox(
-                            width: 100,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey,
-                                minimumSize: const Size(0, 40),
-                              ),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => StatefulBuilder(
-                                    builder: (BuildContext context, StateSetter setState) {
-                                      return Dialog(
-                                        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-                                        child: SingleChildScrollView(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                                            child: Wrap(
-                                              runSpacing: 20,
-                                              spacing: 20,
-                                              children: [
-                                                CustomDropdownMenu(
-                                                  requestFocusOnTap: true,
-                                                  enableSearch: true,
-                                                  label: const Text('검색 선택'),
-                                                  expandedInsets: EdgeInsets.zero,
-                                                  initialSelection: _selectedFilterType,
-                                                  dropdownMenuEntries: const [
-                                                    DropdownMenuEntry(value: 'status', label: '상태'),
-                                                    DropdownMenuEntry(value: 'apply_date', label: '접수일자'),
-                                                    DropdownMenuEntry(value: 'regis_date', label: '개통일자'),
-                                                  ],
-                                                  onSelected: (newValue) async {
-                                                    setState(() {
-                                                      _selectedFilterType = newValue ?? "status";
-                                                    });
-                                                  },
-                                                ),
-                                                if (_selectedFilterType == 'status') statusW(),
-                                                if (_selectedFilterType != 'status') _fromdateW(),
-                                                if (_selectedFilterType != 'status') _todateW(),
-                                                SizedBox(
-                                                  width: double.infinity,
-                                                  child: _searchbuttonW(true),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.filter_alt_outlined, size: 20),
-                                  SizedBox(width: 5),
-                                  Text('필터'),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 20),
-                      ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
-                        separatorBuilder: (context, index) => const SizedBox(height: 15),
-                        itemCount: _dataList.length,
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return _buildCardWwidget(_dataList[index]);
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      Align(
-                        alignment: Alignment.center,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(0, 40),
-                            backgroundColor: Theme.of(context).colorScheme.tertiary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          onPressed: () {
-                            _pageNumber++;
-                            _fetchData();
-                          },
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: _dataLoading
+                ? SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        if (isTablet)
+                          Wrap(
+                            spacing: 15,
+                            runSpacing: 15,
                             children: [
-                              Text('더보기'),
-                              SizedBox(width: 5),
-                              Icon(Icons.expand_more_outlined, size: 20),
+                              Container(
+                                constraints: const BoxConstraints(maxWidth: 150),
+                                child: CustomDropdownMenu(
+                                  requestFocusOnTap: true,
+                                  enableSearch: true,
+                                  label: const Text('검색 선택'),
+                                  expandedInsets: EdgeInsets.zero,
+                                  initialSelection: _selectedFilterType,
+                                  dropdownMenuEntries: const [
+                                    DropdownMenuEntry(value: 'status', label: '상태'),
+                                    DropdownMenuEntry(value: 'apply_date', label: '접수일자'),
+                                    DropdownMenuEntry(value: 'regis_date', label: '개통일자'),
+                                  ],
+                                  onSelected: (newValue) async {
+                                    _selectedFilterType = newValue ?? "status";
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                              if (_selectedFilterType == 'status')
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 150),
+                                  child: statusW(),
+                                ),
+                              if (_selectedFilterType != 'status')
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 150),
+                                  child: _fromdateW(),
+                                ),
+                              if (_selectedFilterType != 'status')
+                                Container(
+                                  constraints: const BoxConstraints(maxWidth: 150),
+                                  child: _todateW(),
+                                ),
+                              SizedBox(
+                                width: 100,
+                                child: _searchbuttonW(false),
+                              ),
                             ],
                           ),
+                        if (!isTablet)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              width: 100,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey,
+                                  minimumSize: const Size(0, 40),
+                                ),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => StatefulBuilder(
+                                      builder: (BuildContext context, StateSetter setState) {
+                                        return Dialog(
+                                          insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+                                          child: SingleChildScrollView(
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                                              child: Wrap(
+                                                runSpacing: 20,
+                                                spacing: 20,
+                                                children: [
+                                                  CustomDropdownMenu(
+                                                    requestFocusOnTap: true,
+                                                    enableSearch: true,
+                                                    label: const Text('검색 선택'),
+                                                    expandedInsets: EdgeInsets.zero,
+                                                    initialSelection: _selectedFilterType,
+                                                    dropdownMenuEntries: const [
+                                                      DropdownMenuEntry(value: 'status', label: '상태'),
+                                                      DropdownMenuEntry(value: 'apply_date', label: '접수일자'),
+                                                      DropdownMenuEntry(value: 'regis_date', label: '개통일자'),
+                                                    ],
+                                                    onSelected: (newValue) async {
+                                                      setState(() {
+                                                        _selectedFilterType = newValue ?? "status";
+                                                      });
+                                                    },
+                                                  ),
+                                                  if (_selectedFilterType == 'status') statusW(),
+                                                  if (_selectedFilterType != 'status') _fromdateW(),
+                                                  if (_selectedFilterType != 'status') _todateW(),
+                                                  SizedBox(
+                                                    width: double.infinity,
+                                                    child: _searchbuttonW(true),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.filter_alt_outlined, size: 20),
+                                    SizedBox(width: 5),
+                                    Text('필터'),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+                        ListView.separated(
+                          physics: const NeverScrollableScrollPhysics(),
+                          separatorBuilder: (context, index) => const SizedBox(height: 15),
+                          itemCount: _dataList.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return _buildCardWwidget(_dataList[index]);
+                          },
                         ),
-                      ),
-                      const SizedBox(height: 400),
-                    ],
+                        const SizedBox(height: 20),
+                        Align(
+                          alignment: Alignment.center,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(0, 40),
+                              backgroundColor: Theme.of(context).colorScheme.tertiary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            onPressed: () {
+                              _pageNumber++;
+                              _fetchData();
+                            },
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('더보기'),
+                                SizedBox(width: 5),
+                                Icon(Icons.expand_more_outlined, size: 20),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 400),
+                      ],
+                    ),
                   ),
-                ),
+          ),
         ),
       ),
     );

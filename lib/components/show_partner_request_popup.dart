@@ -18,7 +18,7 @@ import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 showPartnerRequestPopup(BuildContext context, String agentCode) async {
-  final res = await showDialog(
+  await showDialog(
     context: context,
     builder: (BuildContext context) => Dialog(
       insetPadding: const EdgeInsets.all(20),
@@ -307,6 +307,7 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                       padTitle: '판매자 서명',
                       signData: _signData,
                       sealData: _sealData,
+                      errorText: _submitted && (_signData != null || _sealData != null) ? '판매자서명을 하지 않았습니다.' : null,
                       updateSignSeal: (signData, sealData) {
                         _signData = signData != null ? base64Encode(signData) : null;
                         _sealData = sealData != null ? base64Encode(sealData) : null;
@@ -403,11 +404,7 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                     child: SizedBox(
                       width: 250,
                       child: ElevatedButton(
-                        onPressed: _submitting
-                            ? null
-                            : () {
-                                _submit();
-                              },
+                        onPressed: _submitting ? null : _submit,
                         child: _submitting
                             ? SizedBox(
                                 height: 20,
@@ -486,6 +483,11 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
 
       if (!_agreementChecked) {
         showCustomSnackBar('판매점 계약서 내용에 동의해주세요.');
+        return;
+      }
+
+      if (_signData != null || _sealData != null) {
+        showCustomSnackBar('판매자서명을 하지 않았습니다.');
         return;
       }
 

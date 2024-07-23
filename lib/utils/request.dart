@@ -28,7 +28,7 @@ class Request {
       var result = json.decode(utf8.decode(response.bodyBytes));
       await prefs.setString('accessToken', result['accessToken']);
     } catch (e) {
-      print('Error reissuing token: $e');
+      // print('Error reissuing token: $e');
       rethrow;
     }
   }
@@ -63,7 +63,7 @@ class Request {
 
       return response;
     } catch (e) {
-      print('Error in request: $e');
+      // print('Error in request: $e');
       rethrow;
     }
   }

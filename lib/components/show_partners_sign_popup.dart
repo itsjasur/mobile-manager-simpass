@@ -1,23 +1,15 @@
 import 'dart:convert';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
-import 'package:mobile_manager_simpass/components/image_picker_container.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
-import 'package:mobile_manager_simpass/components/show_address_popup.dart';
 import 'package:mobile_manager_simpass/components/signature_pad.dart';
-import 'package:mobile_manager_simpass/globals/constant.dart';
-import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
-import 'package:http/http.dart' as http;
-import 'package:mobile_manager_simpass/utils/validators.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 showPartnerSignPopup(BuildContext context, String agentCode) async {
-  final res = await showDialog(
+  await showDialog(
     context: context,
     builder: (BuildContext context) => Dialog(
       insetPadding: const EdgeInsets.all(20),
@@ -94,16 +86,6 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
         ),
       ),
     );
-  }
-
-  String? _validateForms(type) {
-    if (type == 'email') return _submitted ? InputValidator().validateEmail(_data['email']) : null;
-    if (type == 'address') return _submitted ? InputValidator().validateForNoneEmpty(_data['address'], '주소') : null;
-    if (type == 'dtl_address') return _submitted ? InputValidator().validateForNoneEmpty(_data['dtl_address'], '상세주소') : null;
-    if (type == 'bank_nm') return _submitted ? InputValidator().validateForNoneEmpty(_data['bank_nm'], '은행명') : null;
-    if (type == 'bank_num') return _submitted ? InputValidator().validateForNoneEmpty(_data['bank_num'], '계좌번호') : null;
-
-    return null;
   }
 
   @override
@@ -184,6 +166,7 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
                       padTitle: '판매자 서명',
                       signData: _signData,
                       sealData: _sealData,
+                      errorText: _submitted && (_signData != null || _sealData != null) ? '판매자서명을 하지 않았습니다.' : null,
                       updateSignSeal: (signData, sealData) {
                         _signData = signData != null ? base64Encode(signData) : null;
                         _sealData = sealData != null ? base64Encode(sealData) : null;
@@ -271,6 +254,11 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
       _submitting = true;
       setState(() {});
 
+      if (_signData != null || _sealData != null) {
+        showCustomSnackBar('판매자서명을 하지 않았습니다.');
+        return;
+      }
+
       final response = await Request().requestWithRefreshToken(
         url: 'agent/setContractSign',
         method: 'POST',
@@ -281,8 +269,6 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
         },
       );
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-
-      print(decodedRes);
 
       if (decodedRes['result'] == 'SUCCESS') {
         if (mounted) Navigator.pop(context);

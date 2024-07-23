@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 showPartnerContract(BuildContext context, String agentCode, String partnerName) async {
-  final res = await showDialog(
+  await showDialog(
     context: context,
     builder: (BuildContext context) => Dialog(
       insetPadding: const EdgeInsets.all(20),
