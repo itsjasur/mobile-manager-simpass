@@ -183,7 +183,6 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: SizedBox(
-                              width: 100,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.grey,
@@ -223,10 +222,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                                                   if (_selectedFilterType == 'status') statusW(),
                                                   if (_selectedFilterType != 'status') _fromdateW(),
                                                   if (_selectedFilterType != 'status') _todateW(),
-                                                  SizedBox(
-                                                    width: double.infinity,
-                                                    child: _searchbuttonW(true),
-                                                  ),
+                                                  SizedBox(width: double.infinity, child: _searchbuttonW(true)),
                                                 ],
                                               ),
                                             ),
@@ -237,6 +233,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                                   );
                                 },
                                 child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.filter_alt_outlined, size: 20),
                                     SizedBox(width: 5),
@@ -357,6 +354,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
       onPressed: () async {
         showGlobalLoading(true);
         await _fetchBase64Images(item['act_no']);
+        await Future.delayed(Duration.zero);
         showGlobalLoading(false);
       },
       icon: Icon(
@@ -525,8 +523,9 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
         method: 'POST',
         body: {"act_no": actNo},
       );
+
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-      if (decodedRes['result'] == 'SUCCESS' && decodedRes['data'].isNotEmpty) {
+      if (decodedRes['result'] == 'SUCCESS' && decodedRes['data']['apply_forms_list'].isNotEmpty) {
         if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
         return;
       }

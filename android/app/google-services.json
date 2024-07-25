@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "815804342158",
+    "project_id": "simpassplatform",
+    "storage_bucket": "simpassplatform.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815804342158:android:76539f3117875002290edf",
+        "android_client_info": {
+          "package_name": "com.example.mobile_manager_simpass"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACBkNqqCcAchrBo5yJlzwTg01jQQdyETI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

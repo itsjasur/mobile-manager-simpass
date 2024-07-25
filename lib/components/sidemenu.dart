@@ -26,19 +26,20 @@ class _SideMenuState extends State<SideMenu> {
       'titleIndex': 2,
       'icon': Icons.description_outlined,
       'path': '/plans',
+      // 'secondaryPaths': ['form-details']
     },
+    // {
+    //   'titleIndex': 3,
+    //   'icon': Icons.assignment_outlined,
+    //   'path': '/rental-forms',
+    // },
     {
       'titleIndex': 3,
-      'icon': Icons.assignment_outlined,
-      'path': '/rental-forms',
-    },
-    {
-      'titleIndex': 4,
       'icon': Icons.checklist_outlined,
       'path': '/applications',
     },
     {
-      'titleIndex': 5,
+      'titleIndex': 4,
       'icon': Icons.download_outlined,
       'path': '/download-forms',
     },

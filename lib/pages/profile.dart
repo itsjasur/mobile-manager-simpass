@@ -140,6 +140,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
                       constraints: const BoxConstraints(maxWidth: 350),
                       child: SignatureContainer(
                         padTitle: '판매자 서명',
+                        overlayName: _data['contractor'],
                         signData: _signData,
                         sealData: _sealData,
                         updateSignSeal: (signData, sealData) {

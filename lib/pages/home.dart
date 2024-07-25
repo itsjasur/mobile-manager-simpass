@@ -175,55 +175,58 @@ class _HomePageState extends State<HomePage> {
         child: !_pageLoaded
             ? const SizedBox()
             : Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                alignment: isTablet ? Alignment.center : null,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 height: MediaQuery.of(context).size.height,
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      if (!isTablet)
-                        Column(
-                          children: [
-                            topbarContainerW,
-                            const SizedBox(height: 20),
-                            _buttonGenerate(_buttonsInfo[0]),
-                            const SizedBox(height: 10),
-                            _buttonGenerate(_buttonsInfo[1]),
-                            const SizedBox(height: 10),
-                            _buttonGenerate(_buttonsInfo[2]),
-                            const SizedBox(height: 10),
-                            _buttonGenerate(_buttonsInfo[3]),
-                          ],
-                        ),
-                      if (isTablet)
-                        SizedBox(
-                          width: 600,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        if (!isTablet)
+                          Column(
                             children: [
                               topbarContainerW,
                               const SizedBox(height: 20),
-                              Row(
-                                children: [
-                                  Expanded(child: _buttonGenerate(_buttonsInfo[0])),
-                                  const SizedBox(width: 15),
-                                  Expanded(child: _buttonGenerate(_buttonsInfo[1])),
-                                ],
-                              ),
-                              const SizedBox(height: 15),
-                              Row(
-                                children: [
-                                  Expanded(child: _buttonGenerate(_buttonsInfo[2])),
-                                  const SizedBox(width: 15),
-                                  Expanded(child: _buttonGenerate(_buttonsInfo[3])),
-                                ],
-                              ),
+                              _buttonGenerate(_buttonsInfo[0]),
+                              const SizedBox(height: 10),
+                              _buttonGenerate(_buttonsInfo[1]),
+                              const SizedBox(height: 10),
+                              _buttonGenerate(_buttonsInfo[2]),
+                              const SizedBox(height: 10),
+                              _buttonGenerate(_buttonsInfo[3]),
                             ],
                           ),
-                        ),
-                      const SizedBox(height: 40),
-                    ],
+                        if (isTablet)
+                          SizedBox(
+                            width: 600,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                topbarContainerW,
+                                const SizedBox(height: 20),
+                                Row(
+                                  children: [
+                                    Expanded(child: _buttonGenerate(_buttonsInfo[0])),
+                                    const SizedBox(width: 15),
+                                    Expanded(child: _buttonGenerate(_buttonsInfo[1])),
+                                  ],
+                                ),
+                                const SizedBox(height: 15),
+                                Row(
+                                  children: [
+                                    Expanded(child: _buttonGenerate(_buttonsInfo[2])),
+                                    const SizedBox(width: 15),
+                                    Expanded(child: _buttonGenerate(_buttonsInfo[3])),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -36,7 +36,7 @@ class _HomePagePopupContentState extends State<HomePagePopupContent> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+      padding: const EdgeInsets.only(top: 45, left: 20, right: 20, bottom: 20),
       child: SingleChildScrollView(
         child: widget.contractStatus == 'P'
             ? Column(
@@ -70,7 +70,7 @@ class _HomePagePopupContentState extends State<HomePagePopupContent> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/partner-request-results');
@@ -84,7 +84,7 @@ class _HomePagePopupContentState extends State<HomePagePopupContent> {
                   _textBuilder('현재 거래대리점이 존재하지 않습니다.'),
                   const SizedBox(height: 10),
                   _textBuilder('대리점과 거래계약이 되어야 정상적으로 서비스를 이용하실 수 있습니다. '),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/partner-request');

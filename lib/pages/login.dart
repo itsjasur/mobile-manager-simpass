@@ -18,10 +18,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // final TextEditingController _userNameCntr = TextEditingController();
-  // final TextEditingController _passwordCntr = TextEditingController();
-  final TextEditingController _userNameCntr = TextEditingController(text: MYPASS__);
-  final TextEditingController _passwordCntr = TextEditingController(text: MYPASS__);
+  final TextEditingController _userNameCntr = TextEditingController();
+  final TextEditingController _passwordCntr = TextEditingController();
+  // final TextEditingController _userNameCntr = TextEditingController(text: MYPASS__);
+  // final TextEditingController _passwordCntr = TextEditingController(text: MYPASS__);
 
   bool _submitted = false;
 

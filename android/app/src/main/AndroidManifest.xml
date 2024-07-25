@@ -1,6 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 
+     <queries>
+        <!-- If your app checks for call support -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="tel" />
+        </intent>
+        <!-- Add other intents as needed for your app -->
+    </queries>
+
+    
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Simpass Manager"

@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:provider/provider.dart';
 
 class AuthGuard extends StatefulWidget {
@@ -17,6 +19,12 @@ class AuthGuard extends StatefulWidget {
 
 class _AuthGuardState extends State<AuthGuard> {
   bool _canPopNow = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _saveSigns();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,5 +51,21 @@ class _AuthGuardState extends State<AuthGuard> {
         }
       }),
     );
+  }
+
+  Future<void> _saveSigns() async {
+    try {
+      final response = await Request().requestWithRefreshToken(
+        url: 'agent/setActSign',
+        method: 'POST',
+        body: {"fcm_token": null, "platform": "ios", "version": "1.0.1"},
+      );
+      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+
+      showCustomSnackBar(decodedRes['message']);
+      setState(() {});
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    }
   }
 }

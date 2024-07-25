@@ -166,7 +166,7 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
                       padTitle: '판매자 서명',
                       signData: _signData,
                       sealData: _sealData,
-                      errorText: _submitted && (_signData != null || _sealData != null) ? '판매자서명을 하지 않았습니다.' : null,
+                      errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
                       updateSignSeal: (signData, sealData) {
                         _signData = signData != null ? base64Encode(signData) : null;
                         _sealData = sealData != null ? base64Encode(sealData) : null;
@@ -254,7 +254,7 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
       _submitting = true;
       setState(() {});
 
-      if (_signData != null || _sealData != null) {
+      if (_signData == null || _sealData == null) {
         showCustomSnackBar('판매자서명을 하지 않았습니다.');
         return;
       }
