@@ -1,13 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
-import 'package:mobile_manager_simpass/utils/notification.dart';
-import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:provider/provider.dart';
 
 class AuthGuard extends StatefulWidget {
