@@ -21,10 +21,10 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
-  final notificationService = NotificationService();
-  await notificationService.init();
+  // await Firebase.initializeApp();
+  // final notificationService = NotificationService();
+  // await notificationService.init();
 
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 

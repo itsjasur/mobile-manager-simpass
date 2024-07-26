@@ -3,41 +3,32 @@ import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/material.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  // Initializes notifications and sets up message handlers
   Future<void> init() async {
-    await _initNotifications();
-    await _requestPermissions();
-    _setupMessageHandlers();
-  }
-
-  Future<void> _initNotifications() async {
     const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-
     var initializationSettingsAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
-
     var initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
 
+    // Sets up local notifications plugin, configures settings for iOS and Android,
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (details) {
-        if (details.payload != null) {
-          print("handling foreground notification" + jsonDecode(details.payload!));
-        }
+      onDidReceiveNotificationResponse: (NotificationResponse details) {
+        handleNotificationTap(details.payload);
       },
     );
 
-    // //THIS SHOWS LOCAL NOTIFICATIONS WHEN APP IS IN FOREGROUND on IOS
+    // Configure iOS foreground notification presentation options
     if (Platform.isIOS) {
       await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
         alert: true,
@@ -45,10 +36,22 @@ class NotificationService {
         sound: true,
       );
     }
+
+    // Handle notification taps when app is terminated
+    FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
+      handleNotificationTap(jsonEncode(message?.data));
+    });
+
+    // Configures handlers for FCM messages in foreground, background, and when opening the app from a notification
+    FirebaseMessaging.onMessage.listen(_showLocationNotification);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? message) {
+      handleNotificationTap(jsonEncode(message?.data));
+    });
   }
 
-  // //REQUESTING PERMISSION
-  Future<void> _requestPermissions() async {
+  // Requests notification permissions from the user and returns the FCM token if authorized
+  Future<String?> requestPermissions() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await messaging.requestPermission(
@@ -59,26 +62,14 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print(await FirebaseMessaging.instance.getToken());
+      return await FirebaseMessaging.instance.getToken();
     }
+
+    return null;
   }
 
-  void _setupMessageHandlers() {
-    // //LISTENING TO NOTIFICATIONS WHILE ON FOREGROUNG
-    FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-    // //HANDLING NOTIFICATIONS WHILE ON BACKGROUND/TERMINATED
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  }
-
-  Future<void> _handleForegroundMessage(RemoteMessage message) async {
-    if (message.notification != null) {
-      await showNotification(message);
-    }
-  }
-
-  // //THIS SHOWS LOCAL NOTIFICATIONS WHEN APP IS IN FOREGROUND on ANDROID
-  Future<void> showNotification(RemoteMessage message) async {
-    print(message);
+  // Creates and displays a local notification using the FCM message content
+  Future<void> _showLocationNotification(RemoteMessage? message) async {
     var androidDetails = const AndroidNotificationDetails(
       'simpass_channel_id',
       'Simpass Notifications',
@@ -97,16 +88,23 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.show(
       0,
-      message.notification!.title ?? "Simpass",
-      message.notification!.body ?? "Simpass",
+      message?.notification?.title,
+      message?.notification?.body,
       generalNotificationDetails,
-      payload: jsonEncode(message.data),
+      payload: jsonEncode(message?.data),
     );
+  }
+
+//this recaives payload as string and then converts to map
+  void handleNotificationTap(String? payload) {
+    // print('handlenotificationtap: $payload');
+    if (payload != null) print(jsonDecode(payload));
   }
 }
 
+// Handles FCM messages when the app is in the background or terminated
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
+  print("received background notification : $message");
 }

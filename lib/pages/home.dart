@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/show_home_page_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
+import 'package:mobile_manager_simpass/utils/notification.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,6 +24,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _fetchData();
     _fetchHomeInfo();
+    _updateDeviceData();
   }
 
   bool _pageLoaded = false;
@@ -341,7 +345,7 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> _dataList = [{}];
 
   Future<void> _fetchData() async {
-    // print('fetch data called');
+    print('home page fetch data called');
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/actCntStatus', method: 'GET');
 
@@ -352,6 +356,7 @@ class _HomePageState extends State<HomePage> {
       _pageLoaded = true;
       setState(() {});
     } catch (e) {
+      print('homepage error: $e');
       showCustomSnackBar(e.toString());
     }
   }
@@ -359,6 +364,7 @@ class _HomePageState extends State<HomePage> {
   Map homeInfo = {};
 
   Future<void> _fetchHomeInfo() async {
+    print('home page fetch home info called');
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/homeInfo', method: 'GET');
 
@@ -379,6 +385,29 @@ class _HomePageState extends State<HomePage> {
           );
         }
       }
+    } catch (e) {
+      print('homepage error: $e');
+      showCustomSnackBar(e.toString());
+    }
+  }
+
+  Future<void> _updateDeviceData() async {
+    await Firebase.initializeApp();
+    final notificationService = NotificationService();
+    await notificationService.init();
+    String? fcmToken = await notificationService.requestPermissions();
+
+    try {
+      final response = await Request().requestWithRefreshToken(
+        url: 'agent/setFcmToken',
+        method: 'POST',
+        body: {
+          "fcm_token": fcmToken,
+          "platform": Platform.operatingSystem,
+          "version": "1.0.0",
+        },
+      );
+      await jsonDecode(utf8.decode(response.bodyBytes));
     } catch (e) {
       showCustomSnackBar(e.toString());
     }

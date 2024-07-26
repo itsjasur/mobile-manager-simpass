@@ -186,6 +186,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
         setState(() {});
       }
     } catch (e) {
+      print('profile error: $e');
       showCustomSnackBar(e.toString());
     }
   }
@@ -206,6 +207,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
       showCustomSnackBar(decodedRes['message']);
       setState(() {});
     } catch (e) {
+      print('profile error: $e');
       showCustomSnackBar(e.toString());
     }
   }
