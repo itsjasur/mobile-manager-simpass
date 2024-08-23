@@ -1,0 +1,226 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:ui' as ui;
+
+import 'package:mobile_manager_simpass/components/signature_pad.dart';
+
+class SignaturePadsContainer extends StatefulWidget {
+  final String? title;
+  final String? signData;
+  final String? sealData;
+  final Function(Uint8List?, Uint8List?)? updateDatas;
+
+  const SignaturePadsContainer({super.key, this.title = 'Pad title', this.signData, this.sealData, this.updateDatas});
+
+  @override
+  State<SignaturePadsContainer> createState() => _SignaturePadsContainerState();
+}
+
+class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
+  Uint8List? _signData;
+  Uint8List? _sealData;
+  bool _imagesConverted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _setData();
+  }
+
+  Future<void> _setData() async {
+    // _signData = await _convertBase64ToByte(widget.signData);
+    _sealData = await _convertBase64ToByte(widget.sealData);
+    _imagesConverted = true;
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 500),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.title != null)
+            Text(
+              widget.title!,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          const SizedBox(height: 5),
+          Row(
+            children: [
+              Flexible(
+                flex: 6,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '서명',
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Stack(
+                      children: [
+                        DottedBorder(
+                          borderType: BorderType.RRect,
+                          radius: const Radius.circular(4),
+                          strokeWidth: 2,
+                          dashPattern: const [4],
+                          color: Theme.of(context).colorScheme.primary,
+                          child: Container(
+                            color: Colors.white,
+                            height: 70,
+                            width: double.infinity,
+                            child: _signData != null
+                                ? Image.memory(
+                                    _signData!,
+                                    // fit: BoxFit.contain,
+                                    height: double.infinity,
+                                    width: double.infinity,
+                                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                                  )
+                                : _drawButton('sign'),
+                          ),
+                        ),
+                        if (_signData != null) _deleteButton('sign'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Flexible(
+                flex: 4,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '사인',
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Stack(
+                      children: [
+                        DottedBorder(
+                          borderType: BorderType.RRect,
+                          radius: const Radius.circular(4),
+                          strokeWidth: 2,
+                          dashPattern: const [4],
+                          color: Theme.of(context).colorScheme.primary,
+                          child: Container(
+                            color: Colors.white,
+                            height: 70,
+                            width: double.infinity,
+                            child: _sealData != null
+                                ? Image.memory(
+                                    _sealData!,
+                                    // fit: BoxFit.contain,
+                                    height: double.infinity,
+                                    width: double.infinity,
+                                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                                  )
+                                : _drawButton('seal'),
+                          ),
+                        ),
+                        if (_sealData != null) _deleteButton('seal')
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _drawButton(String type) {
+    return Center(
+      child: IconButton(
+        onPressed: () async {
+          final data = await showDialog(
+            barrierDismissible: false,
+            context: context,
+            useSafeArea: false,
+            builder: (context) => SignaturePad(
+              type: type,
+            ),
+          );
+          if (type == 'sign') {
+            _signData = data;
+          }
+          if (type == 'seal') {
+            _sealData = data;
+          }
+
+          setState(() {});
+
+          if (_signData != null && _sealData != null && widget.updateDatas != null) {
+            widget.updateDatas!(_signData, _sealData);
+          }
+        },
+        icon: Icon(
+          Icons.draw_outlined,
+          color: Theme.of(context).colorScheme.primary,
+          size: 22,
+        ),
+      ),
+    );
+  }
+
+  Widget _deleteButton(String type) {
+    return Align(
+      alignment: Alignment.topRight,
+      child: IconButton(
+        padding: const EdgeInsets.all(0),
+        visualDensity: VisualDensity.compact,
+        onPressed: () {
+          if (type == 'sign') {
+            _signData = null;
+          }
+          if (type == 'seal') {
+            _sealData = null;
+          }
+          if (_signData != null && _sealData != null && widget.updateDatas != null) {
+            widget.updateDatas!(_signData, _sealData);
+          }
+          setState(() {});
+        },
+        icon: const Icon(
+          Icons.delete_outline,
+          color: Colors.red,
+          size: 22,
+        ),
+      ),
+    );
+  }
+
+  Future<Uint8List?> _convertBase64ToByte(String? base64String) async {
+    try {
+      final cleanedBase64String = base64String!.split(',').last;
+      final bytes = base64Decode(cleanedBase64String);
+
+      // Attempt to decode the image to check if it's valid
+      await ui.instantiateImageCodec(bytes);
+      // If successful, return the bytes
+      return bytes;
+    } catch (e) {
+      // If any error occurs, return null
+      return null;
+    }
+  }
+}

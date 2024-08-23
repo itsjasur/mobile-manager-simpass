@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
-import 'package:mobile_manager_simpass/components/signature_pad.dart';
+import 'package:mobile_manager_simpass/components/signature_agree_container.dart';
+import 'package:mobile_manager_simpass/components/signature_pad_old.dart';
+import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
@@ -136,20 +138,30 @@ class _ProfilePafeState extends State<ProfilePafe> {
                     const SizedBox(height: 20),
                     rowBuilder(addressW, addressdetailsW),
                     const SizedBox(height: 20),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 350),
-                      child: SignatureContainer(
-                        padTitle: '판매자 서명',
-                        overlayName: _data['contractor'],
-                        signData: _signData,
-                        sealData: _sealData,
-                        updateSignSeal: (signData, sealData) {
-                          _signData = signData != null ? base64Encode(signData) : null;
-                          _sealData = sealData != null ? base64Encode(sealData) : null;
-                          setState(() {});
-                        },
-                      ),
+                    SignaturePadsContainer(
+                      title: '판매자 서명',
+                      signData: _signData,
+                      sealData: _sealData,
                     ),
+
+                    SignatureAgreeContainer(
+                      title: 'Agree',
+                    ),
+                    //         ConstrainedBox(
+                    //   constraints: const BoxConstraints(maxWidth: 350),
+                    //   child: SignatureContainer(
+                    //     padTitle: '판매자 서명',
+                    //     overlayName: _data['contractor'],
+                    //     signData: _signData,
+                    //     sealData: _sealData,
+                    //     updateSignSeal: (signData, sealData) {
+                    //       _signData = signData != null ? base64Encode(signData) : null;
+                    //       _sealData = sealData != null ? base64Encode(sealData) : null;
+                    //       setState(() {});
+                    //     },
+                    //   ),
+                    // ),
+
                     const SizedBox(height: 30),
                     IntrinsicWidth(
                       child: ElevatedButton(

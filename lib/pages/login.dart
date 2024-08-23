@@ -4,11 +4,11 @@ import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
-import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../sensitive.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,7 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   // final TextEditingController _userNameCntr = TextEditingController();
   // final TextEditingController _passwordCntr = TextEditingController();
-  final TextEditingController _userNameCntr = TextEditingController(text: MYPASS__);
+  final TextEditingController _userNameCntr = TextEditingController(text: MYID__);
   final TextEditingController _passwordCntr = TextEditingController(text: MYPASS__);
 
   bool _submitted = false;

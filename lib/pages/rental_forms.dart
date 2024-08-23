@@ -6,7 +6,7 @@ import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/image_picker_container.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
-import 'package:mobile_manager_simpass/components/signature_pad.dart';
+import 'package:mobile_manager_simpass/components/signature_pad_old.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';

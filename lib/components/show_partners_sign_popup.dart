@@ -5,7 +5,7 @@ import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
-import 'package:mobile_manager_simpass/components/signature_pad.dart';
+import 'package:mobile_manager_simpass/components/signature_pad_old.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
 showPartnerSignPopup(BuildContext context, String agentCode) async {

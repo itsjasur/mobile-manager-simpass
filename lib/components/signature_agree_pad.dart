@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:signature/signature.dart';
 
-class SignaturePad extends StatefulWidget {
-  final String type;
-  const SignaturePad({super.key, this.type = 'sign'});
+class SignatureAgreePad extends StatefulWidget {
+  const SignatureAgreePad({super.key});
 
   @override
-  State<SignaturePad> createState() => _SignaturePadState();
+  State<SignatureAgreePad> createState() => _SignatureAgreePadState();
 }
 
-class _SignaturePadState extends State<SignaturePad> {
+class _SignatureAgreePadState extends State<SignatureAgreePad> {
   late SignatureController _padController;
   double _pencilWidth = 4;
 
@@ -44,8 +43,8 @@ class _SignaturePadState extends State<SignaturePad> {
           Center(
             child: SingleChildScrollView(
               child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: widget.type == 'seal' ? 600 : 800,
+                constraints: const BoxConstraints(
+                  maxWidth: 600,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +76,7 @@ class _SignaturePadState extends State<SignaturePad> {
                                 Uint8List? data = await _padController.toPngBytes();
                                 if (context.mounted) Navigator.pop(context, data);
                               } else {
-                                showCustomSnackBar('먼저 서명을 해주세요.');
+                                showCustomSnackBar('가입약관에 동의하지 않았습니다.');
                               }
                             },
                             child: const Text('저장'),

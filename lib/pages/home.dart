@@ -93,9 +93,11 @@ class _HomePageState extends State<HomePage> {
                                   _dataList[dataIndex]['usim_act_status_nm'] ?? "",
                                   style: TextStyle(
                                     color: colorScheme.onPrimary,
-                                    fontSize: 14,
+                                    fontSize: 10,
+                                    height: 1,
                                   ),
                                 ),
+                                const SizedBox(height: 5),
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
@@ -103,17 +105,21 @@ class _HomePageState extends State<HomePage> {
                                       _dataList[dataIndex]['cnt'].toString(),
                                       style: TextStyle(
                                         color: colorScheme.onPrimary,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        height: 0.8,
                                       ),
+                                      textAlign: TextAlign.end,
                                     ),
                                     const SizedBox(width: 3),
                                     Text(
                                       "건",
                                       style: TextStyle(
                                         color: colorScheme.onPrimary,
-                                        fontSize: 15,
+                                        fontSize: 12,
+                                        height: 1,
                                       ),
+                                      textAlign: TextAlign.end,
                                     ),
                                   ],
                                 ),
@@ -132,11 +138,12 @@ class _HomePageState extends State<HomePage> {
       },
     );
 
-    Widget topbarContainerW = Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: colorScheme.primary,
-      ),
+    Widget topbarContainerW = Card(
+      margin: EdgeInsets.zero,
+      color: Theme.of(context).colorScheme.primary,
+      elevation: 3,
+      shadowColor: Colors.black38,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -178,58 +185,65 @@ class _HomePageState extends State<HomePage> {
         onRefresh: _fetchData,
         child: !_pageLoaded
             ? const SizedBox()
-            : Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                height: MediaQuery.of(context).size.height,
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        if (!isTablet)
-                          Column(
-                            children: [
-                              topbarContainerW,
-                              const SizedBox(height: 20),
-                              _buttonGenerate(_buttonsInfo[0]),
-                              const SizedBox(height: 10),
-                              _buttonGenerate(_buttonsInfo[1]),
-                              const SizedBox(height: 10),
-                              _buttonGenerate(_buttonsInfo[2]),
-                              const SizedBox(height: 10),
-                              _buttonGenerate(_buttonsInfo[3]),
-                            ],
-                          ),
-                        if (isTablet)
-                          SizedBox(
-                            width: 600,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
+            : SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height - 110,
+                  ),
+                  child: Align(
+                    alignment: isTablet ? Alignment.center : Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (!isTablet)
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
+                                const SizedBox(height: 10),
                                 topbarContainerW,
                                 const SizedBox(height: 20),
-                                Row(
-                                  children: [
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[0])),
-                                    const SizedBox(width: 15),
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[1])),
-                                  ],
-                                ),
-                                const SizedBox(height: 15),
-                                Row(
-                                  children: [
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[2])),
-                                    const SizedBox(width: 15),
-                                    Expanded(child: _buttonGenerate(_buttonsInfo[3])),
-                                  ],
-                                ),
+                                _buttonGenerate(_buttonsInfo[0]),
+                                const SizedBox(height: 10),
+                                _buttonGenerate(_buttonsInfo[1]),
+                                const SizedBox(height: 10),
+                                _buttonGenerate(_buttonsInfo[2]),
+                                const SizedBox(height: 10),
+                                _buttonGenerate(_buttonsInfo[3]),
                               ],
                             ),
-                          ),
-                        const SizedBox(height: 40),
-                      ],
+                          if (isTablet)
+                            SizedBox(
+                              width: 500,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  topbarContainerW,
+                                  const SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[0])),
+                                      const SizedBox(width: 15),
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[1])),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[2])),
+                                      const SizedBox(width: 15),
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[3])),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
+                          // const SizedBox(height: 40),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -273,9 +287,9 @@ class _HomePageState extends State<HomePage> {
 
     return Card(
       margin: EdgeInsets.zero,
-      color: Theme.of(context).colorScheme.onPrimary,
+      color: Colors.white,
       elevation: 3,
-      shadowColor: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
+      shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       child: InkWell(
         borderRadius: BorderRadius.circular(6),

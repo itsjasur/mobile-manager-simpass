@@ -1,5 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/pages/download_forms.dart';
@@ -10,11 +10,8 @@ import 'package:mobile_manager_simpass/pages/home.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/pages/profile.dart';
-// import 'package:mobile_manager_simpass/pages/secondary_signup.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
-
 import 'package:mobile_manager_simpass/theme.dart';
-import 'package:mobile_manager_simpass/utils/notification.dart';
 import 'package:provider/provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -22,94 +19,14 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await Firebase.initializeApp();
-  // final notificationService = NotificationService();
-  // await notificationService.init();
-
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-  // //REQUESTING PERMISSION
-  // NotificationSettings settings = await messaging.requestPermission(
-  //   alert: true,
-  //   sound: true,
-  //   badge: true,
-  //   provisional: true,
-  // );
-
-  // if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-  //   print(await FirebaseMessaging.instance.getToken());
-  // }
-
-  // //ios
-  // const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings(
-  //   requestAlertPermission: true,
-  //   requestBadgePermission: true,
-  //   requestSoundPermission: true,
-  // );
-  // //android
-  // var initializationSettingsAndroid = const AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  // var initializationSettings = InitializationSettings(
-  //   android: initializationSettingsAndroid,
-  //   iOS: initializationSettingsIOS,
-  // );
-
-  // flutterLocalNotificationsPlugin.initialize(
-  //   initializationSettings,
-  //   onDidReceiveNotificationResponse: (details) {
-  //     if (details.payload != null) {
-  //       print("handling foreground notification" + jsonDecode(details.payload!));
-  //     }
-  //   },
-  // );
-
-  // //THIS SHOWS LOCAL NOTIFICATIONS WHEN APP IS IN FOREGROUND
-  // if (Platform.isIOS) {
-  //   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  //     alert: true,
-  //     badge: true,
-  //     sound: true,
-  //   );
-  // }
-
-  // Future<void> showNotification(RemoteMessage message) async {
-  //   print(message);
-
-  //   var androidDetails = const AndroidNotificationDetails(
-  //     'simpass_channel_id',
-  //     'Simpass Notifications',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //   );
-
-  //   var iOSDetails = const DarwinNotificationDetails(
-  //     presentAlert: true,
-  //     presentBadge: true,
-  //     presentSound: true,
-  //     sound: 'default',
-  //   );
-
-  //   var generalNotificationDetails = NotificationDetails(android: androidDetails, iOS: iOSDetails);
-
-  //   await flutterLocalNotificationsPlugin.show(
-  //     0,
-  //     message.notification!.title ?? "Simpass",
-  //     message.notification!.body ?? "Simpass",
-  //     generalNotificationDetails,
-  //     payload: jsonEncode(message.data),
-  //   );
-  // }
-
-  // //LISTENING TO NOTIFICATIONS WHILE ON FOREGROUNG
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-  //   if (message.notification != null) {
-  //     await showNotification(message);
-  //   }
-  // });
-
-  // //HANDLING NOTIFICATIONS WHILE ON BACKGROUND/TERMINATED
-  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarDividerColor: Colors.transparent,
+    ),
+  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(
     MultiProvider(
       providers: [
@@ -129,7 +46,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        initialRoute: '/home',
+        initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
         // initialRoute: '/applications',

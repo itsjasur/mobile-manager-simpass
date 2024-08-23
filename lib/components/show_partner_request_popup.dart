@@ -9,7 +9,7 @@ import 'package:mobile_manager_simpass/components/image_picker_container.dart';
 import 'package:mobile_manager_simpass/components/partners_contract.viewer.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
-import 'package:mobile_manager_simpass/components/signature_pad.dart';
+import 'package:mobile_manager_simpass/components/signature_pad_old.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
