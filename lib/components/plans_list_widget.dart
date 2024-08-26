@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/pages/form_details.dart';
@@ -77,9 +79,10 @@ class _PlansListWidgetState extends State<PlansListWidget> {
 
     Widget planNameW = Text(
       item['usim_plan_nm'],
-      style: const TextStyle(
+      style: TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 15,
+        color: Theme.of(context).colorScheme.primary,
       ),
     );
 
@@ -144,12 +147,22 @@ class _PlansListWidgetState extends State<PlansListWidget> {
     );
 
     Widget priceRow = Text(
-      "${InputFormatter().wonify(item['sales_fee'])} 원/월",
-      style: TextStyle(
+      "${InputFormatter().wonify(item['sales_fee'])}원",
+      style: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 15,
-        color: Theme.of(context).colorScheme.primary,
       ),
+      textAlign: TextAlign.end,
+    );
+
+    Widget discountFee = Text(
+      "${InputFormatter().wonify(item['discount_fee'])}원",
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 15,
+        color: Colors.red,
+      ),
+      textAlign: TextAlign.end,
     );
 
     return ClipRRect(
@@ -177,6 +190,7 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                         children: [
                           Flexible(child: planNameW),
                           Flexible(child: priceRow),
+                          // Flexible(child: discountFee),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -188,39 +202,45 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                       const SizedBox(height: 5),
                     ],
                   )
-                : LayoutBuilder(
-                    builder: (context, constraints) {
-                      double w = constraints.maxWidth;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: w * 0.25,
-                            child: planNameW,
-                          ),
-                          SizedBox(width: w * 0.01),
-                          SizedBox(
-                            width: w * 0.2,
-                            child: dataRowW,
-                          ),
-                          SizedBox(width: w * 0.01),
-                          SizedBox(
-                            width: w * 0.2,
-                            child: voiceRow,
-                          ),
-                          SizedBox(width: w * 0.01),
-                          SizedBox(
-                            width: w * 0.15,
-                            child: messageRow,
-                          ),
-                          SizedBox(width: w * 0.01),
-                          SizedBox(
-                            width: w * 0.15,
-                            child: priceRow,
-                          ),
-                        ],
-                      );
-                    },
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        flex: 5,
+                        fit: FlexFit.tight,
+                        child: planNameW,
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        flex: 4,
+                        fit: FlexFit.tight,
+                        child: dataRowW,
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        flex: 3,
+                        fit: FlexFit.tight,
+                        child: voiceRow,
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        flex: 3,
+                        fit: FlexFit.tight,
+                        child: messageRow,
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        flex: 3,
+                        fit: FlexFit.tight,
+                        child: priceRow,
+                      ),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        flex: 3,
+                        fit: FlexFit.tight,
+                        child: discountFee,
+                      ),
+                    ],
                   ),
           ),
         ),

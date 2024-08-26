@@ -7,10 +7,11 @@ import 'dart:ui' as ui;
 
 class SignatureAgreeContainer extends StatefulWidget {
   final String? title;
+  final String? errorText;
   final String? agreeData;
   final Function(Uint8List?)? updateData;
 
-  const SignatureAgreeContainer({super.key, this.title = 'Pad title', this.updateData, this.agreeData});
+  const SignatureAgreeContainer({super.key, this.title = 'Pad title', this.updateData, this.agreeData, this.errorText});
 
   @override
   State<SignatureAgreeContainer> createState() => _SignatureAgreeContainerState();
@@ -18,7 +19,6 @@ class SignatureAgreeContainer extends StatefulWidget {
 
 class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
   Uint8List? _agreeData;
-  bool _imageConverted = false;
 
   @override
   void initState() {
@@ -27,15 +27,16 @@ class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
   }
 
   Future<void> _setData() async {
-    _agreeData = await _convertBase64ToByte(widget.agreeData);
-    _imageConverted = true;
-    setState(() {});
+    if (widget.agreeData != null) {
+      _agreeData = await _convertBase64ToByte(widget.agreeData);
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 500),
+      constraints: const BoxConstraints(maxWidth: 300),
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +75,7 @@ class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
                           color: Theme.of(context).colorScheme.primary,
                           child: Container(
                             color: Colors.white,
-                            height: 70,
+                            height: 60,
                             width: double.infinity,
                             child: _agreeData != null
                                 ? Image.memory(
@@ -95,6 +96,15 @@ class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
               ),
             ],
           ),
+          const SizedBox(height: 2),
+          if (widget.errorText != null)
+            Text(
+              widget.errorText!,
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 13,
+              ),
+            )
         ],
       ),
     );
@@ -110,11 +120,10 @@ class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
             useSafeArea: false,
             builder: (context) => const SignatureAgreePad(),
           );
+
           _agreeData = data;
-
           setState(() {});
-
-          if (_agreeData != null && widget.updateData != null) {
+          if (widget.updateData != null) {
             widget.updateData!(_agreeData);
           }
         },
@@ -135,11 +144,11 @@ class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
         visualDensity: VisualDensity.compact,
         onPressed: () {
           _agreeData = null;
+          setState(() {});
 
-          if (_agreeData != null && widget.updateData != null) {
+          if (widget.updateData != null) {
             widget.updateData!(_agreeData);
           }
-          setState(() {});
         },
         icon: const Icon(
           Icons.delete_outline,

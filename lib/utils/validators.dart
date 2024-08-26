@@ -71,22 +71,22 @@ class InputValidator {
       return '비밀번호는 8자 이상 ';
     }
 
-    final RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[0-9]){2}(?=.*?[!@#$&~*%^?]).{8,}$');
+    final RegExp regex = RegExp(r'^(?=.*?[a-zA-Z])(?=.*?[0-9]){2}(?=.*?[!@#$&~*%^?]).{8,}$');
     if (!regex.hasMatch(value)) {
-      return '비밀번호는 8자 이상, 대문자 1자, 숫자 2자 및 특수 대소문자 1자를 조합';
+      return '비밀번호는 8자 이상, 대/소문자 1자, 숫자 2자 및 특수 대소문자 1자를 조합';
     }
 
     return null;
   }
 
-  String? validateRentryPass(String? oldValue, String? newValue) {
-    newValue = newValue?.replaceAll(' ', '');
+  String? validateRentryPass(String? password, String? reenterPass) {
+    reenterPass = reenterPass?.replaceAll(' ', '');
 
     // checking if the field is empty
-    if (newValue == null || newValue.isEmpty) return '비밀번호를 다시 입력하세요.';
+    if (reenterPass == null || reenterPass.isEmpty) return '비밀번호를 다시 입력하세요.';
 
     //matching old and new password
-    if (oldValue != newValue) return '비밀번호가 일치하지 않습니다.';
+    if (password != reenterPass) return '비밀번호가 일치하지 않습니다.';
 
     return null;
   }

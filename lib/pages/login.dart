@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: const InputDecoration(
                       label: Text('비밀번호'),
                     ),
-                    // errorText: _submitted ? InputValidator().validatePass(_passwordCntr.text) : null,
+                    errorText: _submitted ? InputValidator().validatePass(_passwordCntr.text) : null,
                     onChanged: (p0) => setState(() {}),
                   ),
                   const SizedBox(height: 30),
@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         _submitted = true;
                         setState(() {});
-                        // if (InputValidator().validatePass(_passwordCntr.text) == null && InputValidator().validateId(_userNameCntr.text) == null) _login();
+                        if (InputValidator().validatePass(_passwordCntr.text) == null && InputValidator().validateId(_userNameCntr.text) == null) _login();
                         _login();
                       },
                       child: const Text('로그인'),

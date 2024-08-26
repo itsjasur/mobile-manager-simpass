@@ -14,7 +14,7 @@ class SignaturePad extends StatefulWidget {
 
 class _SignaturePadState extends State<SignaturePad> {
   late SignatureController _padController;
-  double _pencilWidth = 4;
+  double _pencilWidth = 5;
 
   @override
   void initState() {
@@ -101,10 +101,10 @@ class _SignaturePadState extends State<SignaturePad> {
                         color: Colors.transparent,
                         child: Slider(
                           label: _pencilWidth.toString(),
-                          divisions: 6,
+                          divisions: 8,
                           value: _pencilWidth,
                           min: 2,
-                          max: 8,
+                          max: 10,
                           onChanged: (double value) => setState(() {
                             _pencilWidth = value;
                             _initializePadController();

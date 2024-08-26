@@ -1,6 +1,7 @@
 import 'dart:typed_data';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:signature/signature.dart';
 
@@ -13,7 +14,7 @@ class SignatureAgreePad extends StatefulWidget {
 
 class _SignatureAgreePadState extends State<SignatureAgreePad> {
   late SignatureController _padController;
-  double _pencilWidth = 4;
+  double _pencilWidth = 5;
 
   @override
   void initState() {
@@ -43,9 +44,7 @@ class _SignatureAgreePadState extends State<SignatureAgreePad> {
           Center(
             child: SingleChildScrollView(
               child: Container(
-                constraints: const BoxConstraints(
-                  maxWidth: 600,
-                ),
+                // constraints: const BoxConstraints(maxWidth: 600),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -100,10 +99,10 @@ class _SignatureAgreePadState extends State<SignatureAgreePad> {
                         color: Colors.transparent,
                         child: Slider(
                           label: _pencilWidth.toString(),
-                          divisions: 6,
+                          divisions: 8,
                           value: _pencilWidth,
                           min: 2,
-                          max: 8,
+                          max: 10,
                           onChanged: (double value) => setState(() {
                             _pencilWidth = value;
                             _initializePadController();
@@ -112,15 +111,24 @@ class _SignatureAgreePadState extends State<SignatureAgreePad> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    SizedBox(
-                      height: 220,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Signature(
-                          key: const Key('signature'),
-                          controller: _padController,
-                          backgroundColor: Colors.grey.withOpacity(0.2),
-                        ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/umobile_agree_seal.png',
+                            // fit: BoxFit.fitWidth,
+                            width: 500,
+                          ),
+                          Positioned.fill(
+                            child: Signature(
+                              key: const Key('agree'),
+                              controller: _padController,
+                              backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.06),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

@@ -5,7 +5,6 @@ import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
-import 'package:mobile_manager_simpass/components/signature_pad_old.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
 showPartnerSignPopup(BuildContext context, String agentCode) async {
@@ -160,20 +159,20 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
                     ),
 
                   const SizedBox(height: 30),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 350),
-                    child: SignatureContainer(
-                      padTitle: '판매자 서명',
-                      signData: _signData,
-                      sealData: _sealData,
-                      errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
-                      updateSignSeal: (signData, sealData) {
-                        _signData = signData != null ? base64Encode(signData) : null;
-                        _sealData = sealData != null ? base64Encode(sealData) : null;
-                        setState(() {});
-                      },
-                    ),
-                  ),
+                  // ConstrainedBox(
+                  //   constraints: const BoxConstraints(maxWidth: 350),
+                  //   child: SignatureContainer(
+                  //     padTitle: '판매자 서명',
+                  //     signData: _signData,
+                  //     sealData: _sealData,
+                  //     errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
+                  //     updateSignSeal: (signData, sealData) {
+                  //       _signData = signData != null ? base64Encode(signData) : null;
+                  //       _sealData = sealData != null ? base64Encode(sealData) : null;
+                  //       setState(() {});
+                  //     },
+                  //   ),
+                  // ),
                   const SizedBox(height: 30),
                   Align(
                     alignment: Alignment.centerRight,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
@@ -9,14 +10,17 @@ import 'package:mobile_manager_simpass/components/image_picker_container.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
 import 'package:mobile_manager_simpass/components/show_plans_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
-import 'package:mobile_manager_simpass/components/signature_pad_old.dart';
+import 'package:mobile_manager_simpass/components/signature_agree_container.dart';
+import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/globals/plans_forms.dart';
 import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer' as developer;
 
 class FormDetailsPage extends StatefulWidget {
   final int planId;
@@ -105,128 +109,153 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                         ],
                       ),
                     ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: _availableForms.entries
-                          .map(
-                            (entry) => entry.value.isNotEmpty
-                                ? Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                                    margin: const EdgeInsets.only(bottom: 20),
-                                    child: Wrap(
-                                      crossAxisAlignment: WrapCrossAlignment.start,
-                                      runAlignment: WrapAlignment.start,
-                                      alignment: WrapAlignment.start,
-                                      spacing: 15,
-                                      runSpacing: 15,
-                                      children: [
-                                        //title
-                                        _titleGenerator(entry.key),
-
-                                        //fields
-                                        ...entry.value.map(
-                                          (formName) {
-                                            if (_fixedFormsDetails[formName]['type'] == 'input') {
-                                              return Container(
-                                                constraints: isTablet ? BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()) : null,
-                                                child: CustomTextFormField(
-                                                  style: formName == 'usim_plan_nm' ? TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary) : null,
-                                                  decoration: InputDecoration(
-                                                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                                                    label: formName != 'usim_plan_nm' ? Text(_fixedFormsDetails[formName]['label']) : null,
-                                                    hintText: _fixedFormsDetails[formName]['placeholder'],
-                                                    enabledBorder: formName == 'usim_plan_nm'
-                                                        ? OutlineInputBorder(
-                                                            borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
-                                                          )
-                                                        : null,
-                                                  ),
-                                                  errorText: _errorShower(formName),
-                                                  textCapitalization: _fixedFormsDetails[formName]['capital'] ?? false ? TextCapitalization.characters : null,
-                                                  controller: _fixedFormsDetails[formName]['value'],
-                                                  inputFormatters: _fixedFormsDetails[formName]?['formatter'] != null ? [_fixedFormsDetails[formName]['formatter']] : null,
-                                                  onChanged: (newValue) {
-                                                    if (_theSameAsPayeerCheck && (formName == 'name' || formName == 'birthday' || formName == 'birthday_full')) {
-                                                      // if (_theSameAsPayeerCheck) {
-                                                      _fixedFormsDetails['account_name']['value'].text = _fixedFormsDetails['name']['value'].text;
-                                                      _fixedFormsDetails['account_birthday']['value'].text = _fixedFormsDetails['birthday']['value'].text;
-                                                      _fixedFormsDetails['account_birthday_full']['value'].text = _fixedFormsDetails['birthday_full']['value'].text;
-                                                    }
-
-                                                    // birthday date validation
-                                                    if (formName == 'birthday' || formName == 'deputy_birthday' || formName == 'account_birthday') {
-                                                      final formatter = InputFormatter().validateAndCorrectShortDate;
-                                                      _fixedFormsDetails['birthday']['value'].text = formatter(_fixedFormsDetails['birthday']['value'].text);
-                                                      _fixedFormsDetails['deputy_birthday']['value'].text = formatter(_fixedFormsDetails['deputy_birthday']['value'].text);
-                                                      _fixedFormsDetails['account_birthday']['value'].text = formatter(_fixedFormsDetails['account_birthday']['value'].text);
-                                                    }
-
-                                                    // full birthday date validation
-                                                    if (formName == 'birthday_full' || formName == 'deputy_birthday_full' || formName == 'account_birthday_full') {
-                                                      final formatter = InputFormatter().validateAndCorrectDate;
-                                                      _fixedFormsDetails['birthday_full']['value'].text = formatter(_fixedFormsDetails['birthday_full']['value'].text);
-                                                      _fixedFormsDetails['deputy_birthday_full']['value'].text = formatter(_fixedFormsDetails['deputy_birthday_full']['value'].text);
-                                                      _fixedFormsDetails['account_birthday_full']['value'].text = formatter(_fixedFormsDetails['account_birthday_full']['value'].text);
-                                                    }
-
-                                                    setState(() {});
-                                                  },
-                                                  readOnly: redOnlyChecker(formName),
-                                                  onTap: () async {
-                                                    //selecting plan
-                                                    if (formName == 'usim_plan_nm') {
-                                                      // final selectedItem = await showPlansPopup(context, widget.typeCd, widget.carrierCd, widget.mvnoCd, widget.searchText);
-                                                      final selectedItem = await showPlansPopup(context, _serverData['usim_plan_info']['carrier_type'], _serverData['usim_plan_info']['carrier_cd'],
-                                                          _serverData['usim_plan_info']['mvno_cd'], widget.searchText);
-                                                      await _fetchData(selectedItem);
-                                                    }
-
-                                                    //selecting addrss
-                                                    if (formName == 'address' && context.mounted) {
-                                                      final model = await showAddressSelect(context);
-                                                      _fixedFormsDetails['address']['value'].text = model.addressType == 'R' ? model.roadAddress : model.jibunAddress;
-                                                      _fixedFormsDetails['addressdetail']['value'].text = model.buildingName;
-                                                    }
-                                                    setState(() {});
-                                                  },
-                                                ),
-                                              );
-                                            }
-
-                                            if (_fixedFormsDetails[formName]['type'] == 'select') {
-                                              return Container(
-                                                constraints: isTablet ? BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()) : null,
-                                                child: CustomDropdownMenu(
-                                                  requestFocusOnTap: true,
-                                                  enableSearch: true,
-                                                  label: Text(_fixedFormsDetails[formName]['label']),
-                                                  expandedInsets: EdgeInsets.zero,
-                                                  initialSelection: _fixedFormsDetails[formName]['value'].text,
-                                                  errorText: _errorShower(formName),
-                                                  dropdownMenuEntries: _fixedFormsDetails[formName]['options'] ?? [],
-                                                  onSelected: (selectedItem) async {
-                                                    _fixedFormsDetails[formName]['value'].text = selectedItem;
-                                                    setState(() {});
-                                                    _generateInitialForms();
-                                                  },
-                                                ),
-                                              );
-                                            }
-
-                                            return const SizedBox.shrink();
-                                          },
-                                        ),
-                                      ],
+                  Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
+                    ...generateDisplayingForms(_availableForms).map(
+                      (section) => Container(
+                        margin: const EdgeInsets.only(bottom: 25, left: 20, right: 20),
+                        child: section['forms'].isNotEmpty
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (section['type'] != 'empty')
+                                    Container(
+                                      margin: const EdgeInsets.only(bottom: 10, top: 0),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Text(
+                                            section['title'],
+                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          if (section['type'] == 'payment')
+                                            CustomCheckbox(
+                                              onChanged: (newValue) => setState(() {
+                                                _theSameAsPayeerCheck = newValue ?? false;
+                                                //if _theSameAsPayeerCheck is the same
+                                                if (newValue ?? false) {
+                                                  _fixedFormsDetails['account_name']['value'].text = _fixedFormsDetails['name']['value'].text;
+                                                  _fixedFormsDetails['account_birthday']['value'].text = _fixedFormsDetails['birthday']['value'].text;
+                                                  _fixedFormsDetails['account_birthday_full']['value'].text = _fixedFormsDetails['birthday_full']['value'].text;
+                                                } else {
+                                                  _fixedFormsDetails['account_name']['value'].text = '';
+                                                  _fixedFormsDetails['account_birthday']['value'].text = '';
+                                                  _fixedFormsDetails['account_birthday_full']['value'].text = '';
+                                                }
+                                              }),
+                                              text: '가입자와 동일',
+                                              value: _theSameAsPayeerCheck,
+                                            ),
+                                        ],
+                                      ),
                                     ),
-                                  )
-                                : const SizedBox.shrink(),
-                          )
-                          .toList(),
-                    ),
-                  ),
+                                  Wrap(
+                                    spacing: 20,
+                                    runSpacing: 20,
+                                    children: [
+                                      ...List.generate(
+                                        section['forms'].length,
+                                        (index) {
+                                          String formName = section['forms'][index];
+
+                                          if (_fixedFormsDetails[formName]['type'] == 'input') {
+                                            return Container(
+                                              constraints: isTablet ? BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()) : null,
+                                              child: CustomTextFormField(
+                                                style: formName == 'usim_plan_nm' ? TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary) : null,
+                                                decoration: InputDecoration(
+                                                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                  label: formName != 'usim_plan_nm' ? Text(_fixedFormsDetails[formName]['label']) : null,
+                                                  hintText: _fixedFormsDetails[formName]['placeholder'],
+                                                  enabledBorder: formName == 'usim_plan_nm'
+                                                      ? OutlineInputBorder(
+                                                          borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+                                                        )
+                                                      : null,
+                                                ),
+                                                errorText: _errorShower(formName),
+                                                textCapitalization: _fixedFormsDetails[formName]['capital'] ?? false ? TextCapitalization.characters : null,
+                                                controller: _fixedFormsDetails[formName]['value'],
+                                                inputFormatters: _fixedFormsDetails[formName]?['formatter'] != null ? [_fixedFormsDetails[formName]['formatter']] : null,
+                                                onChanged: (newValue) {
+                                                  if (_theSameAsPayeerCheck && (formName == 'name' || formName == 'birthday' || formName == 'birthday_full')) {
+                                                    // if (_theSameAsPayeerCheck) {
+                                                    _fixedFormsDetails['account_name']['value'].text = _fixedFormsDetails['name']['value'].text;
+                                                    _fixedFormsDetails['account_birthday']['value'].text = _fixedFormsDetails['birthday']['value'].text;
+                                                    _fixedFormsDetails['account_birthday_full']['value'].text = _fixedFormsDetails['birthday_full']['value'].text;
+                                                  }
+
+                                                  // birthday date validation
+                                                  if (formName == 'birthday' || formName == 'deputy_birthday' || formName == 'account_birthday') {
+                                                    final formatter = InputFormatter().validateAndCorrectShortDate;
+                                                    _fixedFormsDetails['birthday']['value'].text = formatter(_fixedFormsDetails['birthday']['value'].text);
+                                                    _fixedFormsDetails['deputy_birthday']['value'].text = formatter(_fixedFormsDetails['deputy_birthday']['value'].text);
+                                                    _fixedFormsDetails['account_birthday']['value'].text = formatter(_fixedFormsDetails['account_birthday']['value'].text);
+                                                  }
+
+                                                  // full birthday date validation
+                                                  if (formName == 'birthday_full' || formName == 'deputy_birthday_full' || formName == 'account_birthday_full') {
+                                                    final formatter = InputFormatter().validateAndCorrectDate;
+                                                    _fixedFormsDetails['birthday_full']['value'].text = formatter(_fixedFormsDetails['birthday_full']['value'].text);
+                                                    _fixedFormsDetails['deputy_birthday_full']['value'].text = formatter(_fixedFormsDetails['deputy_birthday_full']['value'].text);
+                                                    _fixedFormsDetails['account_birthday_full']['value'].text = formatter(_fixedFormsDetails['account_birthday_full']['value'].text);
+                                                  }
+
+                                                  setState(() {});
+                                                },
+                                                readOnly: redOnlyChecker(formName),
+                                                onTap: () async {
+                                                  //selecting plan
+                                                  if (formName == 'usim_plan_nm') {
+                                                    // final selectedItem = await showPlansPopup(context, widget.typeCd, widget.carrierCd, widget.mvnoCd, widget.searchText);
+                                                    final selectedItem = await showPlansPopup(context, _serverData['usim_plan_info']['carrier_type'], _serverData['usim_plan_info']['carrier_cd'],
+                                                        _serverData['usim_plan_info']['mvno_cd'], widget.searchText);
+                                                    await _fetchData(selectedItem);
+                                                  }
+
+                                                  //selecting addrss
+                                                  if (formName == 'address' && context.mounted) {
+                                                    final model = await showAddressSelect(context);
+                                                    _fixedFormsDetails['address']['value'].text = model.addressType == 'R' ? model.roadAddress : model.jibunAddress;
+                                                    _fixedFormsDetails['addressdetail']['value'].text = model.buildingName;
+                                                  }
+                                                  setState(() {});
+                                                },
+                                              ),
+                                            );
+                                          }
+
+                                          if (_fixedFormsDetails[formName]['type'] == 'select') {
+                                            return Container(
+                                              constraints: isTablet ? BoxConstraints(maxWidth: _fixedFormsDetails[formName]['maxwidth'].toDouble()) : null,
+                                              child: CustomDropdownMenu(
+                                                requestFocusOnTap: true,
+                                                enableSearch: true,
+                                                label: Text(_fixedFormsDetails[formName]['label']),
+                                                expandedInsets: EdgeInsets.zero,
+                                                initialSelection: _fixedFormsDetails[formName]['value'].text,
+                                                errorText: _errorShower(formName),
+                                                dropdownMenuEntries: _fixedFormsDetails[formName]['options'] ?? [],
+                                                onSelected: (selectedItem) async {
+                                                  _fixedFormsDetails[formName]['value'].text = selectedItem;
+                                                  setState(() {});
+                                                  _generateInitialForms();
+                                                },
+                                              ),
+                                            );
+                                          }
+
+                                          return const SizedBox.shrink();
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    )
+                  ]),
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -238,6 +267,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                       value: _showFileUploadChecked,
                     ),
                   ),
+
                   if (_showFileUploadChecked)
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -295,7 +325,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
                   const SizedBox(height: 20),
                   //sign all after print checkbox
-
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: CustomCheckbox(
@@ -313,18 +342,17 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           //account sign and seal
                           Container(
-                            constraints: const BoxConstraints(maxWidth: 350),
                             margin: const EdgeInsets.only(bottom: 20),
-                            child: SignatureContainer(
-                              padTitle: '가입자서명',
+                            child: SignaturePadsContainer(
+                              title: '가입자서명',
                               signData: _accountSignData,
                               sealData: _accountSealData,
-                              overlayName: _fixedFormsDetails['name']['value'].text,
                               errorText: _getErrorMessageForPad('account'),
-                              updateSignSeal: (signData, sealData) {
+                              updateDatas: (signData, sealData) {
                                 _accountSignData = signData != null ? base64Encode(signData) : null;
                                 _accountSealData = sealData != null ? base64Encode(sealData) : null;
                                 setState(() {});
@@ -335,15 +363,13 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                           //payeer sign and seal
                           if (!_theSameAsPayeerCheck)
                             Container(
-                              constraints: const BoxConstraints(maxWidth: 350),
                               margin: const EdgeInsets.only(bottom: 20),
-                              child: SignatureContainer(
-                                padTitle: '자동이체 서명',
+                              child: SignaturePadsContainer(
+                                title: '자동이체 서명',
                                 signData: _payeerSignData,
                                 sealData: _payeerSealData,
                                 errorText: _getErrorMessageForPad('payeer'),
-                                overlayName: _fixedFormsDetails['account_name']['value'].text,
-                                updateSignSeal: (signData, sealData) {
+                                updateDatas: (signData, sealData) {
                                   _payeerSignData = signData != null ? base64Encode(signData) : null;
                                   _payeerSealData = sealData != null ? base64Encode(sealData) : null;
                                   setState(() {});
@@ -354,15 +380,13 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                           //deputy sign and seal
                           if (_fixedFormsDetails['cust_type_cd']['value'].text == 'COL')
                             Container(
-                              constraints: const BoxConstraints(maxWidth: 350),
                               margin: const EdgeInsets.only(bottom: 20),
-                              child: SignatureContainer(
-                                padTitle: '법정대리인 서명',
+                              child: SignaturePadsContainer(
+                                title: '법정대리인 서명',
                                 signData: _deputySignData,
                                 sealData: _deputySealData,
-                                overlayName: _fixedFormsDetails['deputy_name']['value'].text,
                                 errorText: _getErrorMessageForPad('deputy'),
-                                updateSignSeal: (signData, sealData) {
+                                updateDatas: (signData, sealData) {
                                   _deputySignData = signData != null ? base64Encode(signData) : null;
                                   _deputySealData = sealData != null ? base64Encode(sealData) : null;
                                   setState(() {});
@@ -373,14 +397,13 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                           //partner sign and seal
                           if (_serverData['chk_partner_sign'] == 'N' && _serverData['usim_plan_info']['mvno_cd'] == 'UPM')
                             Container(
-                              constraints: const BoxConstraints(maxWidth: 350),
                               margin: const EdgeInsets.only(bottom: 20),
-                              child: SignatureContainer(
-                                padTitle: '판매자 서명',
+                              child: SignaturePadsContainer(
+                                title: '판매자 서명',
                                 signData: _partnerSignData,
                                 sealData: _partnerSealData,
                                 errorText: _getErrorMessageForPad('partner'),
-                                updateSignSeal: (signData, sealData) {
+                                updateDatas: (signData, sealData) {
                                   _partnerSignData = signData != null ? base64Encode(signData) : null;
                                   _partnerSealData = sealData != null ? base64Encode(sealData) : null;
                                   setState(() {});
@@ -391,15 +414,12 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                           //agree sign pad
                           if (_serverData['usim_plan_info']['mvno_cd'] == 'UPM')
                             Container(
-                              constraints: const BoxConstraints(maxWidth: 350),
                               margin: const EdgeInsets.only(bottom: 20),
-                              child: SignatureContainer(
-                                padTitle: '동의합니다',
-                                signData: _agreePadData,
+                              child: SignatureAgreeContainer(
+                                title: '동의합니다',
+                                agreeData: _agreePadData,
                                 errorText: _getErrorMessageForPad('agree'),
-                                sealData: null,
-                                type: 'agree',
-                                updateAgree: (agreeData) {
+                                updateData: (agreeData) {
                                   _agreePadData = agreeData != null ? base64Encode(agreeData) : null;
                                   setState(() {});
                                 },
@@ -468,59 +488,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   //UPM agree sign
   String? _agreePadData;
 
-  ///checkbox style creator
-  TextStyle _checkBoxStyle() => TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-        color: Theme.of(context).colorScheme.secondary,
-      );
-
-  Widget _titleGenerator(typeName) {
-    String title = '';
-    if (typeName == 'usim') title = '요금제 정보';
-    if (typeName == 'customer') title = '고객 정보';
-    if (typeName == 'deputy') title = '법정대리인';
-    if (typeName == 'payment') title = '자동이체';
-
-    Widget txtW = Text(title, style: _checkBoxStyle());
-
-    if (typeName == 'payment') {
-      return Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          txtW,
-          const SizedBox(width: 10),
-          CustomCheckbox(
-            onChanged: (newValue) => setState(() {
-              _theSameAsPayeerCheck = newValue ?? false;
-              //if _theSameAsPayeerCheck is the same
-              if (newValue ?? false) {
-                _fixedFormsDetails['account_name']['value'].text = _fixedFormsDetails['name']['value'].text;
-                _fixedFormsDetails['account_birthday']['value'].text = _fixedFormsDetails['birthday']['value'].text;
-                _fixedFormsDetails['account_birthday_full']['value'].text = _fixedFormsDetails['birthday_full']['value'].text;
-              } else {
-                _fixedFormsDetails['account_name']['value'].text = '';
-                _fixedFormsDetails['account_birthday']['value'].text = '';
-                _fixedFormsDetails['account_birthday_full']['value'].text = '';
-              }
-            }),
-            text: '가입자와 동일',
-            value: _theSameAsPayeerCheck,
-          ),
-        ],
-      );
-    }
-
-    return SizedBox(
-      width: double.infinity,
-      child: txtW,
-    );
-  }
-
   Map _serverData = {};
 
-  // finding forms
-  final Map<String, List> _availableForms = {"usim": [], "customer": [], "deputy": [], "payment": []};
+  final List _availableForms = [];
 
   Future<void> _fetchData(planId) async {
     try {
@@ -532,18 +502,20 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       if (decodedRes['statusCode'] != 200) throw decodedRes['message'] ?? 'Fetch data error';
       _serverData = decodedRes['data'];
 
+      // developer.log(_serverData.toString());
+      // developer.log("usim_plan_infoo:" + _serverData['usim_plan_info'].toString());
+      // debugPrint(_serverData.toString());
       _fixedFormsDetails['usim_plan_nm']['value'].text = _serverData['usim_plan_info']['usim_plan_nm'];
-
       // usim list select required
       _fixedFormsDetails['usim_model_list']['required'] = _serverData['chk_usim_model'] == 'Y';
 
       // print(_serverData);
-
       _generateInitialForms();
 
       _dataLoading = false;
       setState(() {});
     } catch (e) {
+      developer.log(e.toString());
       showCustomSnackBar(e.toString());
     }
   }
@@ -602,25 +574,18 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   }
 
   void _generateInitialForms() {
-    _dataLoading = true;
-    setState(() {});
-
     // resetting available forms
-    _availableForms['usim']!.clear();
-    _availableForms['customer']!.clear();
-    _availableForms['payment']!.clear();
-    _availableForms['deputy']!.clear();
+    _availableForms.clear();
 
     final usimPlanInfo = _serverData['usim_plan_info'];
 
-    for (var type in plansFormsInfo) {
+    for (var type in plansFormsInfoList) {
       if (type['code'] == usimPlanInfo['carrier_type']) {
         for (var carrier in type['carriers']) {
           if (carrier['code'] == usimPlanInfo['carrier_cd']) {
             for (var mvno in carrier['mvnos']) {
               if (mvno['code'] == usimPlanInfo['mvno_cd']) {
-                _availableForms['usim']!.addAll(mvno['usimForms']);
-                _availableForms['customer']!.addAll(mvno['customerForms']);
+                _availableForms.addAll(mvno['forms']);
               }
             }
           }
@@ -631,21 +596,22 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
     // adding payment forms depending on type
     if (usimPlanInfo['carrier_type'] == 'PO') {
-      _availableForms['payment']!.addAll(['paid_transfer_cd', 'account_name', 'account_birthday', 'account_agency', 'account_number']);
+      _availableForms.addAll(['paid_transfer_cd', 'account_name', 'account_birthday', 'account_agency', 'account_number']);
     }
 
     // //EXTRA FIELDS FOR FORMS
-    if (_fixedFormsDetails['usim_act_cd']?['value'].text == 'N') _availableForms['usim']!.add('wish_number');
+    if (_fixedFormsDetails['usim_act_cd']?['value'].text == 'N') _availableForms.add('wish_number');
+
     if (_fixedFormsDetails['usim_act_cd']?['value'].text == 'M') {
-      _availableForms['usim']!.addAll(['mnp_carrier_type', 'phone_number', 'mnp_pre_carrier']);
-      if (_fixedFormsDetails['mnp_pre_carrier']?['value'] == 'MV') _availableForms['usim']!.add('mnp_pre_carrier_nm');
+      _availableForms.addAll(['mnp_carrier_type', 'phone_number', 'mnp_pre_carrier']);
+      if (_fixedFormsDetails['mnp_pre_carrier']?['value'].text == 'MV') _availableForms.add('mnp_pre_carrier_nm');
     }
 
-    if (_fixedFormsDetails['paid_transfer_cd']['value'].text == 'C') _availableForms['payment']!.add('card_yy_mm');
+    if (_fixedFormsDetails['paid_transfer_cd']['value'].text == 'C') _availableForms.add('card_yy_mm');
 
     //adding deputy forms
     if (_fixedFormsDetails['cust_type_cd']['value'].text == 'COL') {
-      _availableForms['deputy']!.addAll(['deputy_name', 'deputy_birthday', 'relationship_cd', 'deputy_contact']);
+      _availableForms.addAll(['deputy_name', 'deputy_birthday', 'relationship_cd', 'deputy_contact']);
     }
 
     _generateSecondaryValues();
@@ -656,24 +622,20 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
     //removing gender if not underage for HVS
     if (_serverData['usim_plan_info']['mvno_cd'] == 'HVS') {
-      if (_fixedFormsDetails['cust_type_cd']['value'].text != 'COL') _availableForms['customer']!.remove('gender_cd');
+      if (_fixedFormsDetails['cust_type_cd']['value'].text != 'COL') _availableForms.remove('gender_cd');
     }
 
     if (_serverData['usim_plan_info']['mvno_cd'] == 'SVM') {
-      final index = _availableForms['payment']!.indexOf('account_birthday');
-      if (index != -1) _availableForms['payment']![index] = 'account_birthday_full';
+      final index = _availableForms.indexOf('account_birthday');
+      if (index != -1) _availableForms[index] = 'account_birthday_full';
 
-      final index1 = _availableForms['deputy']!.indexOf('deputy_birthday');
-      if (index1 != -1) _availableForms['deputy']![index1] = 'deputy_birthday_full';
+      final index1 = _availableForms.indexOf('deputy_birthday');
+      if (index1 != -1) _availableForms[index1] = 'deputy_birthday_full';
     }
-
-    _dataLoading = false;
-    setState(() {});
   }
 
   void _generateSecondaryValues() {
     //setting drop down values
-
     for (var form in _fixedFormsDetails.entries) {
       if (form.value['type'] == 'select') form.value['options'] = <DropdownMenuEntry<String>>[];
 
@@ -703,17 +665,11 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
       setState(() {});
 
-      List currentAvailableFormNames = [];
-
-      for (var formsList in _availableForms.entries) {
-        currentAvailableFormNames.addAll(formsList.value);
-      }
-
       for (var forms in _fixedFormsDetails.entries) {
         String formName = forms.key;
 
-        if (currentAvailableFormNames.contains(formName) && _errorShower(formName) != null) {
-          showCustomSnackBar('There is unfilled forms');
+        if (_availableForms.contains(formName) && _errorShower(formName) != null) {
+          showCustomSnackBar('채워지지 않은 필드가 있습니다.');
           return;
         }
       }
@@ -740,7 +696,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       request.fields['mvno_cd'] = _serverData['usim_plan_info']['mvno_cd'];
       request.fields['usim_plan_id'] = _serverData['usim_plan_info']['id'].toString();
 
-      for (var formName in currentAvailableFormNames) {
+      for (var formName in _availableForms) {
         request.fields[formName] = _fixedFormsDetails[formName]?['value']?.text;
 
         if (['birthday', 'deputy_birthday', 'account_birthday', 'deputy_contact', 'contact', 'phone_number'].contains(formName)) {
@@ -749,10 +705,10 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
         //adding wishlists
         if (formName == 'wish_number') {
-          List? wishList = _fixedFormsDetails['wish_number']['value'].text.split(' / ');
+          List? wishList = _fixedFormsDetails['wish_number']['value'].text.split('/');
           if (wishList != null && wishList.isNotEmpty) {
             for (int i = 0; i < wishList.length; i++) {
-              request.fields['request_no_$i'] = wishList[i];
+              request.fields['request_no_${i + 1}'] = wishList[i];
             }
           }
         }
@@ -803,30 +759,38 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       }
 
       //pad datas
-      request.fields['bill_sign'] = _payeerSignData ?? "";
-      request.fields['bill_seal'] = _payeerSealData ?? "";
-      request.fields['apply_sign'] = _accountSignData ?? "";
-      request.fields['apply_seal'] = _accountSealData ?? "";
-      request.fields['deputy_sign'] = _deputySignData ?? "";
-      request.fields['deputy_seal'] = _deputySealData ?? "";
-      request.fields['agree_sign'] = _agreePadData ?? "";
+      request.fields['apply_sign'] = _accountSignData != null ? 'data:image/png;base64,$_accountSignData' : "";
+      request.fields['apply_seal'] = _accountSealData != null ? 'data:image/png;base64,$_accountSealData' : "";
+      request.fields['bill_sign'] = _payeerSignData != null ? 'data:image/png;base64,$_payeerSignData' : "";
+      request.fields['bill_seal'] = _payeerSealData != null ? 'data:image/png;base64,$_payeerSealData' : "";
+      request.fields['deputy_sign'] = _deputySignData != null ? 'data:image/png;base64,$_deputySignData' : "";
+      request.fields['deputy_seal'] = _deputySealData != null ? 'data:image/png;base64,$_deputySealData' : "";
+      request.fields['agree_sign'] = _agreePadData != null ? 'data:image/png;base64,$_agreePadData' : "";
 
       // Print fields
-      // request.fields.forEach((key, value) {
-      //   print('Key: $key, Value: $value');
-      // });
+      request.fields.forEach((key, value) {
+        print('Key: $key, Value: $value');
+      });
 
       var response = await request.send();
       final respStr = await response.stream.bytesToString();
       Map decodedRes = await jsonDecode(respStr);
 
-      if (decodedRes['data'] != null && decodedRes['data']['apply_forms_list'] != null) {
-        if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
+      // developer.log(decodedRes.toString());
+
+      if (decodedRes['data'] != null && decodedRes['data']['apply_forms_list'] != null && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list']),
+          ),
+        );
       }
 
-      showCustomSnackBar(decodedRes['message']);
-    } catch (e) {
-      showCustomSnackBar(e.toString());
+      showCustomSnackBar(decodedRes['message'] ?? 'Could not fetch image data');
+      // } catch (e) {
+      //   developer.log(e.toString());
+      //   showCustomSnackBar(e.toString());
     } finally {
       _submitting = false;
       setState(() {});

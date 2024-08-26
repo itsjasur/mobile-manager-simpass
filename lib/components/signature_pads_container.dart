@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,11 +8,12 @@ import 'package:mobile_manager_simpass/components/signature_pad.dart';
 
 class SignaturePadsContainer extends StatefulWidget {
   final String? title;
+  final String? errorText;
   final String? signData;
   final String? sealData;
   final Function(Uint8List?, Uint8List?)? updateDatas;
 
-  const SignaturePadsContainer({super.key, this.title = 'Pad title', this.signData, this.sealData, this.updateDatas});
+  const SignaturePadsContainer({super.key, this.title = 'Sign/Seal', this.signData, this.sealData, this.updateDatas, this.errorText});
 
   @override
   State<SignaturePadsContainer> createState() => _SignaturePadsContainerState();
@@ -22,7 +22,6 @@ class SignaturePadsContainer extends StatefulWidget {
 class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
   Uint8List? _signData;
   Uint8List? _sealData;
-  bool _imagesConverted = false;
 
   @override
   void initState() {
@@ -31,9 +30,8 @@ class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
   }
 
   Future<void> _setData() async {
-    // _signData = await _convertBase64ToByte(widget.signData);
+    _signData = await _convertBase64ToByte(widget.signData);
     _sealData = await _convertBase64ToByte(widget.sealData);
-    _imagesConverted = true;
     setState(() {});
   }
 
@@ -143,6 +141,15 @@ class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
               ),
             ],
           ),
+          const SizedBox(height: 2),
+          if (widget.errorText != null)
+            Text(
+              widget.errorText!,
+              style: const TextStyle(
+                color: Colors.red,
+                fontSize: 13,
+              ),
+            )
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -28,15 +29,21 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
         height: double.infinity,
         child: Stack(
           children: [
-            Center(
-              child: ListView.separated(
-                shrinkWrap: true,
-                separatorBuilder: (context, index) => const SizedBox(height: 20),
-                padding: const EdgeInsets.only(top: 30, bottom: 100, right: 0, left: 0),
-                itemCount: widget.base64Images.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ZoomableImage(base64Image: widget.base64Images[index]);
-                },
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  ...List.generate(
+                    widget.base64Images.length,
+                    (index) => Container(
+                      margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+                      child: ZoomableImage(
+                        base64Image: widget.base64Images[index],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
             Positioned(

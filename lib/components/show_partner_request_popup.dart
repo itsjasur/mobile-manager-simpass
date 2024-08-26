@@ -9,7 +9,6 @@ import 'package:mobile_manager_simpass/components/image_picker_container.dart';
 import 'package:mobile_manager_simpass/components/partners_contract.viewer.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
-import 'package:mobile_manager_simpass/components/signature_pad_old.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
@@ -301,20 +300,20 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                     ),
                   const SizedBox(height: 30),
 
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 350),
-                    child: SignatureContainer(
-                      padTitle: '판매자 서명',
-                      signData: _signData,
-                      sealData: _sealData,
-                      errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
-                      updateSignSeal: (signData, sealData) {
-                        _signData = signData != null ? base64Encode(signData) : null;
-                        _sealData = sealData != null ? base64Encode(sealData) : null;
-                        setState(() {});
-                      },
-                    ),
-                  ),
+                  // ConstrainedBox(
+                  //   constraints: const BoxConstraints(maxWidth: 350),
+                  //   child: SignatureContainer(
+                  //     padTitle: '판매자 서명',
+                  //     signData: _signData,
+                  //     sealData: _sealData,
+                  //     errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
+                  //     updateSignSeal: (signData, sealData) {
+                  //       _signData = signData != null ? base64Encode(signData) : null;
+                  //       _sealData = sealData != null ? base64Encode(sealData) : null;
+                  //       setState(() {});
+                  //     },
+                  //   ),
+                  // ),
 
                   _titleBuilder("판매점 서류 등록"),
 

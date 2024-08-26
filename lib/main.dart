@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/pages/download_forms.dart';
+import 'package:mobile_manager_simpass/pages/form_details.dart';
 import 'package:mobile_manager_simpass/pages/partner_request_results.dart';
 import 'package:mobile_manager_simpass/pages/partner_request.dart';
 import 'package:mobile_manager_simpass/pages/plans.dart';
@@ -46,13 +47,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        initialRoute: '/profile',
+        // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
         // initialRoute: '/applications',
         // initialRoute: '/plans',
         // initialRoute: '/download-forms',
-        // initialRoute: '/form-details',
+        initialRoute: '/form-details',
         // initialRoute: '/partner-request',
         // initialRoute: '/partner-request-results',
         routes: {
@@ -61,7 +62,7 @@ class MyApp extends StatelessWidget {
           // '/secondary-signup': (context) => const SecondarySignup(name: 'name', phoneNumber: '01012312312', receiptId: '34523423432', certType: 'KAKAO', birthday: '19950534', employeeCode: 'asd'),
 
           //protected
-          // '/form-details': (context) => const FormDetailsPage(planId: 4, searchText: ''),
+          '/form-details': (context) => const FormDetailsPage(planId: 157, searchText: ''),
           '/home': (context) => const AuthGuard(child: HomePage()),
           '/profile': (context) => const AuthGuard(child: ProfilePafe()),
           '/plans': (context) => const AuthGuard(child: PlansPage()),
