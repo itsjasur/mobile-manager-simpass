@@ -329,12 +329,9 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
       textAlign: isTablet ? TextAlign.center : TextAlign.end,
     );
 
-    Widget phoneNumberW = SizedBox(
-      width: 120,
-      child: Text(
-        item['phone_number'] ?? "",
-        style: const TextStyle(fontSize: 15),
-      ),
+    Widget phoneNumberW = Text(
+      item['phone_number'] ?? "",
+      style: const TextStyle(fontSize: 15),
     );
 
     Widget applyDateW = Text(
@@ -346,6 +343,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
       item['act_date'] ?? "",
       style: const TextStyle(fontSize: 15),
     );
+
     Widget actionW = IconButton(
       style: IconButton.styleFrom(
         padding: const EdgeInsets.all(0),
@@ -435,48 +433,44 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
               )
             : LayoutBuilder(
                 builder: (context, constraints) {
-                  double w = constraints.maxWidth;
-
-                  return IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: w * 0.11,
-                          child: statusW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.12,
-                          child: mvnoNameW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.25,
-                          child: customerNameW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.15,
-                          child: phoneNumberW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.12,
-                          child: applyDateW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.12,
-                          child: regisDateW,
-                        ),
-                        SizedBox(width: w * 0.01),
-                        SizedBox(
-                          width: w * 0.05,
-                          child: actionW,
-                        ),
-                      ],
-                    ),
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 4,
+                        child: statusW,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 6,
+                        child: mvnoNameW,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 10,
+                        child: customerNameW,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 6,
+                        child: phoneNumberW,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 6,
+                        child: applyDateW,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 6,
+                        child: regisDateW,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 4,
+                        child: actionW,
+                      ),
+                    ],
                   );
                 },
               ),

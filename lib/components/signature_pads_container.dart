@@ -11,9 +11,9 @@ class SignaturePadsContainer extends StatefulWidget {
   final String? errorText;
   final String? signData;
   final String? sealData;
-  final Function(Uint8List?, Uint8List?)? updateDatas;
+  final Function(String?, String?) updateDatas;
 
-  const SignaturePadsContainer({super.key, this.title = 'Sign/Seal', this.signData, this.sealData, this.updateDatas, this.errorText});
+  const SignaturePadsContainer({super.key, this.title = 'Sign/Seal', this.signData, this.sealData, required this.updateDatas, this.errorText});
 
   @override
   State<SignaturePadsContainer> createState() => _SignaturePadsContainerState();
@@ -176,8 +176,10 @@ class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
 
           setState(() {});
 
-          if (_signData != null && _sealData != null && widget.updateDatas != null) {
-            widget.updateDatas!(_signData, _sealData);
+          if (_signData != null && _sealData != null) {
+            String signData = base64Encode(_signData!);
+            String sealData = base64Encode(_sealData!);
+            widget.updateDatas('data:image/png;base64,$signData', 'data:image/png;base64,$sealData');
           }
         },
         icon: Icon(
@@ -196,15 +198,23 @@ class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
         padding: const EdgeInsets.all(0),
         visualDensity: VisualDensity.compact,
         onPressed: () {
+          String? signData = _signData != null ? base64Encode(_signData!) : null;
+          String? sealData = _sealData != null ? base64Encode(_sealData!) : null;
+
           if (type == 'sign') {
             _signData = null;
+            widget.updateDatas(null, sealData);
           }
+
           if (type == 'seal') {
             _sealData = null;
+            widget.updateDatas(signData, null);
           }
-          if (_signData != null && _sealData != null && widget.updateDatas != null) {
-            widget.updateDatas!(_signData, _sealData);
+
+          if (_signData != null && _sealData != null) {
+            widget.updateDatas(null, null);
           }
+
           setState(() {});
         },
         icon: const Icon(

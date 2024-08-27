@@ -5,6 +5,7 @@ import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
+import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
 showPartnerSignPopup(BuildContext context, String agentCode) async {
@@ -159,20 +160,17 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
                     ),
 
                   const SizedBox(height: 30),
-                  // ConstrainedBox(
-                  //   constraints: const BoxConstraints(maxWidth: 350),
-                  //   child: SignatureContainer(
-                  //     padTitle: '판매자 서명',
-                  //     signData: _signData,
-                  //     sealData: _sealData,
-                  //     errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
-                  //     updateSignSeal: (signData, sealData) {
-                  //       _signData = signData != null ? base64Encode(signData) : null;
-                  //       _sealData = sealData != null ? base64Encode(sealData) : null;
-                  //       setState(() {});
-                  //     },
-                  //   ),
-                  // ),
+                  SignaturePadsContainer(
+                    title: '판매자 서명',
+                    signData: _signData,
+                    sealData: _sealData,
+                    updateDatas: (signData, sealData) {
+                      _signData = signData;
+                      _sealData = sealData;
+                      setState(() {});
+                    },
+                    errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
+                  ),
                   const SizedBox(height: 30),
                   Align(
                     alignment: Alignment.centerRight,
@@ -225,10 +223,6 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
         _signData = _data['partner_sign'];
         _sealData = _data['partner_seal'];
 
-        _attachedFiles['bs_reg_no']['initial'] = _data['bs_reg_no'];
-        _attachedFiles['id_card']['initial'] = _data['id_card'];
-        _attachedFiles['bank_book']['initial'] = _data['bank_book'];
-
         _dataLoading = false;
         setState(() {});
       }
@@ -236,13 +230,6 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
       showCustomSnackBar(e.toString());
     }
   }
-
-  //docs and images
-  final Map _attachedFiles = {
-    "bs_reg_no": {"initial": null, "new": null, "filename": "", "required": true, "title": '사업자 등록증 (필수)'},
-    "id_card": {"initial": null, "new": null, "filename": "", "required": true, "title": '대표자 신분증 (필수)'},
-    "bank_book": {"initial": null, "new": null, "filename": "", "required": true, "title": '통장 사본 (필수)'},
-  };
 
   bool _submitted = false;
   bool _submitting = false;

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
@@ -353,8 +352,10 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                               sealData: _accountSealData,
                               errorText: _getErrorMessageForPad('account'),
                               updateDatas: (signData, sealData) {
-                                _accountSignData = signData != null ? base64Encode(signData) : null;
-                                _accountSealData = sealData != null ? base64Encode(sealData) : null;
+                                // _accountSignData = signData != null ? base64Encode(signData) : null;
+                                // _accountSealData = sealData != null ? base64Encode(sealData) : null;
+                                _accountSignData = signData;
+                                _accountSealData = sealData;
                                 setState(() {});
                               },
                             ),
@@ -370,8 +371,10 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 sealData: _payeerSealData,
                                 errorText: _getErrorMessageForPad('payeer'),
                                 updateDatas: (signData, sealData) {
-                                  _payeerSignData = signData != null ? base64Encode(signData) : null;
-                                  _payeerSealData = sealData != null ? base64Encode(sealData) : null;
+                                  // _payeerSignData = signData != null ? base64Encode(signData) : null;
+                                  // _payeerSealData = sealData != null ? base64Encode(sealData) : null;
+                                  _payeerSignData = signData;
+                                  _payeerSealData = sealData;
                                   setState(() {});
                                 },
                               ),
@@ -387,8 +390,10 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 sealData: _deputySealData,
                                 errorText: _getErrorMessageForPad('deputy'),
                                 updateDatas: (signData, sealData) {
-                                  _deputySignData = signData != null ? base64Encode(signData) : null;
-                                  _deputySealData = sealData != null ? base64Encode(sealData) : null;
+                                  // _deputySignData = signData != null ? base64Encode(signData) : null;
+                                  // _deputySealData = sealData != null ? base64Encode(sealData) : null;
+                                  _deputySignData = signData;
+                                  _deputySealData = sealData;
                                   setState(() {});
                                 },
                               ),
@@ -404,8 +409,10 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 sealData: _partnerSealData,
                                 errorText: _getErrorMessageForPad('partner'),
                                 updateDatas: (signData, sealData) {
-                                  _partnerSignData = signData != null ? base64Encode(signData) : null;
-                                  _partnerSealData = sealData != null ? base64Encode(sealData) : null;
+                                  // _partnerSignData = signData != null ? base64Encode(signData) : null;
+                                  // _partnerSealData = sealData != null ? base64Encode(sealData) : null;
+                                  _partnerSignData = signData;
+                                  _partnerSealData = sealData;
                                   setState(() {});
                                 },
                               ),
@@ -420,7 +427,8 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 agreeData: _agreePadData,
                                 errorText: _getErrorMessageForPad('agree'),
                                 updateData: (agreeData) {
-                                  _agreePadData = agreeData != null ? base64Encode(agreeData) : null;
+                                  // _agreePadData = agreeData != null ? base64Encode(agreeData) : null;
+                                  _agreePadData = agreeData;
                                   setState(() {});
                                 },
                               ),
@@ -759,13 +767,13 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       }
 
       //pad datas
-      request.fields['apply_sign'] = _accountSignData != null ? 'data:image/png;base64,$_accountSignData' : "";
-      request.fields['apply_seal'] = _accountSealData != null ? 'data:image/png;base64,$_accountSealData' : "";
-      request.fields['bill_sign'] = _payeerSignData != null ? 'data:image/png;base64,$_payeerSignData' : "";
-      request.fields['bill_seal'] = _payeerSealData != null ? 'data:image/png;base64,$_payeerSealData' : "";
-      request.fields['deputy_sign'] = _deputySignData != null ? 'data:image/png;base64,$_deputySignData' : "";
-      request.fields['deputy_seal'] = _deputySealData != null ? 'data:image/png;base64,$_deputySealData' : "";
-      request.fields['agree_sign'] = _agreePadData != null ? 'data:image/png;base64,$_agreePadData' : "";
+      request.fields['apply_sign'] = _accountSignData ?? "";
+      request.fields['apply_seal'] = _accountSealData ?? "";
+      request.fields['bill_sign'] = _payeerSignData ?? "";
+      request.fields['bill_seal'] = _payeerSealData ?? "";
+      request.fields['deputy_sign'] = _deputySignData ?? "";
+      request.fields['deputy_seal'] = _deputySealData ?? "";
+      request.fields['agree_sign'] = _agreePadData ?? "";
 
       // Print fields
       request.fields.forEach((key, value) {

@@ -7,8 +7,11 @@ Future<bool> showWarningDailogue(BuildContext context, String? title, List<Strin
   await showDialog(
     //  barrierDismissible: false,
     useRootNavigator: true,
+    // barrierColor: Colors.white,
     context: context,
     builder: (context) => Dialog(
+      surfaceTintColor: Colors.transparent,
+      backgroundColor: Colors.white,
       child: Container(
         padding: const EdgeInsets.all(20),
         child: Column(

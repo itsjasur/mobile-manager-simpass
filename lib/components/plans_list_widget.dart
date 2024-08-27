@@ -205,39 +205,33 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
-                        flex: 5,
-                        fit: FlexFit.tight,
+                      Expanded(
+                        flex: 10,
                         child: planNameW,
                       ),
                       const SizedBox(width: 10),
-                      Flexible(
-                        flex: 4,
-                        fit: FlexFit.tight,
+                      Expanded(
+                        flex: 8,
                         child: dataRowW,
                       ),
                       const SizedBox(width: 10),
-                      Flexible(
-                        flex: 3,
-                        fit: FlexFit.tight,
+                      Expanded(
+                        flex: 8,
                         child: voiceRow,
                       ),
                       const SizedBox(width: 10),
-                      Flexible(
-                        flex: 3,
-                        fit: FlexFit.tight,
+                      Expanded(
+                        flex: 6,
                         child: messageRow,
                       ),
                       const SizedBox(width: 10),
-                      Flexible(
-                        flex: 3,
-                        fit: FlexFit.tight,
+                      Expanded(
+                        flex: 6,
                         child: priceRow,
                       ),
                       const SizedBox(width: 10),
-                      Flexible(
-                        flex: 3,
-                        fit: FlexFit.tight,
+                      Expanded(
+                        flex: 6,
                         child: discountFee,
                       ),
                     ],

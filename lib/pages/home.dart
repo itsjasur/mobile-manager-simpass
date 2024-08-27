@@ -7,6 +7,7 @@ import 'package:mobile_manager_simpass/auth.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/show_home_page_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
+import 'package:mobile_manager_simpass/components/warning.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/utils/notification.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
@@ -295,6 +296,10 @@ class _HomePageState extends State<HomePage> {
         borderRadius: BorderRadius.circular(6),
         onTap: () {
           if (info['route'] != null) Navigator.pushReplacementNamed(context, info['route'], result: true);
+
+          if (info['route'] == null) {
+            showWarningDailogue(context, '현재 정책보기 서비스는 개발진행중 입니다.', ['빠른시일내 서비스 제공해 드리겠습니다. ^^']);
+          }
         },
         child: isTablet
             ? Container(

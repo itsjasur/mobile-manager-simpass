@@ -150,8 +150,10 @@ class _ProfilePafeState extends State<ProfilePafe> {
                       signData: _signData,
                       sealData: _sealData,
                       updateDatas: (signData, sealData) {
-                        _signData = signData != null ? base64Encode(signData) : null;
-                        _sealData = sealData != null ? base64Encode(sealData) : null;
+                        // _signData = signData != null ? base64Encode(signData) : null;
+                        // _sealData = sealData != null ? base64Encode(sealData) : null;
+                        _signData = signData;
+                        _sealData = sealData;
                         setState(() {});
                       },
                       // errorText: 'Error text',
@@ -292,8 +294,8 @@ class _ProfilePafeState extends State<ProfilePafe> {
 
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/setActSign', method: 'POST', body: {
-        "partner_sign": 'data:image/png;base64,$_signData',
-        "partner_seal": 'data:image/png;base64,$_sealData',
+        "partner_sign": _signData,
+        "partner_seal": _sealData,
       });
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
 

@@ -43,96 +43,93 @@ class _SignatureAgreePadState extends State<SignatureAgreePad> {
         children: [
           Center(
             child: SingleChildScrollView(
-              child: Container(
-                // constraints: const BoxConstraints(maxWidth: 600),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      runSpacing: 20,
-                      spacing: 20,
-                      children: [
-                        Container(
-                          constraints: const BoxConstraints(minWidth: 100),
-                          height: 40,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                            ),
-                            onPressed: () {
-                              _padController.clear();
-                            },
-                            child: const Text('지우기'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    runSpacing: 20,
+                    spacing: 20,
+                    children: [
+                      Container(
+                        constraints: const BoxConstraints(minWidth: 100),
+                        height: 40,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey,
                           ),
+                          onPressed: () {
+                            _padController.clear();
+                          },
+                          child: const Text('지우기'),
                         ),
-                        Container(
-                          constraints: const BoxConstraints(minWidth: 100),
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (_padController.isNotEmpty) {
-                                Uint8List? data = await _padController.toPngBytes();
-                                if (context.mounted) Navigator.pop(context, data);
-                              } else {
-                                showCustomSnackBar('가입약관에 동의하지 않았습니다.');
-                              }
-                            },
-                            child: const Text('저장'),
+                      ),
+                      Container(
+                        constraints: const BoxConstraints(minWidth: 100),
+                        height: 40,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (_padController.isNotEmpty) {
+                              Uint8List? data = await _padController.toPngBytes();
+                              if (context.mounted) Navigator.pop(context, data);
+                            } else {
+                              showCustomSnackBar('가입약관에 동의하지 않았습니다.');
+                            }
+                          },
+                          child: const Text('저장'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    '펜 잉크 멀미: $_pencilWidth',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  SizedBox(
+                    width: 300,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Slider(
+                        label: _pencilWidth.toString(),
+                        divisions: 8,
+                        value: _pencilWidth,
+                        min: 2,
+                        max: 10,
+                        onChanged: (double value) => setState(() {
+                          _pencilWidth = value;
+                          _initializePadController();
+                        }),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/umobile_agree_seal.png',
+                          // fit: BoxFit.fitWidth,
+                          width: 500,
+                        ),
+                        Positioned.fill(
+                          child: Signature(
+                            key: const Key('agree'),
+                            controller: _padController,
+                            backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.06),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '펜 잉크 멀미: $_pencilWidth',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    SizedBox(
-                      width: 300,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Slider(
-                          label: _pencilWidth.toString(),
-                          divisions: 8,
-                          value: _pencilWidth,
-                          min: 2,
-                          max: 10,
-                          onChanged: (double value) => setState(() {
-                            _pencilWidth = value;
-                            _initializePadController();
-                          }),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/umobile_agree_seal.png',
-                            // fit: BoxFit.fitWidth,
-                            width: 500,
-                          ),
-                          Positioned.fill(
-                            child: Signature(
-                              key: const Key('agree'),
-                              controller: _padController,
-                              backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.06),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

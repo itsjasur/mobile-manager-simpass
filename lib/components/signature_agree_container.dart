@@ -9,9 +9,9 @@ class SignatureAgreeContainer extends StatefulWidget {
   final String? title;
   final String? errorText;
   final String? agreeData;
-  final Function(Uint8List?)? updateData;
+  final Function(String?) updateData;
 
-  const SignatureAgreeContainer({super.key, this.title = 'Pad title', this.updateData, this.agreeData, this.errorText});
+  const SignatureAgreeContainer({super.key, this.title = 'Pad title', required this.updateData, this.agreeData, this.errorText});
 
   @override
   State<SignatureAgreeContainer> createState() => _SignatureAgreeContainerState();
@@ -123,8 +123,9 @@ class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
 
           _agreeData = data;
           setState(() {});
-          if (widget.updateData != null) {
-            widget.updateData!(_agreeData);
+          if (data != null) {
+            String stringData = base64Encode(data!);
+            widget.updateData('data:image/png;base64,$stringData');
           }
         },
         icon: Icon(
@@ -145,10 +146,7 @@ class _SignatureAgreeContainerState extends State<SignatureAgreeContainer> {
         onPressed: () {
           _agreeData = null;
           setState(() {});
-
-          if (widget.updateData != null) {
-            widget.updateData!(_agreeData);
-          }
+          widget.updateData(null);
         },
         icon: const Icon(
           Icons.delete_outline,

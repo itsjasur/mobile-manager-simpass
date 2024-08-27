@@ -9,12 +9,15 @@ import 'package:mobile_manager_simpass/components/image_picker_container.dart';
 import 'package:mobile_manager_simpass/components/partners_contract.viewer.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
+import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'dart:developer' as developer;
 
 showPartnerRequestPopup(BuildContext context, String agentCode) async {
   await showDialog(
@@ -221,7 +224,7 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                       ),
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(visualDensity: VisualDensity.compact),
-                        onPressed: () => showPartnerContract(context, widget.agentCd, _data['partner_nm']),
+                        onPressed: () => showPartnerContract(context, widget.agentCd),
                         child: const Text('계약서 확인'),
                       ),
                     ],
@@ -299,21 +302,6 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                       children: [accNmW, accBirthdayW, accBankNmW, bankAccNumW],
                     ),
                   const SizedBox(height: 30),
-
-                  // ConstrainedBox(
-                  //   constraints: const BoxConstraints(maxWidth: 350),
-                  //   child: SignatureContainer(
-                  //     padTitle: '판매자 서명',
-                  //     signData: _signData,
-                  //     sealData: _sealData,
-                  //     errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
-                  //     updateSignSeal: (signData, sealData) {
-                  //       _signData = signData != null ? base64Encode(signData) : null;
-                  //       _sealData = sealData != null ? base64Encode(sealData) : null;
-                  //       setState(() {});
-                  //     },
-                  //   ),
-                  // ),
 
                   _titleBuilder("판매점 서류 등록"),
 
@@ -398,6 +386,18 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                     ),
                   ),
 
+                  SignaturePadsContainer(
+                    title: '판매자 서명',
+                    signData: _signData,
+                    sealData: _sealData,
+                    updateDatas: (signData, sealData) {
+                      _signData = signData;
+                      _sealData = sealData;
+                      setState(() {});
+                    },
+                    errorText: _submitted && (_signData == null || _sealData == null) ? '판매자서명을 하지 않았습니다.' : null,
+                  ),
+                  const SizedBox(height: 30),
                   Align(
                     alignment: Alignment.centerRight,
                     child: SizedBox(
@@ -519,8 +519,8 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
       }
 
       //adding sign images data
-      request.fields['partner_sign'] = _signData ?? "";
-      request.fields['partner_seal'] = _sealData ?? "";
+      request.fields['partner_sign'] = _signData ?? '';
+      request.fields['partner_seal'] = _sealData ?? '';
 
       request.fields['agent_cd'] = widget.agentCd;
       request.fields['contractor'] = _data['contractor'];
@@ -537,18 +537,18 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
       request.fields['bank_num'] = _data['bank_num'];
       request.fields['id_cert_type'] = _data['id_cert_type'];
       request.fields['receipt_id'] = _data['receipt_id'];
-      request.fields['partner_sign'] = _data['partner_sign'];
-      request.fields['partner_seal'] = _data['partner_seal'];
 
       // Print fields
-      // request.fields.forEach((key, value) {
-      //   print('Key: $key, Value: $value');
-      // });
+      request.fields.forEach((key, value) {
+        print('Key: $key, Value: $value');
+      });
 
       var response = await request.send();
 
       final respStr = await response.stream.bytesToString();
       Map decodedRes = await jsonDecode(respStr);
+
+      developer.log(decodedRes.toString());
 
       showCustomSnackBar(decodedRes['message']);
 
@@ -558,10 +558,9 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
 
       // print(decodedRes);
 
-      setState(() {});
-    } catch (e) {
-      // print(e);
-      showCustomSnackBar(e.toString());
+      // } catch (e) {
+      //   // print(e);
+      //   showCustomSnackBar(e.toString());
     } finally {
       _submitting = false;
       setState(() {});
