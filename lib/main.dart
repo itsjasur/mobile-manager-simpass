@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/auth.dart';
+import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
+import 'package:mobile_manager_simpass/pages/chat.dart';
 import 'package:mobile_manager_simpass/pages/download_forms.dart';
 import 'package:mobile_manager_simpass/pages/form_details.dart';
 import 'package:mobile_manager_simpass/pages/partner_request_results.dart';
@@ -19,6 +22,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -32,6 +36,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationModel()),
+        ChangeNotifierProvider(create: (_) => WebSocketModel()),
       ],
       child: const MyApp(),
     ),
@@ -47,12 +52,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        initialRoute: '/home',
+        // initialRoute: '/home',
         // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
         // initialRoute: '/applications',
         // initialRoute: '/plans',
+        initialRoute: '/chat-page',
         // initialRoute: '/download-forms',
         // initialRoute: '/form-details',
         // initialRoute: '/partner-request',
@@ -65,6 +71,7 @@ class MyApp extends StatelessWidget {
           //protected
           '/form-details': (context) => const FormDetailsPage(planId: 157, searchText: ''),
           '/home': (context) => const AuthGuard(child: HomePage()),
+          '/chat-page': (context) => const AuthGuard(child: ChatPage()),
           '/profile': (context) => const AuthGuard(child: ProfilePafe()),
           '/plans': (context) => const AuthGuard(child: PlansPage()),
           '/applications': (context) => const AuthGuard(child: ApplicationsPage()),

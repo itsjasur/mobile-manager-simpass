@@ -1,5 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+
+import 'dart:developer' as developer;
 
 showPartnerContract(BuildContext context, String agentCode) async {
   await showDialog(
@@ -24,28 +31,46 @@ class PartnersContractViewer extends StatefulWidget {
 
 class PartnersContractViewerState extends State<PartnersContractViewer> {
   @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Uint8List? _pdf;
+  bool _loading = true;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(),
-      // body: SfPdfViewer.asset(
-      //   'assets/aaa.pdf',
-      // ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _pdf != null
+              ? SfPdfViewer.memory(_pdf!)
+              : const SizedBox.shrink(),
     );
   }
 
-  // Future<void> _fetchData() async {
-  //   // print('fetch data called');
-  //   try {
-  //     final response = await Request().requestWithRefreshToken(url: 'agent/partnerInfo', method: 'GET');
-  //     Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-
-  //     if (decodedRes['statusCode'] == 200) {
-  //       setState(() {});
-  //     }
-  //   } catch (e) {
-  //     print('profile error: $e');
-  //     showCustomSnackBar(e.toString());
-  //   }
-  // }
+  Future<void> _fetchData() async {
+    // print('fetch data called');
+    try {
+      final response = await Request().requestWithRefreshToken(
+        url: 'agent/contractForms',
+        method: 'POST',
+        body: {
+          'agent_cd': widget.agentCode,
+        },
+      );
+      final pdfData = response.bodyBytes;
+      _pdf = pdfData;
+      setState(() {});
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    } finally {
+      _loading = false;
+      setState(() {});
+    }
+  }
 }

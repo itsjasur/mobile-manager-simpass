@@ -22,6 +22,7 @@ class AppTheme {
           width: 1,
         ),
       ),
+
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: Colors.grey.shade500,
@@ -55,10 +56,17 @@ class AppTheme {
       // scaffoldBackgroundColor: Colors.white,
       // drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
 
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
+        scrolledUnderElevation: 1,
+        surfaceTintColor: Colors.transparent,
+        color: backgroundColor,
+        // surfaceTintColor: Colors.transparent,
+        // elevation: 0,
+        // backgroundColor: null,
+
         // titleSpacing: 0,
         centerTitle: false,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           fontSize: 18,
           color: Colors.black87,
         ),
@@ -73,15 +81,10 @@ class AppTheme {
 
         tertiary: Colors.black26,
         onTertiary: Colors.amber,
-
-        // onSecondary: Colors.red,
-
-        background: backgroundColor, //whole app background
         surface: backgroundColor, //button and all surfaces
-
         surfaceTint: Colors.transparent,
-        onBackground: Colors.amber,
 
+        // surfaceContainer: Colors.transparent,
         // onSurface: Colors.red,
         // outline: primaryColor, //outlined button color
         // outlineVariant: Colors.pink,

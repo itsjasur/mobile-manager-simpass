@@ -26,14 +26,18 @@ Future<bool> showWarningDailogue(BuildContext context, String? title, List<Strin
                 ),
               ),
             const SizedBox(height: 30),
-            ...content.map((String item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Text(
-                    item,
-                    style: const TextStyle(fontSize: 15),
-                    textAlign: TextAlign.center,
+            ...content.map(
+              (String item) => Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Text(
+                  item,
+                  style: const TextStyle(
+                    fontSize: 15,
                   ),
-                )),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
             SizedBox(
               width: 100,
               child: ElevatedButton(

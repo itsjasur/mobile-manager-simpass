@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:provider/provider.dart';
@@ -20,13 +21,21 @@ class _AuthGuardState extends State<AuthGuard> {
   @override
   void initState() {
     super.initState();
+
+    Provider.of<WebSocketModel>(context, listen: false).connect();
+  }
+
+  @override
+  void dispose() {
+    Provider.of<WebSocketModel>(context, listen: false).disconnect();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: _canPopNow,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         _canPopNow = true;
         setState(() {});
 
