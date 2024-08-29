@@ -1,6 +1,7 @@
 List plansFormsInfoList = [
   {
     "code": 'PR',
+    "paymentForms": null,
     "carriers": [
       {
         "code": 'KT',
@@ -84,7 +85,7 @@ List plansFormsInfoList = [
               'cust_type_cd',
               'contact',
               'name',
-              'birthday_full',
+              'birthday',
               'address',
               'addressdetail',
 
@@ -115,7 +116,7 @@ List plansFormsInfoList = [
               'usim_act_cd',
 
               'usim_plan_nm',
-              'usim_model_list',
+              // 'usim_model_list',
               'usim_no',
               'usim_fee_cd',
             ],
@@ -133,7 +134,7 @@ List plansFormsInfoList = [
               'usim_act_cd',
 
               'usim_plan_nm',
-              'usim_model_list',
+              // 'usim_model_list',
               'usim_no',
             ],
           },
@@ -229,7 +230,6 @@ List<Map> generateDisplayingForms(List availableForms) {
       'id_no',
       'name',
       'birthday',
-      'birthday_full',
       'gender_cd',
       'address',
       'addressdetail',
@@ -252,7 +252,7 @@ List<Map> generateDisplayingForms(List availableForms) {
       displayingForms[2]["forms"].add(formName);
     }
 
-    if (['deputy_name', 'deputy_birthday', 'deputy_birthday_full', 'relationship_cd', 'deputy_contact'].contains(formName)) {
+    if (['deputy_name', 'deputy_birthday', 'relationship_cd', 'deputy_contact'].contains(formName)) {
       displayingForms[3]["forms"].add(formName);
     }
 
@@ -260,7 +260,6 @@ List<Map> generateDisplayingForms(List availableForms) {
       'paid_transfer_cd',
       'account_name',
       'account_birthday',
-      'account_birthday_full',
       'account_agency',
       'account_number',
       'card_yy_mm',

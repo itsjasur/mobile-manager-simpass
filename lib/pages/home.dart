@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/auth.dart';
+import 'package:mobile_manager_simpass/components/chat_button.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/show_home_page_popup.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
@@ -184,99 +185,73 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       drawer: const SideMenu(),
       appBar: AppBar(title: const Text('홈')),
-      body: Stack(
-        children: [
-          RefreshIndicator(
-            onRefresh: _fetchData,
-            child: !_pageLoaded
-                ? const SizedBox()
-                : SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: MediaQuery.of(context).size.height - 110,
-                      ),
-                      child: Align(
-                        alignment: isTablet ? Alignment.center : Alignment.topCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (!isTablet)
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    topbarContainerW,
-                                    const SizedBox(height: 20),
-                                    _buttonGenerate(_buttonsInfo[0]),
-                                    const SizedBox(height: 10),
-                                    _buttonGenerate(_buttonsInfo[1]),
-                                    const SizedBox(height: 10),
-                                    _buttonGenerate(_buttonsInfo[2]),
-                                    const SizedBox(height: 10),
-                                    _buttonGenerate(_buttonsInfo[3]),
-                                  ],
-                                ),
-                              if (isTablet)
-                                SizedBox(
-                                  width: 500,
-                                  child: Column(
+      body: RefreshIndicator(
+        onRefresh: _fetchData,
+        child: !_pageLoaded
+            ? const SizedBox()
+            : SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height - 110,
+                  ),
+                  child: Align(
+                    alignment: isTablet ? Alignment.center : Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (!isTablet)
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 10),
+                                topbarContainerW,
+                                const SizedBox(height: 20),
+                                _buttonGenerate(_buttonsInfo[0]),
+                                const SizedBox(height: 10),
+                                _buttonGenerate(_buttonsInfo[1]),
+                                const SizedBox(height: 10),
+                                _buttonGenerate(_buttonsInfo[2]),
+                                const SizedBox(height: 10),
+                                _buttonGenerate(_buttonsInfo[3]),
+                              ],
+                            ),
+                          if (isTablet)
+                            SizedBox(
+                              width: 500,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 10),
+                                  topbarContainerW,
+                                  const SizedBox(height: 20),
+                                  Row(
                                     children: [
-                                      const SizedBox(height: 10),
-                                      topbarContainerW,
-                                      const SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          Expanded(child: _buttonGenerate(_buttonsInfo[0])),
-                                          const SizedBox(width: 15),
-                                          Expanded(child: _buttonGenerate(_buttonsInfo[1])),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 15),
-                                      Row(
-                                        children: [
-                                          Expanded(child: _buttonGenerate(_buttonsInfo[2])),
-                                          const SizedBox(width: 15),
-                                          Expanded(child: _buttonGenerate(_buttonsInfo[3])),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[0])),
+                                      const SizedBox(width: 15),
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[1])),
                                     ],
                                   ),
-                                ),
-                              // const SizedBox(height: 40),
-                            ],
-                          ),
-                        ),
+                                  const SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[2])),
+                                      const SizedBox(width: 15),
+                                      Expanded(child: _buttonGenerate(_buttonsInfo[3])),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            ),
+                          // const SizedBox(height: 40),
+                        ],
                       ),
                     ),
                   ),
-          ),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: SizedBox(
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
                 ),
-                onPressed: () async {
-                  await showDialog(
-                    context: context,
-                    useSafeArea: false,
-                    builder: (BuildContext context) => const ChatPage(),
-                  );
-                },
-                child: Text('Chatting'),
               ),
-            ),
-          )
-        ],
       ),
     );
   }

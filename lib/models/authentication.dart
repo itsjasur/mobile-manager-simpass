@@ -3,8 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationModel extends ChangeNotifier {
   bool _isAuthenticated = true;
+  // String? _userName;
 
   bool get isAuthenticated => _isAuthenticated;
+  // String? get userName => _userName;
 
   Future<void> login(String accessToken, String refreshToken) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

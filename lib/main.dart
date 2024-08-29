@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/auth.dart';
+import 'package:mobile_manager_simpass/models/navigation.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/pages/chat.dart';
@@ -36,6 +37,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationModel()),
+        ChangeNotifierProvider(create: (_) => SidemenuModel()),
         ChangeNotifierProvider(create: (_) => WebSocketModel()),
       ],
       child: const MyApp(),
@@ -53,16 +55,18 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         // initialRoute: '/home',
+
         // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
         // initialRoute: '/applications',
         // initialRoute: '/plans',
-        initialRoute: '/chat-page',
+        // initialRoute: '/chat-page',
         // initialRoute: '/download-forms',
-        // initialRoute: '/form-details',
+        initialRoute: '/form-details',
         // initialRoute: '/partner-request',
         // initialRoute: '/partner-request-results',
+
         routes: {
           '/login': (context) => const LoginPage(),
           '/signup': (context) => const SignupPage(),

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/chat_button.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
@@ -27,7 +29,7 @@ class _AuthGuardState extends State<AuthGuard> {
 
   @override
   void dispose() {
-    Provider.of<WebSocketModel>(context, listen: false).disconnect();
+    // Provider.of<WebSocketModel>(context, listen: false).disconnect();
     super.dispose();
   }
 
@@ -50,7 +52,20 @@ class _AuthGuardState extends State<AuthGuard> {
         // print('AuthGuard rebuild: isAuthenticated = ${auth.isAuthenticated}');
 
         if (auth.isAuthenticated) {
-          return widget.child;
+          // return Scaffold(
+          //   drawer: const SideMenu(),
+          //   appBar: AppBar(),
+          //   body: widget.child,
+          // );
+          return SizedBox(
+            height: double.infinity,
+            child: Stack(
+              children: [
+                widget.child,
+                const ChatButton(),
+              ],
+            ),
+          );
         } else {
           return const LoginPage();
         }

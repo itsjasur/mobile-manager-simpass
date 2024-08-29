@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -30,12 +31,13 @@ class WebSocketModel extends ChangeNotifier {
 
     developer.log(accessToken.toString());
 
-    _socket = WebSocketChannel.connect(Uri.parse('wss://tchat.baroform.com/ws/$accessToken'));
+    // _socket = WebSocketChannel.connect(Uri.parse('wss://tchat.baroform.com/ws/$accessToken'));
+    _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
     _isConnected = true;
 
     _socket!.stream.listen(
       (message) => _catchEmits(message),
-      onDone: _onDisconnected,
+      // onDone: _onDisconnected,
       onError: (error) => developer.log('WebSocket error: $error'),
     );
 
@@ -44,17 +46,21 @@ class WebSocketModel extends ChangeNotifier {
 
   void _catchEmits(dynamic message) {
     print('caught emit');
+
     final data = jsonDecode(message);
     // developer.log(data.toString());
-
     if (data['type'] == 'total_count') {
       _totalUnreadCount = data['total_unread_count'];
     } else if (data['type'] == 'chats') {
-      _chats = data['chats'];
+      List chats = data['chats'];
+
+      _chats = chats.reversed.toList();
+
       _roomId = data['room_id'];
       if (_callback != null) _callback!();
       // developer.log(chats.toString());
     } else if (data['type'] == 'new_chat') {
+      developer.log(message.toString());
       if (_roomId == data['new_chat']['room_id']) {
         _chats.insert(0, data['new_chat']);
         if (_callback != null) _callback!();
@@ -87,12 +93,14 @@ class WebSocketModel extends ChangeNotifier {
   }
 
   void _onDisconnected() {
+    developer.log('disconneced on _onDisconnected');
     _isConnected = false;
     notifyListeners();
     // _attemptReconnect();
   }
 
   void disconnect() {
+    developer.log('disconneced on disconnect');
     _socket?.sink.close();
     _socket = null;
     _isConnected = false;
