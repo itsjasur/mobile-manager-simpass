@@ -474,7 +474,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
   bool _signAllAfterPrint = false;
   bool _theSameAsPayeerCheck = true;
-
   bool _showFileUploadChecked = false;
 
   //account sign and seal

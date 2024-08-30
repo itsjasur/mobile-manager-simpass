@@ -3,12 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
-import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {

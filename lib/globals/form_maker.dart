@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile_manager_simpass/globals/validators.dart';
+import 'package:mobile_manager_simpass/utils/validators.dart';
 
 class FormDetail {
   TextEditingController controller;
@@ -10,6 +12,7 @@ class FormDetail {
   String label;
   String errorMessage;
   bool required;
+  List<DropdownMenuEntry<String>> options;
 
   FormDetail({
     required this.controller,
@@ -18,6 +21,7 @@ class FormDetail {
     this.maxwidth = 300,
     this.placeholder = '',
     this.label = '',
+    required this.options,
     this.errorMessage = '입력하세요',
     this.required = true,
   });
@@ -31,6 +35,7 @@ class FormDetail {
       label: map['label'] ?? "",
       errorMessage: map['errorMessage'] ?? "입력하세요",
       required: map['required'] ?? true,
+      options: [],
     );
   }
 
@@ -64,18 +69,91 @@ class FormDetail {
     return null;
   }
 
-  //select feilds
+  void onChanged({required String formname, bool longDate = false}) {
+    final newValue = controller.text;
 
-  List<DropdownMenuEntry<String>> generateOptions(String formname, List<dynamic> options) {
-    List<DropdownMenuEntry<String>>? optionsList = [];
-
-    if (options.isNotEmpty) {
-      controller.text = options[0]?['cd'] ?? "";
-      for (var item in options) {
-        optionsList.add(DropdownMenuEntry(value: item['cd'].toString(), label: item['value'].toString()));
+    if (['contact', 'phone_number', 'deputy_contact'].contains(formname)) {
+      String maskedValue = "";
+      if (newValue.startsWith('01')) {
+        maskedValue = MaskTextInputFormatter(
+          mask: '###-####-####',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.lazy,
+        ).maskText(newValue);
+      } else if (newValue.startsWith('02')) {
+        if (newValue.length <= 11) {
+          maskedValue = MaskTextInputFormatter(
+            mask: '##-###-####',
+            filter: {"#": RegExp(r'[0-9]')},
+            type: MaskAutoCompletionType.lazy,
+          ).maskText(newValue);
+        } else {
+          maskedValue = MaskTextInputFormatter(
+            mask: '##-####-####',
+            filter: {"#": RegExp(r'[0-9]')},
+            type: MaskAutoCompletionType.lazy,
+          ).maskText(newValue);
+        }
+      } else {
+        if (newValue.length <= 12) {
+          maskedValue = MaskTextInputFormatter(
+            mask: '###-###-####',
+            filter: {"#": RegExp(r'[0-9]')},
+            type: MaskAutoCompletionType.lazy,
+          ).maskText(newValue);
+        } else {
+          maskedValue = MaskTextInputFormatter(
+            mask: '###-####-####',
+            filter: {"#": RegExp(r'[0-9]')},
+            type: MaskAutoCompletionType.lazy,
+          ).maskText(newValue);
+        }
       }
+      controller.text = maskedValue;
     }
 
-    return optionsList;
+    if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
+      String maskedValue = "";
+
+      if (longDate) {
+        maskedValue = MaskTextInputFormatter(
+          mask: '####-##-##',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.lazy,
+        ).maskText(newValue);
+
+        maskedValue = validateAndCorrectDate(maskedValue);
+      } else {
+        maskedValue = MaskTextInputFormatter(
+          mask: '##-##-##',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.lazy,
+        ).maskText(newValue);
+        maskedValue = validateAndCorrectShortDate(maskedValue);
+      }
+
+      controller.text = maskedValue;
+    }
+
+    if (formname == 'wish_number') {
+      String maskedValue = "";
+      maskedValue = MaskTextInputFormatter(
+        mask: '####/####/####',
+        filter: {"#": RegExp(r'[0-9]')},
+        type: MaskAutoCompletionType.lazy,
+        initialText: '',
+      ).maskText(newValue);
+
+      controller.text = maskedValue;
+    }
   }
+
+  bool readOnly(String formname) {
+    if (['usim_plan_nm', 'address'].contains(formname)) {
+      return true;
+    }
+    return false;
+  }
+
+  // List<TextInputFormatter>? inputFormatter(String formname) {}
 }

@@ -15,14 +15,15 @@ class InputFormatter {
     mask: '010-####-####',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
+
     // initialText: '010-',
   );
 
   var phoneNumber = MaskTextInputFormatter(
     mask: '###-####-####',
     filter: {"#": RegExp(r'[0-9]')},
-    type: MaskAutoCompletionType.lazy,
-    initialText: '010-',
+    // type: MaskAutoCompletionType.lazy,
+    // initialText: '010-',
   );
 
   var officeNumber = MaskTextInputFormatter(
@@ -30,6 +31,7 @@ class InputFormatter {
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
+
   var officeFax = MaskTextInputFormatter(
     mask: '##-####-####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -60,7 +62,7 @@ class InputFormatter {
     type: MaskAutoCompletionType.lazy,
   );
 
-  var wishNumbmer3 = MaskTextInputFormatter(
+  var wishNumbmer = MaskTextInputFormatter(
     mask: '####/####/####',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
