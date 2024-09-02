@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -17,69 +16,76 @@ class Base64ImageViewPage extends StatefulWidget {
 class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        iconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.primary,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      },
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          iconTheme: IconThemeData(
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
-      ),
-      body: SizedBox(
-        height: double.infinity,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  ...List.generate(
-                    widget.base64Images.length,
-                    (index) => Container(
-                      margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-                      child: ZoomableImage(
-                        base64Image: widget.base64Images[index],
+        body: SizedBox(
+          height: double.infinity,
+          width: double.infinity,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    ...List.generate(
+                      widget.base64Images.length,
+                      (index) => Container(
+                        margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
+                        child: ZoomableImage(
+                          base64Image: widget.base64Images[index],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 100),
-                ],
+                    const SizedBox(height: 100),
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              // bottom: 0,
-              bottom: 20,
-              right: 20,
-              child: ElevatedButton(
-                onPressed: _printing ? null : _printImages,
-                child: _printing
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
-                      )
-                    : const Row(
-                        children: [
-                          Icon(
-                            Icons.print_outlined,
-                            size: 23,
+              Positioned(
+                // bottom: 0,
+                bottom: 20,
+                right: 20,
+                child: ElevatedButton(
+                  onPressed: _printing ? null : _printImages,
+                  child: _printing
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: Theme.of(context).colorScheme.onPrimary,
                           ),
-                          SizedBox(width: 10),
-                          Text(
-                            '줄력',
-                            style: TextStyle(
-                              fontSize: 16,
-                              height: 1,
+                        )
+                      : const Row(
+                          children: [
+                            Icon(
+                              Icons.print_outlined,
+                              size: 23,
                             ),
-                          ),
-                        ],
-                      ),
+                            SizedBox(width: 10),
+                            Text(
+                              '줄력',
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

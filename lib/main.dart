@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        // initialRoute: '/home',
+        initialRoute: '/home',
 
         // initialRoute: '/profile',
         // initialRoute: '/login',
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
         // initialRoute: '/plans',
         // initialRoute: '/chat-page',
         // initialRoute: '/download-forms',
-        initialRoute: '/form-details',
+        // initialRoute: '/form-details',
         // initialRoute: '/partner-request',
         // initialRoute: '/partner-request-results',
 
@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
           // '/secondary-signup': (context) => const SecondarySignup(name: 'name', phoneNumber: '01012312312', receiptId: '34523423432', certType: 'KAKAO', birthday: '19950534', employeeCode: 'asd'),
 
           //protected
-          '/form-details': (context) => const FormDetailsPage(planId: 254, searchText: ''),
+          '/form-details': (context) => const FormDetailsPage(planId: 157, searchText: ''),
           '/home': (context) => const AuthGuard(child: HomePage()),
           '/chat-page': (context) => const AuthGuard(child: ChatPage()),
           '/profile': (context) => const AuthGuard(child: ProfilePafe()),

@@ -167,7 +167,7 @@ Map inputFormsList = {
     "label": '희망번호',
     "value": null,
     "type": 'input',
-    "maxwidth": 300,
+    "maxwidth": 250,
     "errorMessage": null,
     "placeholder": '희망번호',
     "required": false,

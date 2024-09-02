@@ -254,30 +254,31 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        Align(
-                          alignment: Alignment.center,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(0, 40),
-                              backgroundColor: Theme.of(context).colorScheme.tertiary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                        if (_dataList.isNotEmpty)
+                          Align(
+                            alignment: Alignment.center,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(0, 40),
+                                backgroundColor: Theme.of(context).colorScheme.tertiary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              onPressed: () {
+                                _pageNumber++;
+                                _fetchData();
+                              },
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text('더보기'),
+                                  SizedBox(width: 5),
+                                  Icon(Icons.expand_more_outlined, size: 20),
+                                ],
                               ),
                             ),
-                            onPressed: () {
-                              _pageNumber++;
-                              _fetchData();
-                            },
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('더보기'),
-                                SizedBox(width: 5),
-                                Icon(Icons.expand_more_outlined, size: 20),
-                              ],
-                            ),
                           ),
-                        ),
                         const SizedBox(height: 400),
                       ],
                     ),

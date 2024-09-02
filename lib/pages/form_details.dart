@@ -14,6 +14,8 @@ import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/globals/form_maker.dart';
 import 'package:mobile_manager_simpass/globals/forms_list.dart';
 import 'package:mobile_manager_simpass/globals/plans_forms.dart';
+import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
+import 'package:mobile_manager_simpass/pages/home.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
@@ -47,7 +49,8 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(sideMenuNames[2] + widget.planId.toString())),
+      // appBar: AppBar(title: Text(sideMenuNames[2] + widget.planId.toString())),
+      appBar: AppBar(title: Text(sideMenuNames[2])),
       body: _dataLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -351,13 +354,20 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                       ),
 
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        _submit();
-                        // _formsSubmitted = true;
-                        // setState(() {});
-                      },
-                      child: const Text('개통 신청/서식출력'),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 180),
+                      child: ElevatedButton(
+                        onPressed: _formsSubmitting ? null : _submit,
+                        child: _formsSubmitting
+                            ? const SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text('개통 신청/서식출력'),
+                      ),
                     ),
 
                     const SizedBox(height: 100),
@@ -415,7 +425,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
       _classForms['usim_plan_nm']?.controller.text = _usimPlanInfo['usim_plan_nm'];
       // usim list select required
-      _classForms['usim_model_list']?.required = _serverData['chk_usim_model'] == 'Y';
+      _classForms['usim_model_list']?.formRequired = _serverData['chk_usim_model'] == 'Y';
 
       //generating default options for dropdowns
       inputFormsList.forEach(
@@ -475,9 +485,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
   void _addSecondaryFields() {
     //new number registration adds wishnumber
-
-    developer.log('usim_act_cd value: ${_classForms['usim_act_cd']?.controller.text}');
-
     _availableForms.remove('wish_number');
     if (_classForms['usim_act_cd']?.controller.text == 'N') _availableForms.add('wish_number');
 
@@ -485,23 +492,27 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
     List<String> phoneTransferFields = ['mnp_carrier_type', 'phone_number', 'mnp_pre_carrier'];
     _availableForms.removeWhere((formname) => phoneTransferFields.contains(formname));
     _availableForms.remove('mnp_pre_carrier_nm');
-    if (_classForms['usim_act_cd']?.controller.text == 'M') {
-      _availableForms.addAll(phoneTransferFields);
-      if (_classForms['mnp_pre_carrier']?.controller.text == 'MV') _availableForms.add('mnp_pre_carrier_nm');
-    }
+    if (_classForms['usim_act_cd']?.controller.text == 'M') _availableForms.addAll(phoneTransferFields);
+    if (_classForms['mnp_pre_carrier']?.controller.text == 'MV') _availableForms.add('mnp_pre_carrier_nm');
 
     //payment card number
+    _availableForms.remove('card_yy_mm');
     if (_classForms['paid_transfer_cd']?.controller.text == 'C') _availableForms.add('card_yy_mm');
 
     //adding deputy forms
-    if (_classForms['cust_type_cd']?.controller.text == 'COL') {
-      _availableForms.addAll(['deputy_name', 'deputy_birthday', 'relationship_cd', 'deputy_contact']);
-    }
+    List<String> deputyForms = ['deputy_name', 'deputy_birthday', 'relationship_cd', 'deputy_contact'];
+    _availableForms.removeWhere((formname) => deputyForms.contains(formname));
+    if (_classForms['cust_type_cd']?.controller.text == 'COL') _availableForms.addAll(deputyForms);
 
     //settnig country code
     _classForms['country']?.controller.text = '';
-    if (_classForms['cust_type_cd']?.controller.text != 'MEA') {
-      _classForms['country']?.controller.text = '대한민국';
+    if (_classForms['cust_type_cd']?.controller.text != 'MEA') _classForms['country']?.controller.text = '대한민국';
+
+    //removing gender if not underage for HVS
+    if (_usimPlanInfo['mvno_cd'] == 'HVS') {
+      _signAllAfterPrint = true;
+      _availableForms.remove('gender_cd');
+      if (_classForms['cust_type_cd']?.controller.text == 'COL') _availableForms.add('gender_cd');
     }
 
     setState(() {});
@@ -535,6 +546,14 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
         _formsSubmitting = true;
       });
 
+      //here checks if any of the forms are unfilled yet
+      for (var formname in _availableForms) {
+        if (_classForms[formname]!.formRequired && _classForms[formname]!.error(formname) != null) {
+          showCustomSnackBar('채워지지 않은 필드가 있습니다. (${_classForms[formname]?.label})');
+          return;
+        }
+      }
+
       //checking if available pads are all filled
       for (var pad in ['account', 'payeer', 'deputy', 'partner', 'agree']) {
         String? error = _getErrorMessageForPad(pad);
@@ -546,7 +565,94 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
       developer.log('reached the end');
 
-      // if(_getErrorMessageForPad(padName))
+      //submission
+      final url = Uri.parse('${BASEURL}agent/actApply');
+      var request = http.MultipartRequest('POST', url);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? accessToken = prefs.getString('accessToken');
+      request.headers['Authorization'] = 'Bearer $accessToken';
+
+      // adding other form fields
+      request.fields['carrier_type'] = _serverData['usim_plan_info']['carrier_type'];
+      request.fields['carrier_cd'] = _serverData['usim_plan_info']['carrier_cd'];
+      request.fields['mvno_cd'] = _serverData['usim_plan_info']['mvno_cd'];
+      request.fields['usim_plan_id'] = _serverData['usim_plan_info']['id'].toString();
+
+      for (var formName in _availableForms) {
+        request.fields[formName] = _classForms[formName]!.controller.text;
+
+        if (['birthday', 'deputy_birthday', 'account_birthday', 'deputy_contact', 'contact', 'phone_number'].contains(formName)) {
+          request.fields[formName] = _classForms[formName]!.controller.text.replaceAll('-', '');
+        }
+
+        //adding wishlists
+        if (formName == 'wish_number') {
+          List? wishList = _classForms['wish_number']!.controller.text.split('/');
+          if (wishList.isNotEmpty) {
+            for (int i = 0; i < wishList.length; i++) {
+              request.fields['request_no_${i + 1}'] = wishList[i];
+            }
+          }
+        }
+        if (formName == 'country') {
+          request.fields['country_cd'] = _classForms[formName]!.controller.text;
+        }
+        if (formName == 'usim_model_list') {
+          request.fields['usim_model_no'] = _classForms[formName]!.controller.text;
+        }
+        if (formName == 'data_roming_block_cd') {
+          request.fields['data_roming_block'] = _classForms[formName]!.controller.text;
+        }
+        if (formName == 'gender_cd') {
+          request.fields['gender'] = _classForms[formName]!.controller.text;
+        }
+        if (formName == 'data_block_cd') {
+          request.fields['data_block'] = _classForms[formName]!.controller.text;
+        }
+        if (formName == 'phone_bill_block_cd') {
+          request.fields['phone_bill_block'] = _classForms[formName]!.controller.text;
+        }
+        if (formName == 'extra_service_cd') {
+          request.fields['extra_service'] = _classForms[formName]!.controller.text;
+        }
+      }
+
+      // adding files to the request
+      for (var file in _extraAttachFiles) {
+        var stream = http.ByteStream(file.openRead());
+        var length = await file.length();
+        //  the key for the files
+        var multipartFile = http.MultipartFile('attach_files', stream, length, filename: file.path.split('/').last);
+        request.files.add(multipartFile);
+      }
+
+      //adding signatute pad datas
+      request.fields['apply_sign'] = _accountSignData ?? "";
+      request.fields['apply_seal'] = _accountSealData ?? "";
+      request.fields['bill_sign'] = _payeerSignData ?? "";
+      request.fields['bill_seal'] = _payeerSealData ?? "";
+      request.fields['deputy_sign'] = _deputySignData ?? "";
+      request.fields['deputy_seal'] = _deputySealData ?? "";
+      request.fields['agree_sign'] = _agreePadData ?? "";
+      // Print fields
+      request.fields.forEach((key, value) {
+        print('Key: $key, Value: $value');
+      });
+
+      var response = await request.send();
+      final respStr = await response.stream.bytesToString();
+      Map decodedRes = await jsonDecode(respStr);
+
+      if (decodedRes['data'] != null && decodedRes['data']['apply_forms_list'] != null && mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list']),
+          ),
+        );
+      }
+
+      showCustomSnackBar(decodedRes['message'] ?? 'Could not fetch image data');
     } catch (e) {
       developer.log(e.toString());
       showCustomSnackBar(e.toString());

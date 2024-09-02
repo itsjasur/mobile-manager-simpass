@@ -5,25 +5,23 @@ import 'package:mobile_manager_simpass/utils/validators.dart';
 
 class FormDetail {
   TextEditingController controller;
-  // InputFormatter? formatter;
   String type;
   double maxwidth;
   String placeholder;
   String label;
   String errorMessage;
-  bool required;
+  bool formRequired;
   List<DropdownMenuEntry<String>> options;
 
   FormDetail({
     required this.controller,
-    // this.formatter,
     required this.type,
     this.maxwidth = 300,
     this.placeholder = '',
     this.label = '',
     required this.options,
     this.errorMessage = '입력하세요',
-    this.required = true,
+    this.formRequired = true,
   });
 
   factory FormDetail.fromMap(Map<String, dynamic> map) {
@@ -34,7 +32,7 @@ class FormDetail {
       placeholder: map['placeholder'] ?? "",
       label: map['label'] ?? "",
       errorMessage: map['errorMessage'] ?? "입력하세요",
-      required: map['required'] ?? true,
+      formRequired: map['required'] ?? true,
       options: [],
     );
   }
@@ -42,6 +40,10 @@ class FormDetail {
   final CustomValidators _validator = CustomValidators();
 
   String? error(String formname) {
+    if (!formRequired) {
+      return null;
+    }
+
     if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
       return _validator.validateShortBirthday(controller.text);
     }
@@ -154,6 +156,4 @@ class FormDetail {
     }
     return false;
   }
-
-  // List<TextInputFormatter>? inputFormatter(String formname) {}
 }

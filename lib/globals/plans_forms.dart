@@ -173,7 +173,6 @@ List plansFormsInfoList = [
               'birthday',
               'address',
               'addressdetail',
-              'gender_cd',
               'plan_fee_cd',
               'usim_act_cd',
 
