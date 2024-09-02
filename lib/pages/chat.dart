@@ -251,6 +251,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _sendMessage() async {
+    print('send message called');
     List<String> attachmentPaths = await _uploadImages();
 
     if (mounted) {

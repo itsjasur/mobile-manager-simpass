@@ -177,7 +177,6 @@ class InputFormatter {
       try {
         // parsing the string into a DateTime object
         DateTime dateTime = DateTime.parse(dateTimeString);
-
         //  output format for a more readable date and time
         DateFormat outputFormat = DateFormat("yyyy-MM-dd");
         //  the DateTime object using the output format
@@ -189,5 +188,48 @@ class InputFormatter {
     }
 
     return null;
+  }
+
+  String formatPhoneNumber(String value) {
+    final newValue = value;
+    String maskedValue = "";
+
+    if (newValue.startsWith('01')) {
+      maskedValue = MaskTextInputFormatter(
+        mask: '###-####-####',
+        filter: {"#": RegExp(r'[0-9]')},
+        type: MaskAutoCompletionType.lazy,
+      ).maskText(newValue);
+    } else if (newValue.startsWith('02')) {
+      if (newValue.length <= 11) {
+        maskedValue = MaskTextInputFormatter(
+          mask: '##-###-####',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.lazy,
+        ).maskText(newValue);
+      } else {
+        maskedValue = MaskTextInputFormatter(
+          mask: '##-####-####',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.lazy,
+        ).maskText(newValue);
+      }
+    } else {
+      if (newValue.length <= 12) {
+        maskedValue = MaskTextInputFormatter(
+          mask: '###-###-####',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.lazy,
+        ).maskText(newValue);
+      } else {
+        maskedValue = MaskTextInputFormatter(
+          mask: '###-####-####',
+          filter: {"#": RegExp(r'[0-9]')},
+          type: MaskAutoCompletionType.lazy,
+        ).maskText(newValue);
+      }
+    }
+
+    return maskedValue;
   }
 }

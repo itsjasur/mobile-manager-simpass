@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile_manager_simpass/globals/validators.dart';
+import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
 
 class FormDetail {
@@ -75,43 +76,7 @@ class FormDetail {
     final newValue = controller.text;
 
     if (['contact', 'phone_number', 'deputy_contact'].contains(formname)) {
-      String maskedValue = "";
-      if (newValue.startsWith('01')) {
-        maskedValue = MaskTextInputFormatter(
-          mask: '###-####-####',
-          filter: {"#": RegExp(r'[0-9]')},
-          type: MaskAutoCompletionType.lazy,
-        ).maskText(newValue);
-      } else if (newValue.startsWith('02')) {
-        if (newValue.length <= 11) {
-          maskedValue = MaskTextInputFormatter(
-            mask: '##-###-####',
-            filter: {"#": RegExp(r'[0-9]')},
-            type: MaskAutoCompletionType.lazy,
-          ).maskText(newValue);
-        } else {
-          maskedValue = MaskTextInputFormatter(
-            mask: '##-####-####',
-            filter: {"#": RegExp(r'[0-9]')},
-            type: MaskAutoCompletionType.lazy,
-          ).maskText(newValue);
-        }
-      } else {
-        if (newValue.length <= 12) {
-          maskedValue = MaskTextInputFormatter(
-            mask: '###-###-####',
-            filter: {"#": RegExp(r'[0-9]')},
-            type: MaskAutoCompletionType.lazy,
-          ).maskText(newValue);
-        } else {
-          maskedValue = MaskTextInputFormatter(
-            mask: '###-####-####',
-            filter: {"#": RegExp(r'[0-9]')},
-            type: MaskAutoCompletionType.lazy,
-          ).maskText(newValue);
-        }
-      }
-      controller.text = maskedValue;
+      controller.text = InputFormatter().formatPhoneNumber(newValue);
     }
 
     if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
@@ -124,14 +89,14 @@ class FormDetail {
           type: MaskAutoCompletionType.lazy,
         ).maskText(newValue);
 
-        maskedValue = validateAndCorrectDate(maskedValue);
+        maskedValue = InputFormatter().validateAndCorrectDate(maskedValue);
       } else {
         maskedValue = MaskTextInputFormatter(
           mask: '##-##-##',
           filter: {"#": RegExp(r'[0-9]')},
           type: MaskAutoCompletionType.lazy,
         ).maskText(newValue);
-        maskedValue = validateAndCorrectShortDate(maskedValue);
+        maskedValue = InputFormatter().validateAndCorrectShortDate(maskedValue);
       }
 
       controller.text = maskedValue;

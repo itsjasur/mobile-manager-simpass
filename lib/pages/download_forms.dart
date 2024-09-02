@@ -229,15 +229,12 @@ class _DownloadFormsPageState extends State<DownloadFormsPage> {
         final filePath = '${directory.path}/$filename.pdf';
         final file = File(filePath);
         await file.writeAsBytes(bytes);
-        final result = await OpenFile.open(filePath);
-
-        if (result.type != ResultType.done) {
-          showCustomSnackBar('Failed to open PDF: ${result.message}');
-        }
+        await OpenFile.open(filePath);
       } else {
         showCustomSnackBar('No form received');
       }
     } catch (e) {
+      // print(e);
       showCustomSnackBar(e.toString());
     }
   }

@@ -15,7 +15,6 @@ import 'package:mobile_manager_simpass/globals/form_maker.dart';
 import 'package:mobile_manager_simpass/globals/forms_list.dart';
 import 'package:mobile_manager_simpass/globals/plans_forms.dart';
 import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
-import 'package:mobile_manager_simpass/pages/home.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
@@ -48,333 +47,367 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(title: Text(sideMenuNames[2] + widget.planId.toString())),
-      appBar: AppBar(title: Text(sideMenuNames[2])),
-      body: _dataLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    ...generateDisplayingForms(_availableForms).map(
-                      (section) => Container(
-                        margin: const EdgeInsets.only(bottom: 25),
-                        child: section['forms'].isEmpty
-                            ? const SizedBox.shrink()
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (section['type'] != 'empty')
-                                    Container(
-                                      margin: const EdgeInsets.only(bottom: 10, top: 0),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          Text(
-                                            section['title'],
-                                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                                          ),
-                                          const SizedBox(width: 10),
-                                          if (section['type'] == 'payment')
-                                            CustomCheckbox(
-                                              onChanged: (newValue) => setState(() {
-                                                _theSameAsPayeerCheck = newValue ?? false;
-
-                                                // resetting same values
-                                                if (_theSameAsPayeerCheck) {
-                                                  _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
-                                                  _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
-                                                } else {
-                                                  _classForms['account_name']?.controller.text = '';
-                                                  _classForms['account_birthday']?.controller.text = '';
-                                                }
-                                              }),
-                                              text: '가입자와 동일',
-                                              value: _theSameAsPayeerCheck,
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  Wrap(
-                                    spacing: 20,
-                                    runSpacing: 20,
-                                    alignment: WrapAlignment.start,
-                                    children: [
-                                      ...section['forms'].map(
-                                        (formname) {
-                                          //for seven mobile need to full date
-                                          bool fullBirhtday = _usimPlanInfo['mvno_cd'] == 'SVM';
-
-                                          if (_classForms[formname]?.type == 'input') {
-                                            return Container(
-                                              constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
-                                              child: CustomTextFormField(
-                                                controller: _classForms[formname]?.controller,
-                                                decoration: InputDecoration(
-                                                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                                                  label: Text(_classForms[formname]?.label ?? ""),
-                                                  hintText: ['birthday', 'account_birthday', 'deputy_birthday'].contains(formname) && fullBirhtday ? '1991-01-31' : _classForms[formname]?.placeholder,
-                                                  enabledBorder: _classForms[formname]?.isBordered(formname, context),
-                                                ),
-                                                errorText: _formsSubmitted ? _classForms[formname]?.error(formname) : null,
-                                                textCapitalization: _classForms[formname]?.capitalizeCharacters(formname),
-                                                readOnly: _classForms[formname]?.readOnly(formname),
-                                                onChanged: (newValue) {
-                                                  _classForms[formname]?.onChanged(formname: formname, longDate: fullBirhtday);
-
-                                                  //setting payment name and birthday
-                                                  // if (_theSameAsPayeerCheck && ['name', 'birthday', 'birthday_full'].contains(formname)) {
-                                                  if (_theSameAsPayeerCheck) {
-                                                    _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
-                                                    _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
-                                                  }
-
-                                                  setState(() {});
-                                                },
-                                                onTap: () async {
-                                                  //selecting plan
-                                                  if (formname == 'usim_plan_nm') {
-                                                    int? selId = await showPlansPopup(context, _usimPlanInfo['carrier_type'], _usimPlanInfo['carrier_cd'], _usimPlanInfo['mvno_cd'], widget.searchText);
-                                                    if (selId != null) await _fetchData(selId);
-                                                  }
-
-                                                  //selecting addrss
-                                                  if (formname == 'address' && context.mounted) {
-                                                    final model = await showAddressSelect(context);
-                                                    _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
-                                                    _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
-                                                  }
-                                                  setState(() {});
-                                                },
-                                              ),
-                                            );
-                                          }
-
-                                          if (_classForms[formname]?.type == 'select') {
-                                            return Container(
-                                              constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
-                                              child: CustomDropdownMenu(
-                                                requestFocusOnTap: true,
-                                                expandedInsets: EdgeInsets.zero,
-                                                enableSearch: true,
-                                                label: Text(_classForms[formname]?.label ?? ""),
-                                                dropdownMenuEntries: _classForms[formname]?.options ?? [],
-                                                initialSelection: _classForms[formname]?.controller.text,
-                                                errorText: _formsSubmitted ? _classForms[formname]?.error(formname) : null,
-                                                onSelected: (newValue) {
-                                                  if (_classForms[formname]?.controller.text != newValue) {
-                                                    _classForms[formname]?.controller.text = newValue ?? "";
-                                                    _addSecondaryFields();
-                                                  }
-                                                  // print('old value: ${_classForms[formname]?.controller.text}');
-                                                  // print('new value: $newValue');
-                                                },
-                                              ),
-                                            );
-                                          }
-
-                                          return const SizedBox.shrink();
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    //upload attach images
-                    CustomCheckbox(
-                      onChanged: (newValue) => setState(() {
-                        _showFileUploadChecked = newValue ?? false;
-                      }),
-                      text: '증빙자료첨부(선택사항)',
-                      value: _showFileUploadChecked,
-                    ),
-                    if (_showFileUploadChecked) const SizedBox(height: 20),
-
-                    if (!_showFileUploadChecked)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 20, top: 10),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
+    return GestureDetector(
+      onTap: FocusManager.instance.primaryFocus?.unfocus,
+      child: Scaffold(
+        // appBar: AppBar(title: Text(sideMenuNames[2] + widget.planId.toString())),
+        appBar: AppBar(title: Text(sideMenuNames[2])),
+        body: _dataLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      if (_serverData['chk_agent_role_info'] != 'Y')
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(4)),
+                          child: Column(
                             children: [
-                              SizedBox(
-                                height: 100,
-                                width: 140,
-                                child: ImagePickerContainer(
-                                  getImages: (imageList) {
-                                    _extraAttachFiles.addAll(imageList);
-                                    setState(() {});
-                                  },
-                                ),
+                              Text(
+                                _serverData['agent_role_message_1'] ?? "",
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                textAlign: TextAlign.center,
                               ),
-                              ...List.generate(
-                                _extraAttachFiles.length,
-                                (index) => Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(4),
-                                      child: Container(
-                                        color: Theme.of(context).colorScheme.onPrimary,
-                                        child: Image.file(
-                                          _extraAttachFiles[index],
-                                          fit: BoxFit.cover,
-                                          height: 100,
-                                          width: 140,
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: IconButton(
-                                        onPressed: () {
-                                          _extraAttachFiles.removeAt(index);
-                                          setState(() {});
-                                        },
-                                        color: Colors.yellow,
-                                        icon: const Icon(Icons.delete_outlined, size: 23),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              const SizedBox(height: 5),
+                              Text(
+                                _serverData['agent_role_message_2'] ?? "",
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 10),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/partner-request');
+                                },
+                                child: const Text('거래요청 상태으로 가기'),
                               )
                             ],
                           ),
                         ),
+                      const SizedBox(height: 20),
+                      ...generateDisplayingForms(_availableForms).map(
+                        (section) => Container(
+                          margin: const EdgeInsets.only(bottom: 25),
+                          child: section['forms'].isEmpty
+                              ? const SizedBox.shrink()
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (section['type'] != 'empty')
+                                      Container(
+                                        margin: const EdgeInsets.only(bottom: 10, top: 0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            Text(
+                                              section['title'],
+                                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                                            ),
+                                            const SizedBox(width: 10),
+                                            if (section['type'] == 'payment')
+                                              CustomCheckbox(
+                                                onChanged: (newValue) => setState(() {
+                                                  _theSameAsPayeerCheck = newValue ?? false;
+
+                                                  // resetting same values
+                                                  if (_theSameAsPayeerCheck) {
+                                                    _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
+                                                    _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
+                                                  } else {
+                                                    _classForms['account_name']?.controller.text = '';
+                                                    _classForms['account_birthday']?.controller.text = '';
+                                                  }
+                                                }),
+                                                text: '가입자와 동일',
+                                                value: _theSameAsPayeerCheck,
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    Wrap(
+                                      spacing: 20,
+                                      runSpacing: 20,
+                                      alignment: WrapAlignment.start,
+                                      children: [
+                                        ...section['forms'].map(
+                                          (formname) {
+                                            //for seven mobile need to full date
+                                            bool fullBirhtday = _usimPlanInfo['mvno_cd'] == 'SVM';
+
+                                            if (_classForms[formname]?.type == 'input') {
+                                              return Container(
+                                                constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
+                                                child: CustomTextFormField(
+                                                  controller: _classForms[formname]?.controller,
+                                                  decoration: InputDecoration(
+                                                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                    label: Text(_classForms[formname]?.label ?? ""),
+                                                    hintText:
+                                                        ['birthday', 'account_birthday', 'deputy_birthday'].contains(formname) && fullBirhtday ? '1991-01-31' : _classForms[formname]?.placeholder,
+                                                    enabledBorder: _classForms[formname]?.isBordered(formname, context),
+                                                  ),
+                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname) : null,
+                                                  textCapitalization: _classForms[formname]?.capitalizeCharacters(formname),
+                                                  readOnly: _classForms[formname]?.readOnly(formname),
+                                                  onChanged: (newValue) {
+                                                    _classForms[formname]?.onChanged(formname: formname, longDate: fullBirhtday);
+
+                                                    //setting payment name and birthday
+                                                    // if (_theSameAsPayeerCheck && ['name', 'birthday', 'birthday_full'].contains(formname)) {
+                                                    if (_theSameAsPayeerCheck) {
+                                                      _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
+                                                      _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
+                                                    }
+
+                                                    setState(() {});
+                                                  },
+                                                  onTap: () async {
+                                                    //selecting plan
+                                                    if (formname == 'usim_plan_nm') {
+                                                      int? selId =
+                                                          await showPlansPopup(context, _usimPlanInfo['carrier_type'], _usimPlanInfo['carrier_cd'], _usimPlanInfo['mvno_cd'], widget.searchText);
+                                                      if (selId != null) await _fetchData(selId);
+                                                    }
+
+                                                    //selecting addrss
+                                                    if (formname == 'address' && context.mounted) {
+                                                      final model = await showAddressSelect(context);
+                                                      _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
+                                                      _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
+                                                    }
+                                                    setState(() {});
+                                                  },
+                                                ),
+                                              );
+                                            }
+
+                                            if (_classForms[formname]?.type == 'select') {
+                                              return Container(
+                                                constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
+                                                child: CustomDropdownMenu(
+                                                  requestFocusOnTap: true,
+                                                  expandedInsets: EdgeInsets.zero,
+                                                  enableSearch: true,
+                                                  label: Text(_classForms[formname]?.label ?? ""),
+                                                  dropdownMenuEntries: _classForms[formname]?.options ?? [],
+                                                  initialSelection: _classForms[formname]?.controller.text,
+                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname) : null,
+                                                  onSelected: (newValue) {
+                                                    if (_classForms[formname]?.controller.text != newValue) {
+                                                      _classForms[formname]?.controller.text = newValue ?? "";
+                                                      _addSecondaryFields();
+                                                    }
+                                                    // print('old value: ${_classForms[formname]?.controller.text}');
+                                                    // print('new value: $newValue');
+                                                  },
+                                                ),
+                                              );
+                                            }
+
+                                            return const SizedBox.shrink();
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      //upload attach images
+                      CustomCheckbox(
+                        onChanged: (newValue) => setState(() {
+                          _showFileUploadChecked = newValue ?? false;
+                        }),
+                        text: '증빙자료첨부(선택사항)',
+                        value: _showFileUploadChecked,
+                      ),
+                      if (_showFileUploadChecked) const SizedBox(height: 20),
+
+                      if (!_showFileUploadChecked)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 20, top: 10),
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              children: [
+                                SizedBox(
+                                  height: 100,
+                                  width: 140,
+                                  child: ImagePickerContainer(
+                                    getImages: (imageList) {
+                                      _extraAttachFiles.addAll(imageList);
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                                ...List.generate(
+                                  _extraAttachFiles.length,
+                                  (index) => Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Container(
+                                          color: Theme.of(context).colorScheme.onPrimary,
+                                          child: Image.file(
+                                            _extraAttachFiles[index],
+                                            fit: BoxFit.cover,
+                                            height: 100,
+                                            width: 140,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            _extraAttachFiles.removeAt(index);
+                                            setState(() {});
+                                          },
+                                          color: Colors.yellow,
+                                          icon: const Icon(Icons.delete_outlined, size: 23),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+
+                      //sign all after print checkbox
+                      CustomCheckbox(
+                        onChanged: (newValue) => setState(() {
+                          _signAllAfterPrint = newValue ?? false;
+                        }),
+                        text: '신청서 프린트 인쇄후 서명/사인 자필',
+                        value: _signAllAfterPrint,
                       ),
 
-                    //sign all after print checkbox
-                    CustomCheckbox(
-                      onChanged: (newValue) => setState(() {
-                        _signAllAfterPrint = newValue ?? false;
-                      }),
-                      text: '신청서 프린트 인쇄후 서명/사인 자필',
-                      value: _signAllAfterPrint,
-                    ),
-
-                    if (!_signAllAfterPrint)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 20, top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 20),
-                              child: SignaturePadsContainer(
-                                title: '가입자서명',
-                                signData: _accountSignData,
-                                sealData: _accountSealData,
-                                errorText: _getErrorMessageForPad('account'),
-                                updateDatas: (signData, sealData) {
-                                  _accountSignData = signData;
-                                  _accountSealData = sealData;
-                                  setState(() {});
-                                },
-                              ),
-                            ),
-
-                            //payeer sign and seal
-                            if (!_theSameAsPayeerCheck)
+                      if (!_signAllAfterPrint)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 20, top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Container(
                                 margin: const EdgeInsets.only(bottom: 20),
                                 child: SignaturePadsContainer(
-                                  title: '자동이체 서명',
-                                  signData: _payeerSignData,
-                                  sealData: _payeerSealData,
-                                  errorText: _getErrorMessageForPad('payeer'),
+                                  title: '가입자서명',
+                                  signData: _accountSignData,
+                                  sealData: _accountSealData,
+                                  errorText: _getErrorMessageForPad('account'),
                                   updateDatas: (signData, sealData) {
-                                    _payeerSignData = signData;
-                                    _payeerSealData = sealData;
+                                    _accountSignData = signData;
+                                    _accountSealData = sealData;
                                     setState(() {});
                                   },
                                 ),
                               ),
 
-                            //deputy sign and seal
-                            if (_classForms['cust_type_cd']?.controller.text == 'COL')
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 20),
-                                child: SignaturePadsContainer(
-                                  title: '법정대리인 서명',
-                                  signData: _deputySignData,
-                                  sealData: _deputySealData,
-                                  errorText: _getErrorMessageForPad('deputy'),
-                                  updateDatas: (signData, sealData) {
-                                    _deputySignData = signData;
-                                    _deputySealData = sealData;
-                                    setState(() {});
-                                  },
+                              //payeer sign and seal
+                              if (!_theSameAsPayeerCheck)
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  child: SignaturePadsContainer(
+                                    title: '자동이체 서명',
+                                    signData: _payeerSignData,
+                                    sealData: _payeerSealData,
+                                    errorText: _getErrorMessageForPad('payeer'),
+                                    updateDatas: (signData, sealData) {
+                                      _payeerSignData = signData;
+                                      _payeerSealData = sealData;
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
-                              ),
 
-                            //partner sign and seal
-                            if (_serverData['chk_partner_sign'] == 'N' && _usimPlanInfo['mvno_cd'] == 'UPM')
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 20),
-                                child: SignaturePadsContainer(
-                                  title: '판매자 서명',
-                                  signData: _partnerSignData,
-                                  sealData: _partnerSealData,
-                                  errorText: _getErrorMessageForPad('partner'),
-                                  updateDatas: (signData, sealData) {
-                                    _partnerSignData = signData;
-                                    _partnerSealData = sealData;
-                                    setState(() {});
-                                  },
+                              //deputy sign and seal
+                              if (_classForms['cust_type_cd']?.controller.text == 'COL')
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  child: SignaturePadsContainer(
+                                    title: '법정대리인 서명',
+                                    signData: _deputySignData,
+                                    sealData: _deputySealData,
+                                    errorText: _getErrorMessageForPad('deputy'),
+                                    updateDatas: (signData, sealData) {
+                                      _deputySignData = signData;
+                                      _deputySealData = sealData;
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
-                              ),
 
-                            //agree sign pad
-                            if (_usimPlanInfo['mvno_cd'] == 'UPM')
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 20),
-                                child: SignatureAgreeContainer(
-                                  title: '동의합니다',
-                                  agreeData: _agreePadData,
-                                  errorText: _getErrorMessageForPad('agree'),
-                                  updateData: (agreeData) {
-                                    _agreePadData = agreeData;
-                                    setState(() {});
-                                  },
+                              //partner sign and seal
+                              if (_serverData['chk_partner_sign'] == 'N' && _usimPlanInfo['mvno_cd'] == 'UPM')
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  child: SignaturePadsContainer(
+                                    title: '판매자 서명',
+                                    signData: _partnerSignData,
+                                    sealData: _partnerSealData,
+                                    errorText: _getErrorMessageForPad('partner'),
+                                    updateDatas: (signData, sealData) {
+                                      _partnerSignData = signData;
+                                      _partnerSealData = sealData;
+                                      setState(() {});
+                                    },
+                                  ),
                                 ),
-                              ),
-                          ],
+
+                              //agree sign pad
+                              if (_usimPlanInfo['mvno_cd'] == 'UPM')
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 20),
+                                  child: SignatureAgreeContainer(
+                                    title: '동의합니다',
+                                    agreeData: _agreePadData,
+                                    errorText: _getErrorMessageForPad('agree'),
+                                    updateData: (agreeData) {
+                                      _agreePadData = agreeData;
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+
+                      const SizedBox(height: 20),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(minWidth: 180),
+                        child: ElevatedButton(
+                          onPressed: _formsSubmitting ? null : _submit,
+                          child: _formsSubmitting
+                              ? const SizedBox(
+                                  height: 30,
+                                  width: 30,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text('개통 신청/서식출력'),
                         ),
                       ),
 
-                    const SizedBox(height: 20),
-                    ConstrainedBox(
-                      constraints: const BoxConstraints(minWidth: 180),
-                      child: ElevatedButton(
-                        onPressed: _formsSubmitting ? null : _submit,
-                        child: _formsSubmitting
-                            ? const SizedBox(
-                                height: 30,
-                                width: 30,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Text('개통 신청/서식출력'),
-                      ),
-                    ),
-
-                    const SizedBox(height: 100),
-                  ],
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
               ),
-            ),
+      ),
     );
   }
 

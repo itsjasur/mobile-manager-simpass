@@ -37,7 +37,7 @@ class WebSocketModel extends ChangeNotifier {
 
     _socket!.stream.listen(
       (message) => _catchEmits(message),
-      // onDone: _onDisconnected,
+      onDone: _onDisconnected,
       onError: (error) => developer.log('WebSocket error: $error'),
     );
 
@@ -45,7 +45,8 @@ class WebSocketModel extends ChangeNotifier {
   }
 
   void _catchEmits(dynamic message) {
-    print('caught emit');
+    // print('caught emit');
+    // developer.log(message);
 
     final data = jsonDecode(message);
     // developer.log(data.toString());
@@ -53,16 +54,17 @@ class WebSocketModel extends ChangeNotifier {
       _totalUnreadCount = data['total_unread_count'];
     } else if (data['type'] == 'chats') {
       List chats = data['chats'];
-
       _chats = chats.reversed.toList();
-
       _roomId = data['room_id'];
       if (_callback != null) _callback!();
       // developer.log(chats.toString());
     } else if (data['type'] == 'new_chat') {
       developer.log(message.toString());
+
       if (_roomId == data['new_chat']['room_id']) {
         _chats.insert(0, data['new_chat']);
+        _chats.add(data['new_chat']);
+
         if (_callback != null) _callback!();
       }
     }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/chat_button.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
-import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';

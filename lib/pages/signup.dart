@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
+import 'package:mobile_manager_simpass/components/show_html.dart';
 import 'package:mobile_manager_simpass/components/sign_up_waiting_popup.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
@@ -21,10 +22,9 @@ class SignupPageState extends State<SignupPage> {
   final TextEditingController _phoneNumberCntr = TextEditingController();
   final TextEditingController _birthdayCntr = TextEditingController();
 
-  bool _agreementChecked = false;
+  bool _useTermsChecked = false;
+  bool _privacyPolicyChecked = false;
   bool _noEmployeeCode = false;
-
-  final _formKey = GlobalKey<FormState>();
 
   bool _submitted = false;
 
@@ -36,7 +36,7 @@ class SignupPageState extends State<SignupPage> {
   void initState() {
     super.initState();
     // _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
-    // _birthdayCntr.text = '1995-08-18';
+    // _birthdayCntr.text = '1935-12-11';
     // _phoneNumberCntr.text = '010-5818-9352';
   }
 
@@ -52,14 +52,14 @@ class SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: Form(
-            key: _formKey,
+    return GestureDetector(
+      onTap: FocusManager.instance.primaryFocus?.unfocus,
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
+            ),
             child: Center(
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 450),
@@ -68,49 +68,93 @@ class SignupPageState extends State<SignupPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(height: 70),
-                    const Text(
-                      '본 신청서는 심패스에서 직접 운영하는 판매점 전자계약서이며 고객님에 소중한 개인정보는 암호화되어 안전하게 보호됩니다.',
-                      style: TextStyle(
-                        fontSize: 15,
+                    const SizedBox(height: 50),
+                    const Center(
+                      child: Text(
+                        '판매점 회원 가입',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Transform.scale(
                           scale: 1.2,
                           child: Checkbox(
-                            value: _agreementChecked,
+                            value: _useTermsChecked,
                             onChanged: (newValue) => {
-                              _agreementChecked = newValue ?? false,
+                              _useTermsChecked = newValue ?? false,
                               setState(() {}),
                             },
                           ),
                         ),
                         const SizedBox(width: 5),
                         const Text(
-                          '개인정보 수집이용 동의 (필수)',
+                          '이용약관 (필수)',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '약관내용',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline,
+                        const SizedBox(width: 5),
+                        GestureDetector(
+                          onTap: () {
+                            showHtmlContentPopup(context, 'useterms');
+                          },
+                          child: Text(
+                            '전문보기',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Transform.scale(
+                          scale: 1.2,
+                          child: Checkbox(
+                            value: _privacyPolicyChecked,
+                            onChanged: (newValue) => {
+                              _privacyPolicyChecked = newValue ?? false,
+                              setState(() {}),
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        const Text(
+                          '개인정보보호정책 (필수)',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        GestureDetector(
+                          onTap: () {
+                            showHtmlContentPopup(context, 'privacy');
+                          },
+                          child: Text(
+                            '전문보기',
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -177,6 +221,7 @@ class SignupPageState extends State<SignupPage> {
                         hintText: '홍길동',
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                       ),
+                      textCapitalization: TextCapitalization.characters,
                       errorText: _submitted ? InputValidator().validateName(_nameCntr.text) : null,
                       onChanged: (p0) => setState(() {}),
                     ),
@@ -289,30 +334,43 @@ class SignupPageState extends State<SignupPage> {
                       ],
                     ),
                     const SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () {
-                        _submitted = true;
-                        setState(() {});
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _submitting
+                            ? null
+                            : () async {
+                                _submitted = true;
+                                setState(() {});
 
-                        bool allFiled = [
-                          (!_noEmployeeCode ? InputValidator().validateEmployeeCode(_employeeCodeCntr.text) == null : true),
-                          InputValidator().validateName(_nameCntr.text) == null,
-                          InputValidator().validatePhoneNumber(_phoneNumberCntr.text) == null,
-                          InputValidator().validateDate(_birthdayCntr.text) == null,
-                        ].every((element) => element == true);
+                                bool allFiled = [
+                                  (!_noEmployeeCode ? InputValidator().validateEmployeeCode(_employeeCodeCntr.text) == null : true),
+                                  InputValidator().validateName(_nameCntr.text) == null,
+                                  InputValidator().validatePhoneNumber(_phoneNumberCntr.text) == null,
+                                  InputValidator().validateDate(_birthdayCntr.text) == null,
+                                ].every((element) => element == true);
 
-                        if (allFiled) _submit();
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.verified_user,
-                            size: 22,
-                          ),
-                          SizedBox(width: 10),
-                          Text('전자서명'),
-                        ],
+                                if (allFiled) _submit();
+                              },
+                        child: _submitting
+                            ? const SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.verified_user,
+                                    size: 22,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text('전자서명'),
+                                ],
+                              ),
                       ),
                     ),
                     const SizedBox(height: 100),
@@ -326,6 +384,8 @@ class SignupPageState extends State<SignupPage> {
     );
   }
 
+  bool _submitting = false;
+
   void chooseType(type) {
     _selectedCertType = type;
     setState(() {});
@@ -333,12 +393,20 @@ class SignupPageState extends State<SignupPage> {
 
   Future<void> _submit() async {
     // print('submit clicked');
-    if (!_agreementChecked) {
-      showCustomSnackBar('개인정보 보호 약관에 동의해주세요.');
+    if (!_useTermsChecked) {
+      showCustomSnackBar('이용약관에 동의해주세요.');
+      return;
+    }
+
+    if (!_privacyPolicyChecked) {
+      showCustomSnackBar('개인정보보호정책에 동의해주세요.');
       return;
     }
 
     try {
+      _submitting = true;
+      setState(() {});
+
       final response = await http.post(
         Uri.parse('${BASEURL}auth/requestSign'),
         headers: {'Content-Type': 'application/json'},
@@ -378,6 +446,9 @@ class SignupPageState extends State<SignupPage> {
       }
     } catch (e) {
       showCustomSnackBar(e.toString());
+    } finally {
+      _submitted = false;
+      setState(() {});
     }
   }
 }

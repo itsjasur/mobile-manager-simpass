@@ -372,11 +372,7 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
       final filePath = '${directory.path}/contract.pdf';
       final file = File(filePath);
       await file.writeAsBytes(bytes);
-      final result = await OpenFile.open(filePath);
-
-      if (result.type != ResultType.done) {
-        showCustomSnackBar('Failed to open PDF: ${result.message}');
-      }
+      await OpenFile.open(filePath);
     } catch (e) {
       showCustomSnackBar(e.toString());
     } finally {

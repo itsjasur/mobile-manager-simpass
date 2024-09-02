@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
+import 'package:mobile_manager_simpass/components/show_address_popup.dart';
 import 'package:mobile_manager_simpass/components/warning.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
@@ -44,6 +47,22 @@ class _SecondarySignupState extends State<SecondarySignup> {
   final InputFormatter _formatter = InputFormatter();
 
   bool _submitted = false;
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    _partnerNameCntr.dispose();
+    _businessNumberCntr.dispose();
+    _emailCntrl.dispose();
+    _storeTelCntr.dispose();
+    _storeFaxCntr.dispose();
+    _addressCntr.dispose();
+    _addressAdditionsxCntr.dispose();
+    _userNameCntr.dispose();
+    _passwordCntr.dispose();
+    _passwordCheckCntr.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +91,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('상호명*'),
                   ),
-                  errorText: _submitted ? InputValidator().validateForNoneEmpty(_partnerNameCntr.text, '상호명') : null,
+                  errorText: _submitted ? _formValidate('partnername') : null,
                   onChanged: (p0) => setState(() {}),
                 ),
                 const SizedBox(height: 30),
@@ -88,7 +107,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                           label: Text('사업자번호*'),
                           hintText: '000-00-00000',
                         ),
-                        errorText: _businessNumberPrompt ?? (_submitted ? InputValidator().validateForNoneEmpty(_businessNumberCntr.text, '사업자번호') : null),
+                        errorText: _businessNumberPrompt ?? _formValidate('businessnumber'),
                         errorTextStyle: _businessNumberOK ? const TextStyle(color: Colors.green) : null,
                         inputFormatters: [_formatter.businessNumber],
                         onChanged: (value) {
@@ -110,7 +129,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                 const SizedBox(height: 30),
                 CustomTextFormField(
                   readOnly: true,
-                  initialValue: widget.phoneNumber,
+                  initialValue: _formatter.formatPhoneNumber(widget.phoneNumber),
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('연락 번호*'),
@@ -120,6 +139,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                 CustomTextFormField(
                   readOnly: true,
                   initialValue: widget.name,
+                  textCapitalization: TextCapitalization.characters,
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('대표자 명*'),
@@ -134,7 +154,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('이메일주소*'),
                   ),
-                  errorText: _submitted ? InputValidator().validateEmail(_emailCntrl.text) : null,
+                  errorText: _submitted ? _formValidate('email') : null,
                   onChanged: (p0) => setState(() {}),
                 ),
                 const SizedBox(height: 30),
@@ -144,7 +164,9 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('매장 전화'),
                   ),
-                  inputFormatters: [_formatter.officeNumber],
+                  onChanged: (newValue) {
+                    _storeTelCntr.text = _formatter.formatPhoneNumber(newValue);
+                  },
                 ),
                 const SizedBox(height: 30),
                 CustomTextFormField(
@@ -153,6 +175,9 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('매장 팩스'),
                   ),
+                  onChanged: (newValue) {
+                    _storeFaxCntr.text = _formatter.formatPhoneNumber(newValue);
+                  },
                 ),
                 const SizedBox(height: 30),
                 CustomTextFormField(
@@ -161,8 +186,16 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('주소*'),
                   ),
-                  errorText: _submitted ? InputValidator().validateForNoneEmpty(_addressCntr.text, '주소') : null,
+                  errorText: _submitted ? _formValidate('address') : null,
                   onChanged: (p0) => setState(() {}),
+                  readOnly: true,
+                  onTap: () async {
+                    final model = await showAddressSelect(context);
+                    setState(() {
+                      _addressCntr.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
+                      _addressAdditionsxCntr.text = model.buildingName ?? "";
+                    });
+                  },
                 ),
                 const SizedBox(height: 30),
                 CustomTextFormField(
@@ -192,7 +225,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                           label: Text('아이디*'),
                           hintText: 'abc00',
                         ),
-                        errorText: _usernamePrompt ?? (_submitted ? InputValidator().validateForNoneEmpty(_userNameCntr.text, '아이디') : null),
+                        errorText: _usernamePrompt ?? _formValidate('username'),
                         errorTextStyle: _usernameOK ? const TextStyle(color: Colors.green) : null,
                         onChanged: (value) {
                           _usernameOK = false;
@@ -215,7 +248,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                   decoration: const InputDecoration(
                     label: Text('비밀번호'),
                   ),
-                  errorText: _submitted ? InputValidator().validatePass(_passwordCntr.text) : null,
+                  errorText: _submitted ? _formValidate('password') : null,
                   onChanged: (p0) => setState(() {}),
                 ),
                 const SizedBox(height: 30),
@@ -225,31 +258,24 @@ class _SecondarySignupState extends State<SecondarySignup> {
                   decoration: const InputDecoration(
                     label: Text('비밀번호 확인'),
                   ),
-                  errorText: _submitted ? InputValidator().validateRentryPass(_passwordCntr.text, _passwordCheckCntr.text) : null,
                   onChanged: (p0) => setState(() {}),
+                  errorText: _submitted ? _formValidate('passcheck') : null,
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 30),
                 Align(
                   child: Container(
                     constraints: const BoxConstraints(maxWidth: 500),
                     child: ElevatedButton(
-                      onPressed: () {
-                        _submitted = true;
-                        setState(() {});
-
-                        bool allFilled = [
-                          InputValidator().validateForNoneEmpty(_partnerNameCntr.text, 'e') == null,
-                          InputValidator().validateForNoneEmpty(_businessNumberCntr.text, 'e') == null,
-                          InputValidator().validateEmail(_emailCntrl.text) == null,
-                          InputValidator().validateForNoneEmpty(_addressCntr.text, 'e') == null,
-                          InputValidator().validateForNoneEmpty(_userNameCntr.text, 'e') == null,
-                          InputValidator().validatePass(_passwordCntr.text) == null,
-                          InputValidator().validateRentryPass(_passwordCntr.text, _passwordCheckCntr.text) == null,
-                        ].every((element) => element == true);
-
-                        if (allFilled) _submit();
-                      },
-                      child: const Text('인증완료'),
+                      onPressed: _submitting ? null : _submit,
+                      child: _submitting
+                          ? const SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('인증완료'),
                     ),
                   ),
                 ),
@@ -262,7 +288,28 @@ class _SecondarySignupState extends State<SecondarySignup> {
     );
   }
 
+  final List<String> _reqForms = ['partnername', 'businessnumber', 'email', 'address', 'username', 'password', 'passcheck'];
+
+  String? _formValidate(String formname) {
+    InputValidator validator = InputValidator();
+
+    if (formname == 'partnername') return validator.validateForNoneEmpty(_partnerNameCntr.text, '상호명을');
+    if (formname == 'businessnumber') return validator.validateForNoneEmpty(_businessNumberCntr.text, '사업자번호을');
+    if (formname == 'email') return validator.validateEmail(_emailCntrl.text);
+    if (formname == 'address') return validator.validateForNoneEmpty(_addressCntr.text, '주소을');
+    if (formname == 'username') return validator.validateForNoneEmpty(_addressCntr.text, '아이디을');
+    if (formname == 'password') return validator.validatePass(_passwordCntr.text);
+    if (formname == 'passcheck') return validator.validateRentryPass(_passwordCntr.text, _passwordCheckCntr.text);
+
+    setState(() {});
+    return null;
+  }
+
   Future<void> _submit() async {
+    _submitted = true;
+
+    setState(() {});
+
     if (!_businessNumberOK) {
       _businessNumberPrompt = '사업자번호 중복체크 해야합니다';
       showCustomSnackBar('사업자번호 중복체크 해야합니다');
@@ -273,22 +320,32 @@ class _SecondarySignupState extends State<SecondarySignup> {
     if (!_usernameOK) {
       _usernamePrompt = '아이디 중복체크 해야합니다';
       showCustomSnackBar('아이디 중복체크 해야합니다');
-      setState(() {});
       return;
     }
 
+    for (var formname in _reqForms) {
+      String? res = _formValidate(formname);
+      if (res != null) {
+        showCustomSnackBar(res);
+        return;
+      }
+    }
+
     try {
+      setState(() {
+        _submitting = true;
+      });
+
       Map body = {
         "username": _userNameCntr.text, //아이디
         "password": _passwordCntr.text, //패스워드
         "partner_nm": _partnerNameCntr.text, //판매점명
-        "business_num": _formatter.businessNumber.getUnmaskedText(), //사업자번호
+        "business_num": _businessNumberCntr.text.replaceAll('-', ''), //사업자번호
         "address": _addressCntr.text, //주소
         "dtl_address": _addressAdditionsxCntr.text, //상세주소
         "email": _emailCntrl.text,
-        "store_contact": _formatter.officeNumber.getUnmaskedText(), //매장번호
-        "store_fax": _formatter.officeFax.getUnmaskedText(), //매장팩스
-
+        "store_contact": _storeTelCntr.text.replaceAll('-', ''), //매장번호
+        "store_fax": _storeFaxCntr.text.replaceAll('-', ''), //매장팩스
         "contractor": widget.name, //대표자명
         "receipt_id": widget.receiptId,
         "id_cert_type": widget.certType,
@@ -327,6 +384,10 @@ class _SecondarySignupState extends State<SecondarySignup> {
       throw data['message'] ?? 'Submission error';
     } catch (e) {
       showCustomSnackBar(e.toString());
+    } finally {
+      setState(() {
+        _submitting = false;
+      });
     }
   }
 
