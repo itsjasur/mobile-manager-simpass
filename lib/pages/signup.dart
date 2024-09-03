@@ -36,8 +36,11 @@ class SignupPageState extends State<SignupPage> {
   void initState() {
     super.initState();
     // _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
-    // _birthdayCntr.text = '1935-12-11';
+    // _birthdayCntr.text = '1995-08-18';
     // _phoneNumberCntr.text = '010-5818-9352';
+    // _nameCntr.text = '박기철';
+    // _phoneNumberCntr.text = '010-4201-3337';
+    // _birthdayCntr.text = '1974-07-25';
   }
 
   @override
@@ -386,7 +389,8 @@ class SignupPageState extends State<SignupPage> {
 
   bool _submitting = false;
 
-  void chooseType(type) {
+  void chooseType(String type) {
+    print(type);
     _selectedCertType = type;
     setState(() {});
   }
@@ -412,8 +416,8 @@ class SignupPageState extends State<SignupPage> {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           "name": _nameCntr.text,
-          "birthday": _formatter.birthday.getUnmaskedText(),
-          "cert_phone_number": _formatter.phoneNumber.getUnmaskedText(),
+          "birthday": _birthdayCntr.text.replaceAll('-', ''),
+          "cert_phone_number": _phoneNumberCntr.text.replaceAll('-', ''),
           "id_cert_type": _selectedCertType,
           "sales_cd": _employeeCodeCntr.text,
         }),
@@ -434,9 +438,9 @@ class SignupPageState extends State<SignupPage> {
               insetPadding: const EdgeInsets.all(20),
               child: SignUpWaitingPopup(
                 name: _nameCntr.text,
-                birthday: _formatter.birthday.getUnmaskedText(),
                 certType: _selectedCertType,
-                phoneNumber: _formatter.phoneNumber.getUnmaskedText(),
+                birthday: _birthdayCntr.text.replaceAll('-', ''),
+                phoneNumber: _phoneNumberCntr.text.replaceAll('-', ''),
                 receiptId: data['receipt_id'],
                 employeeCode: _employeeCodeCntr.text,
               ),
@@ -447,7 +451,7 @@ class SignupPageState extends State<SignupPage> {
     } catch (e) {
       showCustomSnackBar(e.toString());
     } finally {
-      _submitted = false;
+      _submitting = false;
       setState(() {});
     }
   }

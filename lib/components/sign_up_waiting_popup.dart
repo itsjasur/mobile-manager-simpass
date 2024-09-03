@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/warning.dart';
 import 'dart:math' as math;
@@ -41,7 +42,7 @@ class _SignUpWaitingPopupState extends State<SignUpWaitingPopup> {
           ClipRRect(
             borderRadius: BorderRadius.circular(50),
             child: Image.asset(
-              'assets/logos/kakao.png',
+              widget.certType == 'KAKAO' ? 'assets/logos/kakao.png' : 'assets/logos/pass.png',
               height: 50,
             ),
           ),
@@ -183,21 +184,85 @@ class _SignUpWaitingPopupState extends State<SignUpWaitingPopup> {
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '문제발생시 조치방법',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: 10),
-                  Text('1. 카카오인증서 이용에 문제가 있는 경우 [고객센터 도움말] 에서 해결방법을 찾아보세요.'),
-                  SizedBox(height: 10),
-                  Text(
-                    '2. 문제가 지속되면 [고객센터 문의하기] 또는 [상담톡채널] 채팅하기를 통해 문의해 주세요.',
-                  ),
-                ],
-              ),
+              child: widget.certType == 'KAKAO'
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '문제발생시 조치방법',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 10),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: [
+                              const TextSpan(text: '1. 카카오인증서 이용에 문제가 있는 경우'),
+                              TextSpan(
+                                text: '[고객센터 도움말]',
+                                style: const TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.bold),
+                                recognizer: TapGestureRecognizer()..onTap = () {},
+                              ),
+                              const TextSpan(text: '에서 해결방법을 찾아보세요.'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: [
+                              const TextSpan(text: '2. 문제가 지속되면'),
+                              TextSpan(
+                                text: '[고객센터 문의하기]',
+                                style: const TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.bold),
+                                recognizer: TapGestureRecognizer()..onTap = () {},
+                              ),
+                              const TextSpan(text: '또는'),
+                              TextSpan(
+                                text: '[상담톡채널]',
+                                style: const TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.bold),
+                                recognizer: TapGestureRecognizer()..onTap = () {},
+                              ),
+                              const TextSpan(text: '채팅하기를 통해 문의해 주세요.'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('인증요청(알림)이 휴대폰으로오지 않았다면 아래 순서로 확인해 주세요.'),
+                        const SizedBox(height: 10),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: const [
+                              TextSpan(
+                                text: '1. [PASS 앱 실행>홈화면 또는 인증서 메뉴] ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(text: '에서 인증 요청 내용을 확인할 수 있습니다.'),
+                            ],
+                          ),
+                        ),
+                        const Text('2. PASS 앱 설치 확인 및 알림 수신동의 되어있는지 확인해 주세요.'),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: const [
+                              TextSpan(text: '3. 문제가 계속된다면'),
+                              TextSpan(
+                                text: ' [PASS인증서 고객센터:1800-4273] ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(text: '로 연략해 주세요.'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
             ),
             const SizedBox(height: 30),
             Container(

@@ -380,7 +380,6 @@ class _SecondarySignupState extends State<SecondarySignup> {
           return;
         }
       }
-
       throw data['message'] ?? 'Submission error';
     } catch (e) {
       showCustomSnackBar(e.toString());
