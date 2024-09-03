@@ -55,10 +55,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        // initialRoute: '/home',
-
+        initialRoute: '/home',
         // initialRoute: '/profile',
-        initialRoute: '/login',
+        // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
         // initialRoute: '/applications',
         // initialRoute: '/plans',

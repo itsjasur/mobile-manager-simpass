@@ -152,7 +152,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                                         ['birthday', 'account_birthday', 'deputy_birthday'].contains(formname) && fullBirhtday ? '1991-01-31' : _classForms[formname]?.placeholder,
                                                     enabledBorder: _classForms[formname]?.isBordered(formname, context),
                                                   ),
-                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname) : null,
+                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname, fullBirhtday) : null,
                                                   textCapitalization: _classForms[formname]?.capitalizeCharacters(formname),
                                                   readOnly: _classForms[formname]?.readOnly(formname),
                                                   onChanged: (newValue) {
@@ -197,7 +197,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                                   label: Text(_classForms[formname]?.label ?? ""),
                                                   dropdownMenuEntries: _classForms[formname]?.options ?? [],
                                                   initialSelection: _classForms[formname]?.controller.text,
-                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname) : null,
+                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname, fullBirhtday) : null,
                                                   onSelected: (newValue) {
                                                     if (_classForms[formname]?.controller.text != newValue) {
                                                       _classForms[formname]?.controller.text = newValue ?? "";
@@ -581,7 +581,8 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
       //here checks if any of the forms are unfilled yet
       for (var formname in _availableForms) {
-        if (_classForms[formname]!.formRequired && _classForms[formname]!.error(formname) != null) {
+        bool longBirthday = _usimPlanInfo['mvno_cd'] == 'SVM';
+        if (_classForms[formname]!.formRequired && _classForms[formname]!.error(formname, longBirthday) != null) {
           showCustomSnackBar('채워지지 않은 필드가 있습니다. (${_classForms[formname]?.label})');
           return;
         }

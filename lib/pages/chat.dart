@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-
+    Provider.of<WebSocketModel>(context, listen: false).connect();
     _fetchData();
   }
 
@@ -39,7 +40,7 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  Widget _chatAndImageBubble(String? text, List<dynamic>? imagePaths) {
+  Widget _chatAndImageBubble(String? text, List<dynamic>? imagePaths, bool mychat) {
     // developer.log(imagePaths.toString());
     if ((text != null && text.isNotEmpty) || (imagePaths != null && imagePaths.isNotEmpty)) {
       return Container(
@@ -49,11 +50,11 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               if (text != null && text.isNotEmpty)
                 Container(
-                  alignment: Alignment.centerRight,
+                  alignment: mychat ? Alignment.centerRight : null,
                   padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   constraints: const BoxConstraints(minHeight: 45, minWidth: 100),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: mychat ? Theme.of(context).colorScheme.primary : Colors.black54,
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Text(
@@ -66,12 +67,15 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               if (imagePaths != null && imagePaths.isNotEmpty)
                 ...imagePaths.map(
-                  (imagePath) => ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      imagePath,
-                      width: 250,
-                      // height: 100,
+                  (imagePath) => Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: Image.network(
+                        imagePath,
+                        width: 250,
+                        // height: 100,
+                      ),
                     ),
                   ),
                 )
@@ -102,7 +106,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   onSelected: (value) {
                     Provider.of<WebSocketModel>(context, listen: false).joinRoom(value.toString());
-                    Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
+                    // Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
                   },
                 )
               : const SizedBox.shrink(),
@@ -140,12 +144,12 @@ class _ChatPageState extends State<ChatPage> {
                           if (_myUsername == chat['sender']) {
                             return Align(
                               alignment: Alignment.centerRight,
-                              child: _chatAndImageBubble(chat['text'], chat['attachment_paths']),
+                              child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
                             );
                           }
                           return Align(
                             alignment: Alignment.centerLeft,
-                            child: _chatAndImageBubble(chat['text'], chat['attachment_paths']),
+                            child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], false),
                           );
                         },
                       ),
@@ -263,7 +267,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<List<String>> _uploadImages() async {
-    final uri = Uri.parse('https://tchat.baroform.com/upload');
+    final uri = Uri.parse('${IMAGEUPLOADURL}upload');
     List<String> uploadedFilePaths = [];
 
     for (var file in _attachedFiles) {
@@ -337,7 +341,7 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {});
       if (_myUsername != null && _agentList.isNotEmpty && mounted) {
         Provider.of<WebSocketModel>(context, listen: false).joinRoom(_agentList.first['agent_cd']);
-        Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
+        // Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
       }
     } catch (e) {
       showCustomSnackBar(e.toString());

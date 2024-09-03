@@ -14,6 +14,7 @@ import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/pages/chat.dart';
 import 'package:mobile_manager_simpass/utils/notification.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -418,6 +419,11 @@ class _HomePageState extends State<HomePage> {
     final notificationService = NotificationService();
     await notificationService.init();
     String? fcmToken = await notificationService.requestPermissions();
+
+    if (fcmToken != null) {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('fcmToken', fcmToken);
+    }
 
     try {
       final response = await Request().requestWithRefreshToken(

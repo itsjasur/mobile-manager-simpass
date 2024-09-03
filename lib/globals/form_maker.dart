@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile_manager_simpass/globals/validators.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
-import 'package:mobile_manager_simpass/utils/validators.dart';
 
 class FormDetail {
   TextEditingController controller;
@@ -40,13 +39,17 @@ class FormDetail {
 
   final CustomValidators _validator = CustomValidators();
 
-  String? error(String formname) {
+  String? error(String formname, bool longDate) {
     if (!formRequired) {
       return null;
     }
 
     if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
-      return _validator.validateShortBirthday(controller.text);
+      if (longDate) {
+        return _validator.validateBirthday(controller.text);
+      } else {
+        return _validator.validateShortBirthday(controller.text);
+      }
     }
     if (['contact', 'phone_number', 'deputy_contact'].contains(formname)) {
       return _validator.validate010phoneNumber(controller.text, errorMessage);

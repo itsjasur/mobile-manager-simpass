@@ -12,28 +12,39 @@ class WebSocketModel extends ChangeNotifier {
   int _totalUnreadCount = 0;
   bool _isConnected = false;
   List<dynamic> _chats = [];
-  String? _roomId;
-  // Timer? _reconnectTimer;
+  String? _selectedRoomId;
+  List _chatRooms = [];
 
-  Function? _callback;
-  void setCallback(Function callback) {
-    _callback = callback;
-  }
+  // Timer? _reconnectTimer;
+  // Function? _callback;
+  // void setCallback(Function callback) {
+  //   _callback = callback;
+  // }
 
   bool get isConnected => _isConnected;
   int get totalUnreadCount => _totalUnreadCount;
-  List<dynamic> get chats => _chats;
-  String? get roomId => _roomId;
+  List get chatRooms => _chatRooms;
+  List get chats => _chats;
+  String? get selectedRoomId => _selectedRoomId;
 
   Future<void> connect() async {
+    if (_socket != null) return;
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
+    // developer.log(accessToken.toString());
 
-    developer.log(accessToken.toString());
+    developer.log('fm token: ' + accessToken.toString());
 
-    // _socket = WebSocketChannel.connect(Uri.parse('wss://tchat.baroform.com/ws/$accessToken'));
     _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
     _isConnected = true;
+
+    if (_socket != null) {
+      String? fcmToken = prefs.getString('fcmToken');
+      if (fcmToken != null) {
+        _emit({'action': 'update_fcm_token', 'fcmToken': fcmToken});
+      }
+      print('fcm token sent to chatserver');
+    }
 
     _socket!.stream.listen(
       (message) => _catchEmits(message),
@@ -52,20 +63,25 @@ class WebSocketModel extends ChangeNotifier {
     // developer.log(data.toString());
     if (data['type'] == 'total_count') {
       _totalUnreadCount = data['total_unread_count'];
-    } else if (data['type'] == 'chats') {
-      List chats = data['chats'];
-      _chats = chats.reversed.toList();
-      _roomId = data['room_id'];
-      if (_callback != null) _callback!();
-      // developer.log(chats.toString());
-    } else if (data['type'] == 'new_chat') {
-      developer.log(message.toString());
+      developer.log('total unread count called $_totalUnreadCount');
+      //
+    }
+    if (data['type'] == 'chat_rooms') {
+      _chatRooms = data['chat_rooms'];
+    }
 
-      if (_roomId == data['new_chat']['room_id']) {
+    if (data['type'] == 'chats') {
+      List chatz = data['chats'];
+      _chats = chatz.reversed.toList();
+      _selectedRoomId = data['room_id'];
+      resetRoomUnreadCount();
+    }
+    if (data['type'] == 'new_chat') {
+      developer.log('new chat: ' + message.toString());
+
+      if (_selectedRoomId == data['new_chat']['room_id']) {
         _chats.insert(0, data['new_chat']);
-        _chats.add(data['new_chat']);
-
-        if (_callback != null) _callback!();
+        resetRoomUnreadCount();
       }
     }
 
@@ -85,12 +101,20 @@ class WebSocketModel extends ChangeNotifier {
     });
   }
 
+  void resetRoomUnreadCount() {
+    developer.log('reset room count called');
+    _emit({
+      'action': 'reset_room_unread_count',
+      'roomId': _selectedRoomId,
+    });
+  }
+
   void sendMessage(String text, List<String> attachmentPaths) {
     _emit({
       'action': 'new_message',
       'text': text,
       'attachmentPaths': attachmentPaths,
-      'roomId': _roomId,
+      'roomId': _selectedRoomId,
     });
   }
 

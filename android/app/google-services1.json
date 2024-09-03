@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "631195054253",
-    "project_id": "testsimpassplatform",
-    "storage_bucket": "testsimpassplatform.appspot.com"
+    "project_number": "815804342158",
+    "project_id": "simpassplatform",
+    "storage_bucket": "simpassplatform.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:631195054253:android:62edcab220e51d10cd5624",
+        "mobilesdk_app_id": "1:815804342158:android:76539f3117875002290edf",
         "android_client_info": {
           "package_name": "com.example.mobile_manager_simpass"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDJUt-Vz39ge7Sa3B1f1wpS73cvoRSF0sQ"
+          "current_key": "AIzaSyACBkNqqCcAchrBo5yJlzwTg01jQQdyETI"
         }
       ],
       "services": {
