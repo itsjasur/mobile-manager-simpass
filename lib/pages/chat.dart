@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
-import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
@@ -24,21 +23,21 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     Provider.of<WebSocketModel>(context, listen: false).connect();
-    _fetchData();
+    Provider.of<WebSocketModel>(context, listen: false).joinRoom();
   }
 
   final ScrollController _scrollController = ScrollController();
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      developer.log('scroll to bottom called');
-      _scrollController.animateTo(
-        _scrollController.position.minScrollExtent,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeOut,
-      );
-    });
-  }
+  // void _scrollToBottom() {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     developer.log('scroll to bottom called');
+  //     _scrollController.animateTo(
+  //       _scrollController.position.minScrollExtent,
+  //       duration: const Duration(milliseconds: 100),
+  //       curve: Curves.easeOut,
+  //     );
+  //   });
+  // }
 
   Widget _chatAndImageBubble(String? text, List<dynamic>? imagePaths, bool mychat) {
     // developer.log(imagePaths.toString());
@@ -94,22 +93,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context, socketProvider, child) => Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          centerTitle: true,
-          title: _agentList.isNotEmpty
-              ? DropdownMenu(
-                  dropdownMenuEntries: _agentList.map((item) => DropdownMenuEntry(label: item['agent_nm'], value: item['agent_cd'].toString())).toList(),
-                  initialSelection: _agentList.first?['agent_cd'],
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  inputDecorationTheme: const InputDecorationTheme(
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                  ),
-                  onSelected: (value) {
-                    Provider.of<WebSocketModel>(context, listen: false).joinRoom(value.toString());
-                    // Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
-                  },
-                )
-              : const SizedBox.shrink(),
+          title: const Text('Data'),
           actions: [
             Text(
               socketProvider.isConnected ? 'Connected' : 'Disconnected',
@@ -120,7 +104,36 @@ class _ChatPageState extends State<ChatPage> {
             const SizedBox(width: 20),
           ],
         ),
-        body: _myUsername == null || _agentList.isEmpty
+
+        // appBar: AppBar(
+        //   centerTitle: true,
+        //   title: _agentList.isNotEmpty
+        //       ? DropdownMenu(
+        //           dropdownMenuEntries: _agentList.map((item) => DropdownMenuEntry(label: item['agent_nm'], value: item['agent_cd'].toString())).toList(),
+        //           initialSelection: _agentList.first?['agent_cd'],
+        //           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        //           inputDecorationTheme: const InputDecorationTheme(
+        //             border: InputBorder.none,
+        //             enabledBorder: InputBorder.none,
+        //           ),
+        //           onSelected: (value) {
+        //             Provider.of<WebSocketModel>(context, listen: false).joinRoom(value.toString());
+        //             // Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
+        //           },
+        //         )
+        //       : const SizedBox.shrink(),
+        //   actions: [
+        //     Text(
+        //       socketProvider.isConnected ? 'Connected' : 'Disconnected',
+        //       style: const TextStyle(
+        //         color: Colors.orange,
+        //       ),
+        //     ),
+        //     const SizedBox(width: 20),
+        //   ],
+        // ),
+
+        body: socketProvider.myUsername == null
             ? const Center(child: Text('Cannot find current user'))
             : GestureDetector(
                 onTap: () {
@@ -141,7 +154,7 @@ class _ChatPageState extends State<ChatPage> {
                         itemBuilder: (context, index) {
                           Map chat = socketProvider.chats[index];
 
-                          if (_myUsername == chat['sender']) {
+                          if (socketProvider.myUsername == chat['sender']) {
                             return Align(
                               alignment: Alignment.centerRight,
                               child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
@@ -322,53 +335,6 @@ class _ChatPageState extends State<ChatPage> {
       }
     } catch (e) {
       showCustomSnackBar('Error picking images: $e');
-    }
-  }
-
-  List _agentList = [];
-  Future<void> _fetchAgentList() async {
-    try {
-      final response = await Request().requestWithRefreshToken(url: 'agent/agentlist', method: 'GET');
-      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-
-      if (response.statusCode != 200) {
-        throw decodedRes['message'] ?? "Fetch agentlist error";
-      }
-
-      _agentList = decodedRes['data']?['agentlist'] ?? [];
-      // developer.log('agent list $_agentList');
-
-      setState(() {});
-      if (_myUsername != null && _agentList.isNotEmpty && mounted) {
-        Provider.of<WebSocketModel>(context, listen: false).joinRoom(_agentList.first['agent_cd']);
-        // Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
-      }
-    } catch (e) {
-      showCustomSnackBar(e.toString());
-    }
-  }
-
-  String? _myUsername;
-  Future<void> _fetchData() async {
-    // print('fetch data called');
-    try {
-      final response = await Request().requestWithRefreshToken(url: 'agent/userInfo', method: 'GET');
-      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-
-      if (response.statusCode != 200) {
-        throw decodedRes['message'] ?? "Fetch agentlist error";
-      }
-      // developer.log(decodedRes.toString());
-
-      _myUsername = decodedRes['data']?['info']?['username'];
-
-      await _fetchAgentList();
-
-      // developer.log(_myUsername.toString());
-      setState(() {});
-    } catch (e) {
-      // print('profile error: $e');
-      showCustomSnackBar(e.toString());
     }
   }
 }

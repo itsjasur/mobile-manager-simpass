@@ -12,8 +12,11 @@ class WebSocketModel extends ChangeNotifier {
   int _totalUnreadCount = 0;
   bool _isConnected = false;
   List<dynamic> _chats = [];
-  String? _selectedRoomId;
   List _chatRooms = [];
+  String? _myUsername;
+
+  String? _selectedRoomId;
+  String? _selectedAgentName;
 
   // Timer? _reconnectTimer;
   // Function? _callback;
@@ -26,6 +29,16 @@ class WebSocketModel extends ChangeNotifier {
   List get chatRooms => _chatRooms;
   List get chats => _chats;
   String? get selectedRoomId => _selectedRoomId;
+  String? get myUsername => _myUsername;
+
+  void setUsername(String username) {
+    _myUsername = username;
+  }
+
+  void selectRoom(String roomId, String agentName) {
+    _selectedRoomId = roomId;
+    _selectedAgentName = agentName;
+  }
 
   Future<void> connect() async {
     if (_socket != null) return;
@@ -40,6 +53,7 @@ class WebSocketModel extends ChangeNotifier {
 
     if (_socket != null) {
       String? fcmToken = prefs.getString('fcmToken');
+
       if (fcmToken != null) {
         _emit({'action': 'update_fcm_token', 'fcmToken': fcmToken});
       }
@@ -67,7 +81,7 @@ class WebSocketModel extends ChangeNotifier {
       //
     }
     if (data['type'] == 'chat_rooms') {
-      _chatRooms = data['chat_rooms'];
+      _chatRooms = data['rooms'] ?? [];
     }
 
     if (data['type'] == 'chats') {
@@ -94,10 +108,18 @@ class WebSocketModel extends ChangeNotifier {
     }
   }
 
-  void joinRoom(String selectedAgentCode) {
+  void getChatRooms() {
+    _emit({
+      'action': 'get_chat_rooms',
+      'searchText': null,
+    });
+  }
+
+  void joinRoom() {
     _emit({
       'action': 'join_room',
-      'agentCode': selectedAgentCode,
+      'roomId': _selectedRoomId,
+      'agentCode': _selectedAgentName,
     });
   }
 
