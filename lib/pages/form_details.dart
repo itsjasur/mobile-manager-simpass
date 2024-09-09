@@ -178,7 +178,29 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                             }
 
                                             TextCapitalization? capitalizeCharacters(String formname) {
-                                              if (['name', 'account_name', 'deputy_name'].contains(formname)) return TextCapitalization.characters;
+                                              if (['name', 'account_name', 'deputy_name', 'usim_no'].contains(formname)) return TextCapitalization.characters;
+                                              return null;
+                                            }
+
+                                            TextInputType? keyboardType(String formname) {
+                                              if ([
+                                                'birthday',
+                                                'account_birthday',
+                                                'deputy_birthday',
+                                                'contact',
+                                                'phone_number',
+                                                'deputy_contact',
+                                                'wish_number',
+                                                'card_yy_mm',
+                                                'account_number',
+                                              ].contains(formname)) {
+                                                return TextInputType.phone;
+                                              }
+
+                                              if (['name', 'account_name', 'deputy_name'].contains(formname)) {
+                                                return TextInputType.name;
+                                              }
+
                                               return null;
                                             }
 
@@ -203,6 +225,21 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                             if (formname == 'card_yy_mm') {
                                               formatters = [_formatters.cardYYMM];
                                             }
+
+                                            if (['name', 'account_name', 'deputy_name'].contains(formname)) {
+                                              formatters = [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ \-]'))];
+                                            }
+
+                                            if (formname == 'account_agency') {
+                                              formatters = [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ ]'))];
+                                            }
+                                            if (formname == 'account_number') {
+                                              formatters = [FilteringTextInputFormatter.digitsOnly];
+                                            }
+                                            if (formname == 'usim_no') {
+                                              formatters = [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9 ]'))];
+                                            }
+
                                             if (formname == 'usim_plan_nm') {
                                               enabledBorder = OutlineInputBorder(
                                                 borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
@@ -213,8 +250,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                               return Container(
                                                 constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
                                                 child: CustomTextFormField(
-                                                  inputFormatters: formatters,
                                                   controller: formInfo.controller,
+                                                  inputFormatters: formatters,
+                                                  keyboardType: keyboardType(formname),
                                                   decoration: InputDecoration(
                                                     floatingLabelBehavior: FloatingLabelBehavior.always,
                                                     label: Text(formInfo.label),
@@ -484,7 +522,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   // checkboxes
   bool _signAllAfterPrint = false;
   bool _theSameAsPayeerCheck = true;
-  bool _showFileUploadChecked = true;
+  bool _showFileUploadChecked = false;
   //account sign and seal
   String? _accountSignData;
   String? _accountSealData;
@@ -580,7 +618,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
     }
 
     //adding extra service for 7mobile if combine is not empty
-    if (mvnoCode == 'SVM' && _usimPlanInfo['combine'].isNotEmpty) {
+    if (mvnoCode == 'SVM' && _usimPlanInfo['combine'] != null) {
       _availableForms.add('extra_service_cd');
     }
 

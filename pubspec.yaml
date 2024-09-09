@@ -65,7 +65,7 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "/assets/main.png"
+  image_path: "assets/main.png"
   adaptive_icon_background: "#ffffff"
 
 # The following section is specific to Flutter packages.
@@ -80,9 +80,6 @@ flutter:
     - assets/
     - assets/logos/
     - assets/icons/
-    - assets/contracts/
-    - assets/contracts/j/
-    - assets/contracts/s/
     - assets/htmls/
 
   # An image asset can refer to one or more resolution-specific "variants", see

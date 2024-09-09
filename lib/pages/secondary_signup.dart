@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
@@ -129,8 +127,9 @@ class _SecondarySignupState extends State<SecondarySignup> {
                 const SizedBox(height: 30),
                 CustomTextFormField(
                   readOnly: true,
-                  // initialValue: _formatter.formatPhoneNumber(widget.phoneNumber),
+                  initialValue: PhoneNumberFormatter().formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: widget.phoneNumber)).text,
                   inputFormatters: [PhoneNumberFormatter()],
+                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('연락 번호*'),
@@ -161,6 +160,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                 const SizedBox(height: 30),
                 CustomTextFormField(
                   controller: _storeTelCntr,
+                  keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('매장 전화'),
@@ -173,6 +173,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                 const SizedBox(height: 30),
                 CustomTextFormField(
                   controller: _storeFaxCntr,
+                  keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('매장 팩스'),

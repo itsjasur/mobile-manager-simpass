@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/show_html.dart';
@@ -36,7 +37,7 @@ class SignupPageState extends State<SignupPage> {
   void initState() {
     super.initState();
     // _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
-    // _birthdayCntr.text = '1995-08-18';
+    // _birthdayCntr.text = '1995-01-28';
     // _phoneNumberCntr.text = '010-5818-9352';
     // _nameCntr.text = '박기철';
     // _phoneNumberCntr.text = '010-4201-3337';
@@ -226,11 +227,13 @@ class SignupPageState extends State<SignupPage> {
                       ),
                       textCapitalization: TextCapitalization.characters,
                       errorText: _submitted ? InputValidator().validateName(_nameCntr.text) : null,
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ \-]'))],
                       onChanged: (p0) => setState(() {}),
                     ),
                     const SizedBox(height: 30),
                     CustomTextFormField(
-                      // autovalidateMode: AutovalidateMode.onUserInteraction,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      keyboardType: TextInputType.number,
                       controller: _phoneNumberCntr,
                       decoration: const InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -245,6 +248,7 @@ class SignupPageState extends State<SignupPage> {
                     CustomTextFormField(
                       // autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: _birthdayCntr,
+                      keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         label: Text('생년월일'),

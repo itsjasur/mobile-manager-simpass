@@ -219,7 +219,7 @@ List<Map> generateDisplayingForms(List availableForms) {
   // console.log('newList', newList)
   for (var formName in availableForms) {
     // console.log(e)
-    if (['usim_plan_nm', 'usim_model_list', 'usim_no', 'usim_fee_cd'].contains(formName)) {
+    if (['usim_plan_nm', 'usim_model_list', 'usim_no', 'usim_fee_cd', 'extra_service_cd'].contains(formName)) {
       displayingForms[0]["forms"].add(formName);
     }
     if ([
@@ -237,7 +237,6 @@ List<Map> generateDisplayingForms(List availableForms) {
     }
 
     if ([
-      'extra_service_cd',
       'data_block_cd',
       'plan_fee_cd',
       'phone_bill_block_cd',

@@ -24,7 +24,7 @@ class FormDetail {
 
   factory FormDetail.fromMap(Map<String, dynamic> map) {
     return FormDetail(
-      controller: TextEditingController(text: map['value'] ?? ""),
+      controller: TextEditingController(text: map['initialValue'] ?? ""),
       type: map['type'] ?? "input",
       maxwidth: (map['maxwidth'] ?? 400).toDouble(),
       placeholder: map['placeholder'] ?? "",

@@ -15,7 +15,7 @@ class PlansPage extends StatefulWidget {
 
 class _PlansPageState extends State<PlansPage> {
   final List _types = [
-    {'code': 'PO', 'name': '후붛'},
+    {'code': 'PO', 'name': '후불'},
     {'code': 'PR', 'name': '선불'},
   ];
 

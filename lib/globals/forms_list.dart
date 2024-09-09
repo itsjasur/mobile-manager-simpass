@@ -191,6 +191,7 @@ Map inputFormsList = {
     "placeholder": '010-0000-0000',
     "label": '가입/이동 전화번호',
     "required": true,
+    "initialValue": '010-',
   },
 
   "mnp_pre_carrier": {

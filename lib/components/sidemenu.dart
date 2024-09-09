@@ -102,9 +102,12 @@ class _SideMenuState extends State<SideMenu> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 70),
-                    Image.asset(
-                      'assets/logo.png',
-                      width: 200,
+                    Container(
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Image.asset(
+                        'assets/white_logo.png',
+                        width: 130,
+                      ),
                     ),
                     const SizedBox(height: 30),
                     ...List.generate(menuItems.length, (index) => itemBuilder(index)),
