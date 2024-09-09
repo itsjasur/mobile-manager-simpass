@@ -1,23 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class InputFormatter {
-  MaskTextInputFormatter createPhoneNumberFormatter() {
-    return MaskTextInputFormatter(
-      mask: '###-####-####',
-      filter: {"#": RegExp(r'[0-9]')},
-      type: MaskAutoCompletionType.lazy,
-    );
-  }
-
-  var phoneNumber010 = MaskTextInputFormatter(
-    // mask: '###-####-####',
-    mask: '010-####-####',
-    filter: {"#": RegExp(r'[0-9]')},
-    type: MaskAutoCompletionType.lazy,
-
-    // initialText: '010-',
-  );
+  // var phoneNumber010 = MaskTextInputFormatter(
+  //   // mask: '###-####-####',
+  //   mask: '010-####-####',
+  //   filter: {"#": RegExp(r'[0-9]')},
+  //   type: MaskAutoCompletionType.lazy,
+  //   // initialText: '010-',
+  // );
 
   var phoneNumber = MaskTextInputFormatter(
     mask: '###-####-####',
@@ -190,46 +183,98 @@ class InputFormatter {
     return null;
   }
 
-  String formatPhoneNumber(String value) {
-    final newValue = value;
-    String maskedValue = "";
+  // String formatPhoneNumber(String value) {
+  //   final newValue = value;
+  //   String maskedValue = "";
 
-    if (newValue.startsWith('01')) {
-      maskedValue = MaskTextInputFormatter(
+  //   if (newValue.startsWith('01')) {
+  //     maskedValue = MaskTextInputFormatter(
+  //       mask: '###-####-####',
+  //       filter: {"#": RegExp(r'[0-9]')},
+  //       type: MaskAutoCompletionType.lazy,
+  //     ).maskText(newValue);
+  //   } else if (newValue.startsWith('02')) {
+  //     if (newValue.length <= 11) {
+  //       maskedValue = MaskTextInputFormatter(
+  //         mask: '##-###-####',
+  //         filter: {"#": RegExp(r'[0-9]')},
+  //         type: MaskAutoCompletionType.lazy,
+  //       ).maskText(newValue);
+  //     } else {
+  //       maskedValue = MaskTextInputFormatter(
+  //         mask: '##-####-####',
+  //         filter: {"#": RegExp(r'[0-9]')},
+  //         type: MaskAutoCompletionType.lazy,
+  //       ).maskText(newValue);
+  //     }
+  //   } else {
+  //     if (newValue.length <= 12) {
+  //       maskedValue = MaskTextInputFormatter(
+  //         mask: '###-###-####',
+  //         filter: {"#": RegExp(r'[0-9]')},
+  //         type: MaskAutoCompletionType.lazy,
+  //       ).maskText(newValue);
+  //     } else {
+  //       maskedValue = MaskTextInputFormatter(
+  //         mask: '###-####-####',
+  //         filter: {"#": RegExp(r'[0-9]')},
+  //         type: MaskAutoCompletionType.lazy,
+  //       ).maskText(newValue);
+  //     }
+  //   }
+
+  //   return maskedValue;
+  // }
+}
+
+class PhoneNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String value = newValue.text;
+    String formattedValue;
+
+    if (value.startsWith('01')) {
+      formattedValue = MaskTextInputFormatter(
         mask: '###-####-####',
         filter: {"#": RegExp(r'[0-9]')},
         type: MaskAutoCompletionType.lazy,
-      ).maskText(newValue);
-    } else if (newValue.startsWith('02')) {
-      if (newValue.length <= 11) {
-        maskedValue = MaskTextInputFormatter(
+      ).maskText(value);
+    } else if (value.startsWith('02')) {
+      if (value.length <= 11) {
+        formattedValue = MaskTextInputFormatter(
           mask: '##-###-####',
           filter: {"#": RegExp(r'[0-9]')},
           type: MaskAutoCompletionType.lazy,
-        ).maskText(newValue);
+        ).maskText(value);
       } else {
-        maskedValue = MaskTextInputFormatter(
+        formattedValue = MaskTextInputFormatter(
           mask: '##-####-####',
           filter: {"#": RegExp(r'[0-9]')},
           type: MaskAutoCompletionType.lazy,
-        ).maskText(newValue);
+        ).maskText(value);
       }
     } else {
-      if (newValue.length <= 12) {
-        maskedValue = MaskTextInputFormatter(
+      if (value.length <= 12) {
+        formattedValue = MaskTextInputFormatter(
           mask: '###-###-####',
           filter: {"#": RegExp(r'[0-9]')},
           type: MaskAutoCompletionType.lazy,
-        ).maskText(newValue);
+        ).maskText(value);
       } else {
-        maskedValue = MaskTextInputFormatter(
+        formattedValue = MaskTextInputFormatter(
           mask: '###-####-####',
           filter: {"#": RegExp(r'[0-9]')},
           type: MaskAutoCompletionType.lazy,
-        ).maskText(newValue);
+        ).maskText(value);
       }
     }
 
-    return maskedValue;
+    return newValue.copyWith(
+      text: formattedValue,
+      selection: TextSelection.collapsed(offset: formattedValue.length),
+    );
   }
 }

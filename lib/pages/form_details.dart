@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
 import 'package:mobile_manager_simpass/components/custom_drop_down_menu.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
@@ -11,13 +12,15 @@ import 'package:mobile_manager_simpass/components/show_plans_popup.dart';
 import 'package:mobile_manager_simpass/components/signature_agree_container.dart';
 import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
-import 'package:mobile_manager_simpass/globals/form_maker.dart';
+import 'package:mobile_manager_simpass/models/form_model.dart';
 import 'package:mobile_manager_simpass/globals/forms_list.dart';
 import 'package:mobile_manager_simpass/globals/plans_forms.dart';
 import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
+import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
+import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FormDetailsPage extends StatefulWidget {
@@ -31,6 +34,8 @@ class FormDetailsPage extends StatefulWidget {
 }
 
 class _FormDetailsPageState extends State<FormDetailsPage> {
+  final Map<String, FormDetail> _classForms = {};
+
   @override
   void initState() {
     super.initState();
@@ -43,7 +48,113 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
     );
   }
 
-  final Map<String, FormDetail> _classForms = {};
+  final InputFormatter _formatters = InputFormatter();
+  final PhoneNumberFormatter _phoneNumberFormatter = PhoneNumberFormatter();
+  final InputValidator _validator = InputValidator();
+
+  //THIS CREATES FORM FOR INPUT TYPE
+  Widget _formInfoCreate(String formname) {
+    bool fullBirhtday = _usimPlanInfo['mvno_cd'] == 'SVM';
+    FormDetail formInfo = _classForms[formname]!;
+    List<TextInputFormatter>? formatters;
+    InputBorder? enabledBorder;
+    Function()? onChangedExtra;
+    String? hintText = formInfo.placeholder;
+
+    bool readOnly(String formname) {
+      if (['usim_plan_nm', 'address'].contains(formname)) return true;
+      return false;
+    }
+
+    TextCapitalization? capitalizeCharacters(String formname) {
+      if (['name', 'account_name', 'deputy_name'].contains(formname)) return TextCapitalization.characters;
+      return null;
+    }
+
+    if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
+      if (fullBirhtday) {
+        formatters = [_formatters.birthday];
+        hintText = '1991-01-31';
+        onChangedExtra = () => formInfo.controller.text = InputFormatter().validateAndCorrectDate(formInfo.controller.text);
+      } else {
+        formatters = [_formatters.birthdayShort];
+        hintText = '91-01-31';
+        onChangedExtra = () => formInfo.controller.text = InputFormatter().validateAndCorrectShortDate(formInfo.controller.text);
+      }
+    }
+    if (['contact', 'phone_number', 'deputy_contact'].contains(formname)) {
+      formatters = [_phoneNumberFormatter];
+    }
+    if (formname == 'wish_number') {
+      formatters = [_formatters.wishNumbmer];
+    }
+    if (formname == 'card_yy_mm') {
+      formatters = [_formatters.cardYYMM];
+    }
+    if (formname == 'usim_plan_nm') {
+      enabledBorder = OutlineInputBorder(
+        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+      );
+    }
+
+    return CustomTextFormField(
+      inputFormatters: formatters,
+      controller: formInfo.controller,
+      decoration: InputDecoration(
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        label: Text(formInfo.label),
+        hintText: hintText,
+        enabledBorder: enabledBorder,
+      ),
+      errorText: _formsSubmitted ? _errorChecker(formname) : null,
+      textCapitalization: capitalizeCharacters(formname),
+      readOnly: readOnly(formname),
+      onChanged: (newValue) {
+        onChangedExtra?.call();
+        setState(() {});
+        //setting payment name and birthday
+        if (_theSameAsPayeerCheck) {
+          _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
+          _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
+        }
+      },
+      onTap: () async {
+        //selecting plan
+        if (formname == 'usim_plan_nm') {
+          int? selId = await showPlansPopup(context, _usimPlanInfo['carrier_type'], _usimPlanInfo['carrier_cd'], _usimPlanInfo['mvno_cd'], widget.searchText);
+          if (selId != null) await _fetchData(selId);
+        }
+
+        //selecting addrss
+        if (formname == 'address' && mounted) {
+          final model = await showAddressSelect(context);
+          _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
+          _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
+        }
+        setState(() {});
+      },
+    );
+  }
+
+  String? _errorChecker(String formname) {
+    bool fullBirhtday = _usimPlanInfo['mvno_cd'] == 'SVM';
+    FormDetail formInfo = _classForms[formname]!;
+
+    if (!formInfo.formRequired) {
+      return null;
+    }
+    if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
+      return fullBirhtday ? _validator.validateBirthday(formInfo.controller.text) : _validator.validateShortBirthday(formInfo.controller.text);
+    }
+    if (['contact', 'phone_number', 'deputy_contact'].contains(formname)) {
+      return _validator.validateAllPhoneNumber(formInfo.controller.text);
+    }
+    if (formname == 'card_yy_mm') {
+      return _validator.expiryDate(formInfo.controller.text);
+    }
+
+    return _validator.validateForNoneEmpty(formInfo.controller.text, formInfo.label);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +202,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                           ),
                         ),
                       const SizedBox(height: 20),
+
                       ...generateDisplayingForms(_availableForms).map(
                         (section) => Container(
                           margin: const EdgeInsets.only(bottom: 25),
@@ -143,47 +255,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                             if (_classForms[formname]?.type == 'input') {
                                               return Container(
                                                 constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
-                                                child: CustomTextFormField(
-                                                  controller: _classForms[formname]?.controller,
-                                                  decoration: InputDecoration(
-                                                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                                                    label: Text(_classForms[formname]?.label ?? ""),
-                                                    hintText:
-                                                        ['birthday', 'account_birthday', 'deputy_birthday'].contains(formname) && fullBirhtday ? '1991-01-31' : _classForms[formname]?.placeholder,
-                                                    enabledBorder: _classForms[formname]?.isBordered(formname, context),
-                                                  ),
-                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname, fullBirhtday) : null,
-                                                  textCapitalization: _classForms[formname]?.capitalizeCharacters(formname),
-                                                  readOnly: _classForms[formname]?.readOnly(formname),
-                                                  onChanged: (newValue) {
-                                                    _classForms[formname]?.onChanged(formname: formname, longDate: fullBirhtday);
-
-                                                    //setting payment name and birthday
-                                                    // if (_theSameAsPayeerCheck && ['name', 'birthday', 'birthday_full'].contains(formname)) {
-                                                    if (_theSameAsPayeerCheck) {
-                                                      _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
-                                                      _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
-                                                    }
-
-                                                    setState(() {});
-                                                  },
-                                                  onTap: () async {
-                                                    //selecting plan
-                                                    if (formname == 'usim_plan_nm') {
-                                                      int? selId =
-                                                          await showPlansPopup(context, _usimPlanInfo['carrier_type'], _usimPlanInfo['carrier_cd'], _usimPlanInfo['mvno_cd'], widget.searchText);
-                                                      if (selId != null) await _fetchData(selId);
-                                                    }
-
-                                                    //selecting addrss
-                                                    if (formname == 'address' && context.mounted) {
-                                                      final model = await showAddressSelect(context);
-                                                      _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
-                                                      _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
-                                                    }
-                                                    setState(() {});
-                                                  },
-                                                ),
+                                                child: _formInfoCreate(formname),
                                               );
                                             }
 
@@ -197,14 +269,12 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                                   label: Text(_classForms[formname]?.label ?? ""),
                                                   dropdownMenuEntries: _classForms[formname]?.options ?? [],
                                                   initialSelection: _classForms[formname]?.controller.text,
-                                                  errorText: _formsSubmitted ? _classForms[formname]?.error(formname, fullBirhtday) : null,
+                                                  errorText: _formsSubmitted ? _errorChecker(formname) : null,
                                                   onSelected: (newValue) {
                                                     if (_classForms[formname]?.controller.text != newValue) {
                                                       _classForms[formname]?.controller.text = newValue ?? "";
                                                       _addSecondaryFields();
                                                     }
-                                                    // print('old value: ${_classForms[formname]?.controller.text}');
-                                                    // print('new value: $newValue');
                                                   },
                                                 ),
                                               );
@@ -219,6 +289,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
 
                       //upload attach images
@@ -229,11 +300,10 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                         text: '증빙자료첨부(선택사항)',
                         value: _showFileUploadChecked,
                       ),
-                      if (_showFileUploadChecked) const SizedBox(height: 20),
 
-                      if (!_showFileUploadChecked)
+                      if (_showFileUploadChecked)
                         Container(
-                          margin: const EdgeInsets.only(bottom: 20, top: 10),
+                          margin: const EdgeInsets.only(bottom: 10, top: 10),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Wrap(
@@ -286,6 +356,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                           ),
                         ),
 
+                      const SizedBox(height: 10),
                       //sign all after print checkbox
                       CustomCheckbox(
                         onChanged: (newValue) => setState(() {
@@ -294,10 +365,11 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                         text: '신청서 프린트 인쇄후 서명/사인 자필',
                         value: _signAllAfterPrint,
                       ),
+                      const SizedBox(height: 10),
 
                       if (!_signAllAfterPrint)
                         Container(
-                          margin: const EdgeInsets.only(bottom: 20, top: 10),
+                          margin: const EdgeInsets.only(bottom: 10, top: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -418,7 +490,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   // checkboxes
   bool _signAllAfterPrint = false;
   bool _theSameAsPayeerCheck = true;
-  bool _showFileUploadChecked = false;
+  bool _showFileUploadChecked = true;
   //account sign and seal
   String? _accountSignData;
   String? _accountSealData;
@@ -581,8 +653,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
       //here checks if any of the forms are unfilled yet
       for (var formname in _availableForms) {
-        bool longBirthday = _usimPlanInfo['mvno_cd'] == 'SVM';
-        if (_classForms[formname]!.formRequired && _classForms[formname]!.error(formname, longBirthday) != null) {
+        if (_classForms[formname]!.formRequired && _errorChecker(formname) != null) {
           showCustomSnackBar('채워지지 않은 필드가 있습니다. (${_classForms[formname]?.label})');
           return;
         }

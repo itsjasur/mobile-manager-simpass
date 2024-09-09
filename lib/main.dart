@@ -17,6 +17,7 @@ import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/pages/profile.dart';
 import 'package:mobile_manager_simpass/pages/secondary_signup.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
+import 'package:mobile_manager_simpass/pages/test.dart';
 import 'package:mobile_manager_simpass/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -55,7 +56,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        initialRoute: '/home',
+        // initialRoute: '/test-page',
+        // initialRoute: '/home',
         // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
@@ -63,12 +65,14 @@ class MyApp extends StatelessWidget {
         // initialRoute: '/plans',
         // initialRoute: '/chat-page',
         // initialRoute: '/download-forms',
-        // initialRoute: '/form-details',
+        // initialRoute: '/signup',
+        initialRoute: '/form-details',
         // initialRoute: '/partner-request',
         // initialRoute: '/partner-request-results',
 
         routes: {
           '/login': (context) => const LoginPage(),
+          '/test-page': (context) => const TestPage(),
           '/signup': (context) => const SignupPage(),
           '/secondary-signup': (context) => const SecondarySignup(name: 'name', phoneNumber: '01012312312', receiptId: '34523423432', certType: 'KAKAO', birthday: '19950534', employeeCode: 'asd'),
 

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -12,52 +14,54 @@ class WebSocketModel extends ChangeNotifier {
   int _totalUnreadCount = 0;
   bool _isConnected = false;
   List<dynamic> _chats = [];
+
   List _chatRooms = [];
   String? _myUsername;
 
-  String? _selectedRoomId;
-  String? _selectedAgentName;
+  Map? _selectedRoom;
 
-  // Timer? _reconnectTimer;
-  // Function? _callback;
-  // void setCallback(Function callback) {
-  //   _callback = callback;
-  // }
+  // String? _selectedAgentName;
 
   bool get isConnected => _isConnected;
   int get totalUnreadCount => _totalUnreadCount;
   List get chatRooms => _chatRooms;
   List get chats => _chats;
-  String? get selectedRoomId => _selectedRoomId;
   String? get myUsername => _myUsername;
+  Map? get selectedRoom => _selectedRoom;
+
+  Timer? _reconnectTimer;
 
   void setUsername(String username) {
     _myUsername = username;
+    notifyListeners();
   }
 
-  void selectRoom(String roomId, String agentName) {
-    _selectedRoomId = roomId;
-    _selectedAgentName = agentName;
+  void selectRoom(Map? room) {
+    _selectedRoom = room;
+    notifyListeners();
+  }
+
+  void setChatRooms(List rooms) {
+    _chatRooms = rooms;
+    notifyListeners();
   }
 
   Future<void> connect() async {
-    if (_socket != null) return;
+    if (_socket != null && _isConnected) return;
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     // developer.log(accessToken.toString());
-
-    developer.log('fm token: ' + accessToken.toString());
+    // developer.log('fm token: ' + accessToken.toString());
 
     _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
     _isConnected = true;
 
     if (_socket != null) {
       String? fcmToken = prefs.getString('fcmToken');
-
       if (fcmToken != null) {
         _emit({'action': 'update_fcm_token', 'fcmToken': fcmToken});
       }
-      print('fcm token sent to chatserver');
+      // print('fcm token sent to chatserver');
     }
 
     _socket!.stream.listen(
@@ -66,34 +70,53 @@ class WebSocketModel extends ChangeNotifier {
       onError: (error) => developer.log('WebSocket error: $error'),
     );
 
+    _reconnectTimer?.cancel();
     notifyListeners();
   }
 
   void _catchEmits(dynamic message) {
     // print('caught emit');
-    // developer.log(message);
-
     final data = jsonDecode(message);
     // developer.log(data.toString());
     if (data['type'] == 'total_count') {
-      _totalUnreadCount = data['total_unread_count'];
+      _totalUnreadCount = data?['total_unread_count'] ?? 0;
       developer.log('total unread count called $_totalUnreadCount');
       //
     }
     if (data['type'] == 'chat_rooms') {
-      _chatRooms = data['rooms'] ?? [];
+      for (Map room in data['rooms'] ?? []) {
+        for (int i = 0; i < _chatRooms.length; i++) {
+          if (room['agent_code'] == _chatRooms[i]['agent_code']) {
+            _chatRooms[i] = {..._chatRooms[i], ...room};
+          }
+        }
+      }
     }
 
-    if (data['type'] == 'chats') {
+    if (data['type'] == 'room_chats') {
+      // room_info will come when user joins new room
+      if (data?['room_info'] != null) {
+        _selectedRoom = {...(_selectedRoom ?? {}), ...data['room_info']};
+      }
+
       List chatz = data['chats'];
       _chats = chatz.reversed.toList();
-      _selectedRoomId = data['room_id'];
       resetRoomUnreadCount();
     }
-    if (data['type'] == 'new_chat') {
-      developer.log('new chat: ' + message.toString());
 
-      if (_selectedRoomId == data['new_chat']['room_id']) {
+    if (data?['type'] == 'room_modified') {
+      Map? modifiedRoom = data?['modified_room'];
+      final index = _chatRooms.indexWhere((room) => room['room_id'] == modifiedRoom?['room_id']);
+      if (index != -1) {
+        _chatRooms[index] = {
+          ...(_chatRooms[index] ?? {}),
+          ...(modifiedRoom ?? {}),
+        };
+      }
+    }
+
+    if (data['type'] == 'new_chat') {
+      if (_selectedRoom?['room_id'] == data['new_chat']['room_id']) {
         _chats.insert(0, data['new_chat']);
         resetRoomUnreadCount();
       }
@@ -108,6 +131,13 @@ class WebSocketModel extends ChangeNotifier {
     }
   }
 
+  void joinNewRoom(String agentCode) {
+    _emit({
+      'action': 'join_new_room',
+      'agentCode': agentCode,
+    });
+  }
+
   void getChatRooms() {
     _emit({
       'action': 'get_chat_rooms',
@@ -118,8 +148,8 @@ class WebSocketModel extends ChangeNotifier {
   void joinRoom() {
     _emit({
       'action': 'join_room',
-      'roomId': _selectedRoomId,
-      'agentCode': _selectedAgentName,
+      'roomId': _selectedRoom!['room_id'],
+      'agentCode': _selectedRoom!['agent_code'],
     });
   }
 
@@ -127,7 +157,7 @@ class WebSocketModel extends ChangeNotifier {
     developer.log('reset room count called');
     _emit({
       'action': 'reset_room_unread_count',
-      'roomId': _selectedRoomId,
+      'roomId': _selectedRoom!['room_id'],
     });
   }
 
@@ -136,7 +166,7 @@ class WebSocketModel extends ChangeNotifier {
       'action': 'new_message',
       'text': text,
       'attachmentPaths': attachmentPaths,
-      'roomId': _selectedRoomId,
+      'roomId': _selectedRoom!['room_id'],
     });
   }
 
@@ -144,14 +174,41 @@ class WebSocketModel extends ChangeNotifier {
     developer.log('disconneced on _onDisconnected');
     _isConnected = false;
     notifyListeners();
-    // _attemptReconnect();
+    _socket?.sink.close();
+    _socket = null;
+    notifyListeners();
+    _attemptReconnect();
   }
 
   void disconnect() {
-    developer.log('disconneced on disconnect');
     _socket?.sink.close();
     _socket = null;
     _isConnected = false;
+
+    _reconnectTimer?.cancel();
     notifyListeners();
+  }
+
+  void _attemptReconnect() {
+    // Cancel any existing reconnect timer
+    _reconnectTimer?.cancel();
+
+    // Set up a new reconnect timer
+    _reconnectTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      if (!_isConnected) {
+        developer.log('Attempting to reconnect...');
+        try {
+          final response = await Request().requestWithRefreshToken(url: 'agent/userInfo', method: 'GET');
+          Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+          if (response.statusCode != 200) throw decodedRes['message'] ?? "Fetch userInfo error";
+        } catch (e) {
+          developer.log(e.toString());
+        }
+
+        connect();
+      } else {
+        timer.cancel();
+      }
+    });
   }
 }

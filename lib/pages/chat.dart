@@ -23,7 +23,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     Provider.of<WebSocketModel>(context, listen: false).connect();
-    Provider.of<WebSocketModel>(context, listen: false).joinRoom();
+    print('chats page initiazlied');
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -44,6 +44,7 @@ class _ChatPageState extends State<ChatPage> {
     if ((text != null && text.isNotEmpty) || (imagePaths != null && imagePaths.isNotEmpty)) {
       return Container(
         margin: const EdgeInsets.only(bottom: 10),
+        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
         child: IntrinsicWidth(
           child: Column(
             children: [
@@ -93,7 +94,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context, socketProvider, child) => Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: const Text('Data'),
+          title: Text(socketProvider.selectedRoom?['agent_name'] ?? "No agent_name"),
           actions: [
             Text(
               socketProvider.isConnected ? 'Connected' : 'Disconnected',
@@ -104,35 +105,6 @@ class _ChatPageState extends State<ChatPage> {
             const SizedBox(width: 20),
           ],
         ),
-
-        // appBar: AppBar(
-        //   centerTitle: true,
-        //   title: _agentList.isNotEmpty
-        //       ? DropdownMenu(
-        //           dropdownMenuEntries: _agentList.map((item) => DropdownMenuEntry(label: item['agent_nm'], value: item['agent_cd'].toString())).toList(),
-        //           initialSelection: _agentList.first?['agent_cd'],
-        //           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        //           inputDecorationTheme: const InputDecorationTheme(
-        //             border: InputBorder.none,
-        //             enabledBorder: InputBorder.none,
-        //           ),
-        //           onSelected: (value) {
-        //             Provider.of<WebSocketModel>(context, listen: false).joinRoom(value.toString());
-        //             // Provider.of<WebSocketModel>(context, listen: false).setCallback(_scrollToBottom);
-        //           },
-        //         )
-        //       : const SizedBox.shrink(),
-        //   actions: [
-        //     Text(
-        //       socketProvider.isConnected ? 'Connected' : 'Disconnected',
-        //       style: const TextStyle(
-        //         color: Colors.orange,
-        //       ),
-        //     ),
-        //     const SizedBox(width: 20),
-        //   ],
-        // ),
-
         body: socketProvider.myUsername == null
             ? const Center(child: Text('Cannot find current user'))
             : GestureDetector(

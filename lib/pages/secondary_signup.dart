@@ -129,7 +129,8 @@ class _SecondarySignupState extends State<SecondarySignup> {
                 const SizedBox(height: 30),
                 CustomTextFormField(
                   readOnly: true,
-                  initialValue: _formatter.formatPhoneNumber(widget.phoneNumber),
+                  // initialValue: _formatter.formatPhoneNumber(widget.phoneNumber),
+                  inputFormatters: [PhoneNumberFormatter()],
                   decoration: const InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('연락 번호*'),
@@ -164,8 +165,9 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('매장 전화'),
                   ),
+                  inputFormatters: [PhoneNumberFormatter()],
                   onChanged: (newValue) {
-                    _storeTelCntr.text = _formatter.formatPhoneNumber(newValue);
+                    // _storeTelCntr.text = _formatter.formatPhoneNumber(newValue);
                   },
                 ),
                 const SizedBox(height: 30),
@@ -175,8 +177,9 @@ class _SecondarySignupState extends State<SecondarySignup> {
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     label: Text('매장 팩스'),
                   ),
+                  inputFormatters: [PhoneNumberFormatter()],
                   onChanged: (newValue) {
-                    _storeFaxCntr.text = _formatter.formatPhoneNumber(newValue);
+                    // _storeFaxCntr.text = _formatter.formatPhoneNumber(newValue);
                   },
                 ),
                 const SizedBox(height: 30),

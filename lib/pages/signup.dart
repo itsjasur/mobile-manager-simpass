@@ -250,7 +250,7 @@ class SignupPageState extends State<SignupPage> {
                         label: Text('생년월일'),
                         hintText: '1981-01-31',
                       ),
-                      errorText: _submitted ? InputValidator().validateDate(_birthdayCntr.text) : null,
+                      errorText: _submitted ? InputValidator().validateBirthday(_birthdayCntr.text) : null,
                       onChanged: (value) {
                         _birthdayCntr.text = _formatter.validateAndCorrectDate(value);
                         setState(() {});
@@ -350,7 +350,7 @@ class SignupPageState extends State<SignupPage> {
                                   (!_noEmployeeCode ? InputValidator().validateEmployeeCode(_employeeCodeCntr.text) == null : true),
                                   InputValidator().validateName(_nameCntr.text) == null,
                                   InputValidator().validatePhoneNumber(_phoneNumberCntr.text) == null,
-                                  InputValidator().validateDate(_birthdayCntr.text) == null,
+                                  InputValidator().validateBirthday(_birthdayCntr.text) == null,
                                 ].every((element) => element == true);
 
                                 if (allFiled) _submit();

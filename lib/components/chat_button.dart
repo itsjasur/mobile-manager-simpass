@@ -32,15 +32,16 @@ class ChatButton extends StatelessWidget {
               },
               child: Row(
                 children: [
-                  Text(websocketProvider.isConnected ? "Connected" : 'Disconnected'),
-                  const SizedBox(width: 10),
+                  // Text(websocketProvider.isConnected ? "Connected" : 'Disconnected'),
+                  // const SizedBox(width: 10),
                   const Icon(Icons.comment),
                   const SizedBox(width: 10),
                   const Text('개통 문의'),
+
                   if (websocketProvider.totalUnreadCount > 0)
                     Container(
                       height: 20,
-                      margin: const EdgeInsets.only(left: 5),
+                      margin: const EdgeInsets.only(left: 10),
                       constraints: const BoxConstraints(minWidth: 20),
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       alignment: Alignment.center,

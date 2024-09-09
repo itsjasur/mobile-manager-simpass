@@ -102,7 +102,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
             if (widget.onChanged != null) {
               widget.onChanged!(value);
             }
-            _validateField(value);
+            // _validateField(value);
           },
           onTap: widget.onTap,
         ),
