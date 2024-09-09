@@ -52,90 +52,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
   final PhoneNumberFormatter _phoneNumberFormatter = PhoneNumberFormatter();
   final InputValidator _validator = InputValidator();
 
-  //THIS CREATES FORM FOR INPUT TYPE
-  Widget _formInfoCreate(String formname) {
-    bool fullBirhtday = _usimPlanInfo['mvno_cd'] == 'SVM';
-    FormDetail formInfo = _classForms[formname]!;
-    List<TextInputFormatter>? formatters;
-    InputBorder? enabledBorder;
-    Function()? onChangedExtra;
-    String? hintText = formInfo.placeholder;
-
-    bool readOnly(String formname) {
-      if (['usim_plan_nm', 'address'].contains(formname)) return true;
-      return false;
-    }
-
-    TextCapitalization? capitalizeCharacters(String formname) {
-      if (['name', 'account_name', 'deputy_name'].contains(formname)) return TextCapitalization.characters;
-      return null;
-    }
-
-    if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
-      if (fullBirhtday) {
-        formatters = [_formatters.birthday];
-        hintText = '1991-01-31';
-        onChangedExtra = () => formInfo.controller.text = InputFormatter().validateAndCorrectDate(formInfo.controller.text);
-      } else {
-        formatters = [_formatters.birthdayShort];
-        hintText = '91-01-31';
-        onChangedExtra = () => formInfo.controller.text = InputFormatter().validateAndCorrectShortDate(formInfo.controller.text);
-      }
-    }
-    if (['contact', 'phone_number', 'deputy_contact'].contains(formname)) {
-      formatters = [_phoneNumberFormatter];
-    }
-    if (formname == 'wish_number') {
-      formatters = [_formatters.wishNumbmer];
-    }
-    if (formname == 'card_yy_mm') {
-      formatters = [_formatters.cardYYMM];
-    }
-    if (formname == 'usim_plan_nm') {
-      enabledBorder = OutlineInputBorder(
-        borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
-      );
-    }
-
-    return CustomTextFormField(
-      inputFormatters: formatters,
-      controller: formInfo.controller,
-      decoration: InputDecoration(
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        label: Text(formInfo.label),
-        hintText: hintText,
-        enabledBorder: enabledBorder,
-      ),
-      errorText: _formsSubmitted ? _errorChecker(formname) : null,
-      textCapitalization: capitalizeCharacters(formname),
-      readOnly: readOnly(formname),
-      onChanged: (newValue) {
-        onChangedExtra?.call();
-        setState(() {});
-        //setting payment name and birthday
-        if (_theSameAsPayeerCheck) {
-          _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
-          _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
-        }
-      },
-      onTap: () async {
-        //selecting plan
-        if (formname == 'usim_plan_nm') {
-          int? selId = await showPlansPopup(context, _usimPlanInfo['carrier_type'], _usimPlanInfo['carrier_cd'], _usimPlanInfo['mvno_cd'], widget.searchText);
-          if (selId != null) await _fetchData(selId);
-        }
-
-        //selecting addrss
-        if (formname == 'address' && mounted) {
-          final model = await showAddressSelect(context);
-          _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
-          _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
-        }
-        setState(() {});
-      },
-    );
-  }
-
   String? _errorChecker(String formname) {
     bool fullBirhtday = _usimPlanInfo['mvno_cd'] == 'SVM';
     FormDetail formInfo = _classForms[formname]!;
@@ -251,11 +167,89 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                           (formname) {
                                             //for seven mobile need to full date
                                             bool fullBirhtday = _usimPlanInfo['mvno_cd'] == 'SVM';
+                                            FormDetail formInfo = _classForms[formname]!;
+                                            InputBorder? enabledBorder;
+                                            Function()? onChangedExtra;
+                                            String? hintText = formInfo.placeholder;
+
+                                            bool readOnly(String formname) {
+                                              if (['usim_plan_nm', 'address'].contains(formname)) return true;
+                                              return false;
+                                            }
+
+                                            TextCapitalization? capitalizeCharacters(String formname) {
+                                              if (['name', 'account_name', 'deputy_name'].contains(formname)) return TextCapitalization.characters;
+                                              return null;
+                                            }
+
+                                            List<TextInputFormatter>? formatters;
+                                            if (['birthday', 'account_birthday', 'deputy_birthday'].contains(formname)) {
+                                              if (fullBirhtday) {
+                                                formatters = [_formatters.birthday];
+                                                hintText = '1991-01-31';
+                                                onChangedExtra = () => formInfo.controller.text = InputFormatter().validateAndCorrectDate(formInfo.controller.text);
+                                              } else {
+                                                formatters = [_formatters.birthdayShort];
+                                                hintText = '91-01-31';
+                                                onChangedExtra = () => formInfo.controller.text = InputFormatter().validateAndCorrectShortDate(formInfo.controller.text);
+                                              }
+                                            }
+                                            if (['contact', 'phone_number', 'deputy_contact'].contains(formname)) {
+                                              formatters = [_phoneNumberFormatter];
+                                            }
+                                            if (formname == 'wish_number') {
+                                              formatters = [_formatters.wishNumbmer];
+                                            }
+                                            if (formname == 'card_yy_mm') {
+                                              formatters = [_formatters.cardYYMM];
+                                            }
+                                            if (formname == 'usim_plan_nm') {
+                                              enabledBorder = OutlineInputBorder(
+                                                borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
+                                              );
+                                            }
 
                                             if (_classForms[formname]?.type == 'input') {
                                               return Container(
                                                 constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
-                                                child: _formInfoCreate(formname),
+                                                child: CustomTextFormField(
+                                                  inputFormatters: formatters,
+                                                  controller: formInfo.controller,
+                                                  decoration: InputDecoration(
+                                                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                    label: Text(formInfo.label),
+                                                    hintText: hintText,
+                                                    enabledBorder: enabledBorder,
+                                                  ),
+                                                  errorText: _formsSubmitted ? _errorChecker(formname) : null,
+                                                  textCapitalization: capitalizeCharacters(formname),
+                                                  readOnly: readOnly(formname),
+                                                  onChanged: (newValue) {
+                                                    onChangedExtra?.call();
+                                                    setState(() {});
+                                                    //setting payment name and birthday
+                                                    if (_theSameAsPayeerCheck) {
+                                                      _classForms['account_name']?.controller.text = _classForms['name']!.controller.text;
+                                                      _classForms['account_birthday']?.controller.text = _classForms['birthday']!.controller.text;
+                                                    }
+                                                  },
+                                                  onTap: () async {
+                                                    //selecting plan
+                                                    if (formname == 'usim_plan_nm') {
+                                                      int? selId =
+                                                          await showPlansPopup(context, _usimPlanInfo['carrier_type'], _usimPlanInfo['carrier_cd'], _usimPlanInfo['mvno_cd'], widget.searchText);
+                                                      if (selId != null) await _fetchData(selId);
+                                                    }
+
+                                                    //selecting addrss
+                                                    if (formname == 'address' && context.mounted) {
+                                                      final model = await showAddressSelect(context);
+                                                      _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
+                                                      _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
+                                                    }
+                                                    setState(() {});
+                                                  },
+                                                ),
                                               );
                                             }
 
@@ -585,6 +579,11 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       _availableForms.addAll(type['paymentForms'] ?? []);
     }
 
+    //adding extra service for 7mobile if combine is not empty
+    if (mvnoCode == 'SVM' && _usimPlanInfo['combine'].isNotEmpty) {
+      _availableForms.add('extra_service_cd');
+    }
+
     _addSecondaryFields();
   }
 
@@ -740,9 +739,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       request.fields['deputy_seal'] = _deputySealData ?? "";
       request.fields['agree_sign'] = _agreePadData ?? "";
       // Print fields
-      request.fields.forEach((key, value) {
-        print('Key: $key, Value: $value');
-      });
+      // request.fields.forEach((key, value) {
+      //   print('Key: $key, Value: $value');
+      // });
 
       var response = await request.send();
       final respStr = await response.stream.bytesToString();

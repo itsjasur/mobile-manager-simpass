@@ -39,7 +39,7 @@ class _DownloadFormsPageState extends State<DownloadFormsPage> {
 
     return Scaffold(
       drawer: const SideMenu(),
-      appBar: AppBar(title: Text(sideMenuNames[3])),
+      appBar: AppBar(title: Text(sideMenuNames[4])),
       body: RefreshIndicator(
         onRefresh: _fetchData,
         child: Container(

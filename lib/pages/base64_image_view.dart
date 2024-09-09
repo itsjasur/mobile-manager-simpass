@@ -7,7 +7,8 @@ import 'package:printing/printing.dart';
 
 class Base64ImageViewPage extends StatefulWidget {
   final List base64Images;
-  const Base64ImageViewPage({super.key, required this.base64Images});
+  final bool goHome;
+  const Base64ImageViewPage({super.key, required this.base64Images, this.goHome = true});
 
   @override
   State<Base64ImageViewPage> createState() => _Base64ImageViewPageState();
@@ -19,7 +20,13 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        if (didPop) return;
+
+        if (widget.goHome) {
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        } else {
+          Navigator.pop(context);
+        }
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
@@ -74,7 +81,7 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
                             ),
                             SizedBox(width: 10),
                             Text(
-                              '줄력',
+                              '출력',
                               style: TextStyle(
                                 fontSize: 16,
                                 height: 1,

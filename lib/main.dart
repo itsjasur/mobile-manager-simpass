@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         // initialRoute: '/test-page',
-        // initialRoute: '/home',
+        initialRoute: '/home',
         // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
         // initialRoute: '/chat-page',
         // initialRoute: '/download-forms',
         // initialRoute: '/signup',
-        initialRoute: '/form-details',
+        // initialRoute: '/form-details',
         // initialRoute: '/partner-request',
         // initialRoute: '/partner-request-results',
 

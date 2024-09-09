@@ -10,6 +10,8 @@ import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 
+import 'dart:developer' as developer;
+
 class ApplicationsPage extends StatefulWidget {
   final String? status;
   const ApplicationsPage({super.key, this.status});
@@ -111,7 +113,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
 
     return Scaffold(
       drawer: const SideMenu(),
-      appBar: AppBar(title: Text(sideMenuNames[4])),
+      appBar: AppBar(title: Text(sideMenuNames[3])),
       body: RefreshIndicator(
         onRefresh: () async {
           _pageNumber = 1;
@@ -481,6 +483,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
 
   Future<void> _fetchData() async {
     if (_pageNumber == 1) _dataList.clear();
+
     try {
       final response = await Request().requestWithRefreshToken(
         url: 'agent/actStatus',
@@ -497,12 +500,16 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
           "rowLimit": _perPage,
         },
       );
+      if (response.statusCode != 200) throw 'agent/actStatus fetch error';
+
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+
       // print(decodedRes);
+      if (_dataList.length >= decodedRes['data']?['totalNum']) _dataList.clear();
       _dataList.addAll(decodedRes['data']['act_list']);
       _statuses = decodedRes['data']['usim_act_status_code'];
 
-      // print(_dataList);
+      // developer.log(decodedRes.toString());
       _dataLoading = false;
       setState(() {});
     } catch (e) {
@@ -521,7 +528,17 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
 
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
       if (decodedRes['result'] == 'SUCCESS' && decodedRes['data']['apply_forms_list'].isNotEmpty) {
-        if (mounted) Navigator.push(context, MaterialPageRoute(builder: (context) => Base64ImageViewPage(base64Images: decodedRes['data']['apply_forms_list'])));
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Base64ImageViewPage(
+                base64Images: decodedRes['data']['apply_forms_list'],
+                goHome: false,
+              ),
+            ),
+          );
+        }
         return;
       }
       throw 'No image found';
