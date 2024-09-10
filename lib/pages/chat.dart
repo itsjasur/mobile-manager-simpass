@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
@@ -28,22 +29,24 @@ class _ChatPageState extends State<ChatPage> {
 
   final ScrollController _scrollController = ScrollController();
 
-  // void _scrollToBottom() {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     developer.log('scroll to bottom called');
-  //     _scrollController.animateTo(
-  //       _scrollController.position.minScrollExtent,
-  //       duration: const Duration(milliseconds: 100),
-  //       curve: Curves.easeOut,
-  //     );
-  //   });
-  // }
+  FocusNode _focus = FocusNode();
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      developer.log('scroll to bottom called');
+      _scrollController.animateTo(
+        _scrollController.position.minScrollExtent,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
+    });
+  }
 
   Widget _chatAndImageBubble(String? text, List<dynamic>? imagePaths, bool mychat) {
     // developer.log(imagePaths.toString());
     if ((text != null && text.isNotEmpty) || (imagePaths != null && imagePaths.isNotEmpty)) {
       return Container(
-        margin: const EdgeInsets.only(bottom: 10),
+        margin: const EdgeInsets.only(bottom: 10, left: 15, right: 15),
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
         child: IntrinsicWidth(
           child: Column(
@@ -94,7 +97,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context, socketProvider, child) => Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text(socketProvider.selectedRoom?['agent_name'] ?? "No agent_name"),
+          title: Text(socketProvider.selectedRoom?['agent_name'] + ' ' + socketProvider.chats.length.toString() ?? "No agent_name"),
           actions: [
             Text(
               socketProvider.isConnected ? 'Connected' : 'Disconnected',
@@ -114,34 +117,40 @@ class _ChatPageState extends State<ChatPage> {
                 child: SizedBox(
                   height: double.infinity,
                   width: double.infinity,
-                  child: Stack(
+                  child: Column(
                     children: [
-                      ListView.builder(
-                        controller: _scrollController,
-                        shrinkWrap: true,
-                        reverse: true,
-                        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                        padding: const EdgeInsets.only(bottom: 100, left: 15, right: 15),
-                        itemCount: socketProvider.chats.length,
-                        itemBuilder: (context, index) {
-                          Map chat = socketProvider.chats[index];
+                      Expanded(
+                        child: CustomScrollView(
+                          reverse: true,
+                          controller: _scrollController,
+                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                          // padding: const EdgeInsets.only(bottom: 100, left: 15, right: 15),
 
-                          if (socketProvider.myUsername == chat['sender']) {
-                            return Align(
-                              alignment: Alignment.centerRight,
-                              child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
-                            );
-                          }
-                          return Align(
-                            alignment: Alignment.centerLeft,
-                            child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], false),
-                          );
-                        },
+                          slivers: [
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                childCount: socketProvider.chats.length,
+                                (BuildContext context, int index) {
+                                  Map chat = socketProvider.chats[index];
+
+                                  if (socketProvider.myUsername == chat['sender']) {
+                                    return Align(
+                                      alignment: Alignment.centerRight,
+                                      child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
+                                    );
+                                  }
+                                  return Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], false),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -206,7 +215,11 @@ class _ChatPageState extends State<ChatPage> {
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: TextField(
+                                        focusNode: FocusNode(),
+                                        keyboardType: TextInputType.multiline,
                                         maxLines: null,
+                                        autocorrect: false,
+                                        enableSuggestions: false,
                                         controller: _controller,
                                         decoration: const InputDecoration(constraints: BoxConstraints(maxHeight: 500)),
                                       ),
@@ -240,14 +253,21 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _sendMessage() async {
+    if (_controller.text.isEmpty && _attachedFiles.isEmpty) return;
+
+    String? messageText = _controller.text;
+    _controller.clear();
+    setState(() {});
+
     print('send message called');
     List<String> attachmentPaths = await _uploadImages();
 
     if (mounted) {
-      Provider.of<WebSocketModel>(context, listen: false).sendMessage(_controller.text, attachmentPaths);
+      Provider.of<WebSocketModel>(context, listen: false).sendMessage(messageText, attachmentPaths);
     }
-    _controller.clear();
+
     _attachedFiles = [];
+    _scrollToBottom();
     setState(() {});
   }
 
@@ -310,3 +330,42 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 }
+
+       // onKeyEvent: (value) {
+                                        //   int selectionStart = _controller.selection.start;
+                                        //   int selectionEnd = _controller.selection.end;
+                                        //   String cursorLeftSide = _controller.text.substring(0, selectionStart);
+                                        //   String cursorRightSide = _controller.text.substring(selectionEnd);
+
+                                        //   if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
+                                        //     if (HardwareKeyboard.instance.isShiftPressed) {
+                                        //       cursorLeftSide += '\n';
+                                        //       _controller.text = cursorLeftSide + cursorRightSide;
+                                        //       _controller.selection = TextSelection.fromPosition(TextPosition(offset: selectionStart + 1));
+                                        //     } else {
+                                        //       if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
+                                        //         _sendMessage();
+                                        //         // _controller.clear();
+                                        //         // setState(() {});
+                                        //       }
+                                        //     }
+                                        //   }
+                                        // },
+
+                                        // onKeyEvent: (KeyEvent value) {
+                                        //   if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.enter) {
+                                        //     if (HardwareKeyboard.instance.isShiftPressed) {
+                                        //       final text = _controller.text;
+                                        //       final selection = _controller.selection;
+                                        //       final newText = text.replaceRange(selection.start, selection.end, '\n');
+                                        //       _controller.value = TextEditingValue(
+                                        //         text: newText,
+                                        //         selection: TextSelection.collapsed(offset: selection.start + 1),
+                                        //       );
+                                        //     } else {
+                                        //       if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
+                                        //         _sendMessage();
+                                        //       }
+                                        //     }
+                                        //   }
+                                        // },

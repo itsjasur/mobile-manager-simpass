@@ -25,7 +25,7 @@ class SignupPageState extends State<SignupPage> {
 
   bool _useTermsChecked = false;
   bool _privacyPolicyChecked = false;
-  bool _noEmployeeCode = false;
+  bool _noEmployeeCode = true;
 
   bool _submitted = false;
 
@@ -36,9 +36,9 @@ class SignupPageState extends State<SignupPage> {
   @override
   void initState() {
     super.initState();
-    // _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
-    // _birthdayCntr.text = '1995-01-28';
-    // _phoneNumberCntr.text = '010-5818-9352';
+    _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
+    _birthdayCntr.text = '1995-08-18';
+    _phoneNumberCntr.text = '010-5818-9352';
     // _nameCntr.text = '박기철';
     // _phoneNumberCntr.text = '010-4201-3337';
     // _birthdayCntr.text = '1974-07-25';
@@ -227,7 +227,7 @@ class SignupPageState extends State<SignupPage> {
                       ),
                       textCapitalization: TextCapitalization.characters,
                       errorText: _submitted ? InputValidator().validateName(_nameCntr.text) : null,
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ \-]'))],
+                      inputFormatters: [koreanAndEnlishRegexp],
                       onChanged: (p0) => setState(() {}),
                     ),
                     const SizedBox(height: 30),

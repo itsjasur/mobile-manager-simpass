@@ -140,6 +140,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                             const SizedBox(width: 10),
                                             if (section['type'] == 'payment')
                                               CustomCheckbox(
+                                                key: const ValueKey('_theSameAsPayeerCheck'),
                                                 onChanged: (newValue) => setState(() {
                                                   _theSameAsPayeerCheck = newValue ?? false;
 
@@ -227,11 +228,11 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                             }
 
                                             if (['name', 'account_name', 'deputy_name'].contains(formname)) {
-                                              formatters = [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ \-]'))];
+                                              formatters = [koreanAndEnlishRegexp];
                                             }
 
                                             if (formname == 'account_agency') {
-                                              formatters = [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ ]'))];
+                                              formatters = [koreanAndEnlishRegexp];
                                             }
                                             if (formname == 'account_number') {
                                               formatters = [FilteringTextInputFormatter.digitsOnly];
@@ -295,9 +296,9 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                               return Container(
                                                 constraints: BoxConstraints(maxWidth: _classForms[formname]?.maxwidth ?? 300),
                                                 child: CustomDropdownMenu(
-                                                  requestFocusOnTap: true,
+                                                  // requestFocusOnTap: true,
                                                   expandedInsets: EdgeInsets.zero,
-                                                  enableSearch: true,
+                                                  // enableSearch: true,
                                                   label: Text(_classForms[formname]?.label ?? ""),
                                                   dropdownMenuEntries: _classForms[formname]?.options ?? [],
                                                   initialSelection: _classForms[formname]?.controller.text,
@@ -326,6 +327,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
                       //upload attach images
                       CustomCheckbox(
+                        key: const ValueKey('_showFileUploadChecked'),
                         onChanged: (newValue) => setState(() {
                           _showFileUploadChecked = newValue ?? false;
                         }),
@@ -391,6 +393,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                       const SizedBox(height: 10),
                       //sign all after print checkbox
                       CustomCheckbox(
+                        key: const ValueKey('_signAllAfterPrint'),
                         onChanged: (newValue) => setState(() {
                           _signAllAfterPrint = newValue ?? false;
                         }),
@@ -408,6 +411,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                               Container(
                                 margin: const EdgeInsets.only(bottom: 20),
                                 child: SignaturePadsContainer(
+                                  key: const ValueKey('account'),
                                   title: '가입자서명',
                                   signData: _accountSignData,
                                   sealData: _accountSealData,
@@ -425,6 +429,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 Container(
                                   margin: const EdgeInsets.only(bottom: 20),
                                   child: SignaturePadsContainer(
+                                    key: const ValueKey('payment'),
                                     title: '자동이체 서명',
                                     signData: _payeerSignData,
                                     sealData: _payeerSealData,
@@ -442,6 +447,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 Container(
                                   margin: const EdgeInsets.only(bottom: 20),
                                   child: SignaturePadsContainer(
+                                    key: const ValueKey('deputy'),
                                     title: '법정대리인 서명',
                                     signData: _deputySignData,
                                     sealData: _deputySealData,
@@ -459,6 +465,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 Container(
                                   margin: const EdgeInsets.only(bottom: 20),
                                   child: SignaturePadsContainer(
+                                    key: const ValueKey('partner'),
                                     title: '판매자 서명',
                                     signData: _partnerSignData,
                                     sealData: _partnerSealData,
@@ -476,6 +483,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 Container(
                                   margin: const EdgeInsets.only(bottom: 20),
                                   child: SignatureAgreeContainer(
+                                    key: const ValueKey('agree'),
                                     title: '동의합니다',
                                     agreeData: _agreePadData,
                                     errorText: _getErrorMessageForPad('agree'),
@@ -652,7 +660,6 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
 
     //removing gender if not underage for HVS
     if (_usimPlanInfo['mvno_cd'] == 'HVS') {
-      _signAllAfterPrint = true;
       _availableForms.remove('gender_cd');
       if (_classForms['cust_type_cd']?.controller.text == 'COL') _availableForms.add('gender_cd');
     }

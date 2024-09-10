@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -371,9 +372,14 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
                                       isRow: true,
                                       multipleUploable: false,
                                       buttonText: e.value['new'] == null ? '이미지 업로드' : '재업로드',
-                                      getImage: (images, filename) {
-                                        e.value['new'] = images;
+                                      getImage: (image, filename) {
+                                        // print(image);
+                                        // print(filename);
+
+                                        e.value['new'] = image;
                                         e.value['filename'] = filename;
+
+                                        print(e.value['new']);
                                         setState(() {});
                                       },
                                     ),
@@ -468,6 +474,9 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
   bool _submitting = false;
 
   Future<void> _submit() async {
+    // print(_attachedFiles);
+    // return;
+
     try {
       _submitted = true;
       _submitting = true;
@@ -509,11 +518,13 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
 
       // Adds files to the request
       for (var e in _attachedFiles.entries) {
-        if (e.value['initial'] != null && e.value['new'] != null) {
+        if (e.value['new'] != null && e.value['new'] is File) {
           var stream = http.ByteStream(e.value['new'].openRead());
-          var length = await e.value.length();
-          //  the key for the files
-          var multipartFile = http.MultipartFile(e.key, stream, length, filename: e.value['filename']);
+          var length = await e.value['new'].length();
+
+          String field = '${e.key}_attach';
+
+          var multipartFile = http.MultipartFile(field, stream, length, filename: e.value['filename']);
           request.files.add(multipartFile);
         }
       }
@@ -538,10 +549,10 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
       request.fields['id_cert_type'] = _data['id_cert_type'];
       request.fields['receipt_id'] = _data['receipt_id'];
 
-      // Print fields
-      request.fields.forEach((key, value) {
-        print('Key: $key, Value: $value');
-      });
+      // // Print fields
+      // request.fields.forEach((key, value) {
+      //   print('Key: $key, Value: $value');
+      // });
 
       var response = await request.send();
 
@@ -555,12 +566,9 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
       if (decodedRes['result'] == 'SUCCESS') {
         if (mounted) Navigator.pop(context);
       }
-
       // print(decodedRes);
-
-      // } catch (e) {
-      //   // print(e);
-      //   showCustomSnackBar(e.toString());
+    } catch (e) {
+      showCustomSnackBar(e.toString());
     } finally {
       _submitting = false;
       setState(() {});

@@ -61,12 +61,12 @@ class _CustomDropdownMenuState extends State<CustomDropdownMenu> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DropdownMenu(
+          width: widget.width,
           dropdownMenuEntries: widget.dropdownMenuEntries,
           controller: widget.controller,
           // requestFocusOnTap: widget.requestFocusOnTap,
           // enableFilter: widget.enableFilter ?? false,
-          // enableSearch: widget.enableSearch ?? false,
-
+          // enableSearch: widget.enableSearch ?? false
           menuHeight: widget.menuHeight,
           onSelected: widget.onSelected,
           expandedInsets: widget.expandedInsets,

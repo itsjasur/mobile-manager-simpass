@@ -25,8 +25,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _fetchData();
-    _fetchHomeInfo();
-    _updateDeviceData();
   }
 
   bool _pageLoaded = false;
@@ -375,6 +373,9 @@ class _HomePageState extends State<HomePage> {
       _dataList = decodedRes['data']['act_status_cnt'];
       _pageLoaded = true;
       setState(() {});
+
+      await _fetchHomeInfo();
+      await _updateDeviceData();
     } catch (e) {
       print('homepage error: $e');
       showCustomSnackBar(e.toString());

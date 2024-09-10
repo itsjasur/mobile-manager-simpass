@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/custom_drop_down_menu.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
@@ -47,6 +48,18 @@ class _SecondarySignupState extends State<SecondarySignup> {
   bool _submitted = false;
   bool _submitting = false;
 
+  List<DropdownMenuEntry<String>> emailOptions = const [
+    DropdownMenuEntry(value: '', label: '직접입력'),
+    DropdownMenuEntry(value: '@naver.com', label: '@naver.com'),
+    DropdownMenuEntry(value: '@daum.net', label: '@daum.net'),
+    DropdownMenuEntry(value: '@kakao.com', label: '@kakao.com'),
+    DropdownMenuEntry(value: '@gmail.com', label: '@gmail.com'),
+    DropdownMenuEntry(value: '@hanmail.net', label: '@hanmail.net'),
+    DropdownMenuEntry(value: '@hotmail.com', label: '@hotmail.com'),
+  ];
+
+  String _selectedEmailOption = '';
+
   @override
   void dispose() {
     _partnerNameCntr.dispose();
@@ -65,226 +78,289 @@ class _SecondarySignupState extends State<SecondarySignup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Align(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 50),
-                const Text(
-                  '판매점 정보',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                CustomTextFormField(
-                  controller: _partnerNameCntr,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('상호명*'),
-                  ),
-                  errorText: _submitted ? _formValidate('partnername') : null,
-                  onChanged: (p0) => setState(() {}),
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomTextFormField(
-                        controller: _businessNumberCntr,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          label: Text('사업자번호*'),
-                          hintText: '000-00-00000',
-                        ),
-                        errorText: _businessNumberPrompt ?? _formValidate('businessnumber'),
-                        errorTextStyle: _businessNumberOK ? const TextStyle(color: Colors.green) : null,
-                        inputFormatters: [_formatter.businessNumber],
-                        onChanged: (value) {
-                          _businessNumberOK = false;
-                          _businessNumberPrompt = null;
-                          setState(() {});
-                        },
-                      ),
+      body: GestureDetector(
+        onTap: FocusManager.instance.primaryFocus?.unfocus,
+        child: SingleChildScrollView(
+          child: Align(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 600),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 50),
+                  const Text(
+                    '판매점 정보',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(width: 20),
-                    IntrinsicWidth(
-                      child: ElevatedButton(
-                        onPressed: _checkBusinessNumber,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextFormField(
+                    controller: _partnerNameCntr,
+                    decoration: const InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      label: Text('상호명*'),
+                    ),
+                    errorText: _submitted ? _formValidate('partnername') : null,
+                    onChanged: (p0) => setState(() {}),
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 300),
+                        child: CustomTextFormField(
+                          controller: _businessNumberCntr,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('사업자번호*'),
+                            hintText: '000-00-00000',
+                          ),
+                          errorText: _businessNumberPrompt ?? _formValidate('businessnumber'),
+                          errorTextStyle: _businessNumberOK ? const TextStyle(color: Colors.green) : null,
+                          inputFormatters: [_formatter.businessNumber],
+                          onChanged: (value) {
+                            _businessNumberOK = false;
+                            _businessNumberPrompt = null;
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      IntrinsicWidth(
+                        child: ElevatedButton(
+                          onPressed: _checkBusinessNumber,
+                          child: const Text('중북체크'),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextFormField(
+                          readOnly: true,
+                          initialValue: PhoneNumberFormatter().formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: widget.phoneNumber)).text,
+                          inputFormatters: [PhoneNumberFormatter()],
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('연락 번호*'),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomTextFormField(
+                          readOnly: true,
+                          initialValue: widget.name,
+                          textCapitalization: TextCapitalization.characters,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('대표자 명*'),
+                          ),
+                          inputFormatters: [_formatter.officeFax],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: CustomTextFormField(
+                          controller: _emailCntrl,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('이메일주소*'),
+                          ),
+                          errorText: _submitted ? _formValidate('email') : null,
+                          onChanged: (p0) => setState(() {}),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 2,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => CustomDropdownMenu(
+                            width: constraints.maxWidth,
+                            dropdownMenuEntries: emailOptions,
+                            initialSelection: '',
+                            onSelected: (newValue) {
+                              _selectedEmailOption = newValue ?? "";
+                              print(_selectedEmailOption);
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextFormField(
+                          controller: _storeTelCntr,
+                          keyboardType: TextInputType.phone,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('매장 전화'),
+                          ),
+                          inputFormatters: [PhoneNumberFormatter()],
+                          onChanged: (newValue) {
+                            // _storeTelCntr.text = _formatter.formatPhoneNumber(newValue);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomTextFormField(
+                          controller: _storeFaxCntr,
+                          keyboardType: TextInputType.phone,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('매장 팩스'),
+                          ),
+                          inputFormatters: [PhoneNumberFormatter()],
+                          onChanged: (newValue) {
+                            // _storeFaxCntr.text = _formatter.formatPhoneNumber(newValue);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: CustomTextFormField(
+                          controller: _addressCntr,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('주소*'),
+                          ),
+                          errorText: _submitted ? _formValidate('address') : null,
+                          onChanged: (p0) => setState(() {}),
+                          readOnly: true,
+                          onTap: () async {
+                            final model = await showAddressSelect(context);
+                            setState(() {
+                              _addressCntr.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
+                              _addressAdditionsxCntr.text = model.buildingName ?? "";
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 2,
+                        child: CustomTextFormField(
+                          controller: _addressAdditionsxCntr,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('상세주소'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  const Text(
+                    '가입 정보',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        constraints: const BoxConstraints(maxWidth: 300),
+                        child: CustomTextFormField(
+                          controller: _userNameCntr,
+                          decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            label: Text('아이디*'),
+                            hintText: 'abc00',
+                          ),
+                          errorText: _usernamePrompt ?? _formValidate('username'),
+                          errorTextStyle: _usernameOK ? const TextStyle(color: Colors.green) : null,
+                          onChanged: (value) {
+                            _usernameOK = false;
+                            _usernamePrompt = null;
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      ElevatedButton(
+                        onPressed: _checkUsername,
                         child: const Text('중북체크'),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  readOnly: true,
-                  initialValue: PhoneNumberFormatter().formatEditUpdate(TextEditingValue.empty, TextEditingValue(text: widget.phoneNumber)).text,
-                  inputFormatters: [PhoneNumberFormatter()],
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('연락 번호*'),
+                      )
+                    ],
                   ),
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  readOnly: true,
-                  initialValue: widget.name,
-                  textCapitalization: TextCapitalization.characters,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('대표자 명*'),
-                  ),
-                  inputFormatters: [_formatter.officeFax],
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  controller: _emailCntrl,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('이메일주소*'),
-                  ),
-                  errorText: _submitted ? _formValidate('email') : null,
-                  onChanged: (p0) => setState(() {}),
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  controller: _storeTelCntr,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('매장 전화'),
-                  ),
-                  inputFormatters: [PhoneNumberFormatter()],
-                  onChanged: (newValue) {
-                    // _storeTelCntr.text = _formatter.formatPhoneNumber(newValue);
-                  },
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  controller: _storeFaxCntr,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('매장 팩스'),
-                  ),
-                  inputFormatters: [PhoneNumberFormatter()],
-                  onChanged: (newValue) {
-                    // _storeFaxCntr.text = _formatter.formatPhoneNumber(newValue);
-                  },
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  controller: _addressCntr,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('주소*'),
-                  ),
-                  errorText: _submitted ? _formValidate('address') : null,
-                  onChanged: (p0) => setState(() {}),
-                  readOnly: true,
-                  onTap: () async {
-                    final model = await showAddressSelect(context);
-                    setState(() {
-                      _addressCntr.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
-                      _addressAdditionsxCntr.text = model.buildingName ?? "";
-                    });
-                  },
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  controller: _addressAdditionsxCntr,
-                  decoration: const InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    label: Text('상세주소'),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                const Text(
-                  '가입 정보',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: CustomTextFormField(
-                        controller: _userNameCntr,
-                        decoration: const InputDecoration(
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          label: Text('아이디*'),
-                          hintText: 'abc00',
+                  const SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomTextFormField(
+                          obscureText: true,
+                          controller: _passwordCntr,
+                          decoration: const InputDecoration(
+                            label: Text('비밀번호'),
+                          ),
+                          errorText: _submitted ? _formValidate('password') : null,
+                          onChanged: (p0) => setState(() {}),
                         ),
-                        errorText: _usernamePrompt ?? _formValidate('username'),
-                        errorTextStyle: _usernameOK ? const TextStyle(color: Colors.green) : null,
-                        onChanged: (value) {
-                          _usernameOK = false;
-                          _usernamePrompt = null;
-                          setState(() {});
-                        },
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: CustomTextFormField(
+                          obscureText: true,
+                          controller: _passwordCheckCntr,
+                          decoration: const InputDecoration(
+                            label: Text('비밀번호 확인'),
+                          ),
+                          onChanged: (p0) => setState(() {}),
+                          errorText: _submitted ? _formValidate('passcheck') : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Align(
+                    child: Container(
+                      constraints: const BoxConstraints(minWidth: 200),
+                      child: ElevatedButton(
+                        onPressed: _submitting ? null : _submit,
+                        child: _submitting
+                            ? const SizedBox(
+                                height: 30,
+                                width: 30,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text('가입신청'),
                       ),
                     ),
-                    const SizedBox(width: 20),
-                    ElevatedButton(
-                      onPressed: _checkUsername,
-                      child: const Text('중북체크'),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  obscureText: true,
-                  controller: _passwordCntr,
-                  decoration: const InputDecoration(
-                    label: Text('비밀번호'),
                   ),
-                  errorText: _submitted ? _formValidate('password') : null,
-                  onChanged: (p0) => setState(() {}),
-                ),
-                const SizedBox(height: 30),
-                CustomTextFormField(
-                  obscureText: true,
-                  controller: _passwordCheckCntr,
-                  decoration: const InputDecoration(
-                    label: Text('비밀번호 확인'),
-                  ),
-                  onChanged: (p0) => setState(() {}),
-                  errorText: _submitted ? _formValidate('passcheck') : null,
-                ),
-                const SizedBox(height: 30),
-                Align(
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: ElevatedButton(
-                      onPressed: _submitting ? null : _submit,
-                      child: _submitting
-                          ? const SizedBox(
-                              height: 30,
-                              width: 30,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text('인증완료'),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 200),
-              ],
+                  const SizedBox(height: 200),
+                ],
+              ),
             ),
           ),
         ),
@@ -299,13 +375,13 @@ class _SecondarySignupState extends State<SecondarySignup> {
 
     if (formname == 'partnername') return validator.validateForNoneEmpty(_partnerNameCntr.text, '상호명을');
     if (formname == 'businessnumber') return validator.validateForNoneEmpty(_businessNumberCntr.text, '사업자번호을');
-    if (formname == 'email') return validator.validateEmail(_emailCntrl.text);
+    if (formname == 'email') return validator.validateEmail(_emailCntrl.text + _selectedEmailOption);
     if (formname == 'address') return validator.validateForNoneEmpty(_addressCntr.text, '주소을');
     if (formname == 'username') return validator.validateForNoneEmpty(_addressCntr.text, '아이디을');
     if (formname == 'password') return validator.validatePass(_passwordCntr.text);
     if (formname == 'passcheck') return validator.validateRentryPass(_passwordCntr.text, _passwordCheckCntr.text);
 
-    setState(() {});
+    // setState(() {});
     return null;
   }
 
@@ -347,7 +423,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
         "business_num": _businessNumberCntr.text.replaceAll('-', ''), //사업자번호
         "address": _addressCntr.text, //주소
         "dtl_address": _addressAdditionsxCntr.text, //상세주소
-        "email": _emailCntrl.text,
+        "email": _emailCntrl.text + _selectedEmailOption,
         "store_contact": _storeTelCntr.text.replaceAll('-', ''), //매장번호
         "store_fax": _storeFaxCntr.text.replaceAll('-', ''), //매장팩스
         "contractor": widget.name, //대표자명

@@ -158,17 +158,17 @@ class AppTheme {
 
       dropdownMenuTheme: DropdownMenuThemeData(
         menuStyle: const MenuStyle(
-          padding: MaterialStatePropertyAll(EdgeInsets.zero),
+          padding: WidgetStatePropertyAll(EdgeInsets.zero),
           // visualDensity: VisualDensity.compact,
-          surfaceTintColor: MaterialStatePropertyAll(Colors.transparent),
-          backgroundColor: MaterialStatePropertyAll(Colors.white),
+          surfaceTintColor: WidgetStatePropertyAll(Colors.transparent),
+          backgroundColor: WidgetStatePropertyAll(Colors.white),
         ),
         inputDecorationTheme: inputDecorationTheme,
       ),
 
       menuButtonTheme: MenuButtonThemeData(
         // style: ButtonStyle(
-        //   textStyle: MaterialStatePropertyAll(TextStyle(fontSize: ))
+        //   textStyle: WidgetStatePropertyAll(TextStyle(fontSize: ))
         // ),
         style: MenuItemButton.styleFrom(
           textStyle: const TextStyle(

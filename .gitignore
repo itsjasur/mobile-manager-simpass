@@ -44,7 +44,6 @@ app.*.map.json
 
 
 google-services.json
-google-services1.json
 GoogleService-Info.plist
 
 sensitive.dart

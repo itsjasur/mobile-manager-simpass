@@ -45,7 +45,7 @@ class InputValidator {
     if (value == null || value.isEmpty) return '이메일을 입력하세요.';
 
     // regular expression to validate the email
-    final pattern = RegExp(r'^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
+    final pattern = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!pattern.hasMatch(value)) {
       return '올바르지 않은 이메일 형식입니다.';
     }

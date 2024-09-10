@@ -3,6 +3,8 @@
 // String BASEURL = "http://192.168.0.251:8091/api/";
 
 // ignore: non_constant_identifier_names
+import 'package:flutter/services.dart';
+
 String BASEURL = "https://ta.simpass.co.kr/api/";
 
 // ignore: non_constant_identifier_names
@@ -18,6 +20,9 @@ String IMAGEUPLOADURL = "https://tchat.baroform.com/";
 
 // ignore: non_constant_identifier_names
 String APPOWNER = "baroform";
+
+// FilteringTextInputFormatter koreanAndEnlishRegexp = FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ \- ㆍᆞ]'))
+FilteringTextInputFormatter koreanAndEnlishRegexp = FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z가-힣ㆍᆢㄱ-ㅎㅏ-ㅣ \-]'));
 
 final sideMenuNames = [
   '홈',
