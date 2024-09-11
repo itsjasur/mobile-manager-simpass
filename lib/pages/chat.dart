@@ -29,8 +29,6 @@ class _ChatPageState extends State<ChatPage> {
 
   final ScrollController _scrollController = ScrollController();
 
-  FocusNode _focus = FocusNode();
-
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       developer.log('scroll to bottom called');
@@ -97,7 +95,7 @@ class _ChatPageState extends State<ChatPage> {
       builder: (context, socketProvider, child) => Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: Text(socketProvider.selectedRoom?['agent_name'] + ' ' + socketProvider.chats.length.toString() ?? "No agent_name"),
+          title: Text(socketProvider.selectedRoom?['agent_name'] ?? "No agent_name"),
           actions: [
             Text(
               socketProvider.isConnected ? 'Connected' : 'Disconnected',
@@ -111,9 +109,7 @@ class _ChatPageState extends State<ChatPage> {
         body: socketProvider.myUsername == null
             ? const Center(child: Text('Cannot find current user'))
             : GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
+                onTap: () => FocusScope.of(context).unfocus(),
                 child: SizedBox(
                   height: double.infinity,
                   width: double.infinity,
@@ -124,8 +120,6 @@ class _ChatPageState extends State<ChatPage> {
                           reverse: true,
                           controller: _scrollController,
                           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                          // padding: const EdgeInsets.only(bottom: 100, left: 15, right: 15),
-
                           slivers: [
                             SliverList(
                               delegate: SliverChildBuilderDelegate(
@@ -215,7 +209,9 @@ class _ChatPageState extends State<ChatPage> {
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: TextField(
-                                        focusNode: FocusNode(),
+                                        // focusNode: FocusNode(),
+                                        // onSubmitted: (value) => _sendMessage(),
+                                        // textInputAction: TextInputAction.send,
                                         keyboardType: TextInputType.multiline,
                                         maxLines: null,
                                         autocorrect: false,

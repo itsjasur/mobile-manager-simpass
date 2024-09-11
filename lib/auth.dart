@@ -28,7 +28,7 @@ class _AuthGuardState extends State<AuthGuard> {
 
   @override
   void dispose() {
-    // Provider.of<WebSocketModel>(context, listen: false).disconnect();
+    Provider.of<WebSocketModel>(context, listen: false).disconnect();
     super.dispose();
   }
 

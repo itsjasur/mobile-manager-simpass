@@ -17,10 +17,7 @@ class WebSocketModel extends ChangeNotifier {
 
   List _chatRooms = [];
   String? _myUsername;
-
   Map? _selectedRoom;
-
-  // String? _selectedAgentName;
 
   bool get isConnected => _isConnected;
   int get totalUnreadCount => _totalUnreadCount;
@@ -47,21 +44,22 @@ class WebSocketModel extends ChangeNotifier {
   }
 
   Future<void> connect() async {
-    if (_socket != null && _isConnected) return;
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
-    // developer.log(accessToken.toString());
-    // developer.log('fm token: ' + accessToken.toString());
 
-    _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
-    _isConnected = true;
+    if (_socket == null) {
+      // developer.log(accessToken.toString());
+      _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
+      // _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/asdaskldjlaksjdl;kas'));
+      _isConnected = true;
+    }
 
     if (_socket != null) {
       String? fcmToken = prefs.getString('fcmToken');
       if (fcmToken != null) {
         _emit({'action': 'update_fcm_token', 'fcmToken': fcmToken});
+        // print('fcm token sent to chatserver');
       }
-      // print('fcm token sent to chatserver');
     }
 
     _socket!.stream.listen(
@@ -194,7 +192,7 @@ class WebSocketModel extends ChangeNotifier {
     _reconnectTimer?.cancel();
 
     // Set up a new reconnect timer
-    _reconnectTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+    _reconnectTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
       if (!_isConnected) {
         developer.log('Attempting to reconnect...');
         try {
