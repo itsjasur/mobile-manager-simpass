@@ -425,7 +425,7 @@ class _HomePageState extends State<HomePage> {
 
     try {
       final response = await Request().requestWithRefreshToken(
-        url: 'agent/setFcmToken',
+        url: 'setFcmToken',
         method: 'POST',
         body: {
           "fcm_token": fcmToken,

@@ -16,6 +16,7 @@ import 'package:mobile_manager_simpass/pages/login.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/pages/profile.dart';
 import 'package:mobile_manager_simpass/pages/secondary_signup.dart';
+import 'package:mobile_manager_simpass/pages/settings.dart';
 import 'package:mobile_manager_simpass/pages/signup.dart';
 import 'package:mobile_manager_simpass/pages/test.dart';
 import 'package:mobile_manager_simpass/theme.dart';
@@ -57,15 +58,16 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         // initialRoute: '/test-page',
-        initialRoute: '/home',
+        // initialRoute: '/home',
         // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
         // initialRoute: '/applications',
         // initialRoute: '/plans',
+        // initialRoute: '/settings',
         // initialRoute: '/chat-page',
         // initialRoute: '/download-forms',
-        // initialRoute: '/signup',
+        initialRoute: '/signup',
         // initialRoute: '/form-details',
         // initialRoute: '/partner-request',
         // initialRoute: '/partner-request-results',
@@ -87,6 +89,8 @@ class MyApp extends StatelessWidget {
 
           '/partner-request': (context) => const AuthGuard(child: PartnerRequestPage()),
           '/partner-request-results': (context) => const AuthGuard(child: PartnerRequestResultsPage()),
+
+          '/settings': (context) => const AuthGuard(child: SettingsPage()),
         },
         theme: AppTheme.lightTheme,
       ),

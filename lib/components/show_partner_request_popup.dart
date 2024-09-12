@@ -148,9 +148,11 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
       initialValue: _data['address'],
       onTap: () async {
         final model = await showAddressSelect(context);
-        _data['address'] = model.address;
-        _data['dtl_address'] = model.buildingName;
-        setState(() {});
+        if (model != null) {
+          _data['address'] = model.address;
+          _data['dtl_address'] = model.buildingName;
+          setState(() {});
+        }
       },
       errorText: _validateForms('address'),
     );

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/show_html.dart';
@@ -36,9 +35,9 @@ class SignupPageState extends State<SignupPage> {
   @override
   void initState() {
     super.initState();
-    _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
-    _birthdayCntr.text = '1995-08-18';
-    _phoneNumberCntr.text = '010-5818-9352';
+    // _nameCntr.text = 'SOBIRJONOV JASURBEK ARISLONBEK UGLI';
+    // _birthdayCntr.text = '1995-08-18';
+    // _phoneNumberCntr.text = '010-5818-9352';
     // _nameCntr.text = '박기철';
     // _phoneNumberCntr.text = '010-4201-3337';
     // _birthdayCntr.text = '1974-07-25';

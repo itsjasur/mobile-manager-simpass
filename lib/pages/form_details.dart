@@ -283,10 +283,12 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                                     //selecting addrss
                                                     if (formname == 'address' && context.mounted) {
                                                       final model = await showAddressSelect(context);
-                                                      _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
-                                                      _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
+                                                      if (model != null) {
+                                                        _classForms['address']?.controller.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
+                                                        _classForms['addressdetail']?.controller.text = model.buildingName ?? "";
+                                                      }
+                                                      setState(() {});
                                                     }
-                                                    setState(() {});
                                                   },
                                                 ),
                                               );

@@ -43,6 +43,11 @@ class _SideMenuState extends State<SideMenu> {
       'icon': Icons.download_outlined,
       'path': '/download-forms',
     },
+    {
+      'titleIndex': 5,
+      'icon': Icons.settings_outlined,
+      'path': '/settings',
+    },
   ];
 
   Widget itemBuilder(index) {

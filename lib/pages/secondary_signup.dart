@@ -111,8 +111,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        constraints: const BoxConstraints(maxWidth: 300),
+                      Expanded(
                         child: CustomTextFormField(
                           controller: _businessNumberCntr,
                           keyboardType: TextInputType.number,
@@ -255,10 +254,12 @@ class _SecondarySignupState extends State<SecondarySignup> {
                           readOnly: true,
                           onTap: () async {
                             final model = await showAddressSelect(context);
-                            setState(() {
-                              _addressCntr.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
-                              _addressAdditionsxCntr.text = model.buildingName ?? "";
-                            });
+                            if (model != null) {
+                              setState(() {
+                                _addressCntr.text = model.addressType == 'R' ? model.roadAddress ?? "" : model.jibunAddress ?? "";
+                                _addressAdditionsxCntr.text = model.buildingName ?? "";
+                              });
+                            }
                           },
                         ),
                       ),
@@ -287,8 +288,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        constraints: const BoxConstraints(maxWidth: 300),
+                      Expanded(
                         child: CustomTextFormField(
                           controller: _userNameCntr,
                           decoration: const InputDecoration(
