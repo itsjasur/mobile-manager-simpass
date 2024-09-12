@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
-import 'package:mobile_manager_simpass/components/signature_agree_container.dart';
 import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
@@ -147,11 +146,10 @@ class _ProfilePafeState extends State<ProfilePafe> {
                     const SizedBox(height: 20),
                     SignaturePadsContainer(
                       title: '판매자 서명',
+                      comment: '판매자 이름을 적어주세요',
                       signData: _signData,
                       sealData: _sealData,
                       updateDatas: (signData, sealData) {
-                        // _signData = signData != null ? base64Encode(signData) : null;
-                        // _sealData = sealData != null ? base64Encode(sealData) : null;
                         _signData = signData;
                         _sealData = sealData;
                         setState(() {});

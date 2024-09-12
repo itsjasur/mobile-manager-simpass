@@ -62,33 +62,35 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
                 // bottom: 0,
                 bottom: 20,
                 right: 20,
-                child: ElevatedButton(
-                  onPressed: _printing ? null : _printImages,
-                  child: _printing
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        )
-                      : const Row(
-                          children: [
-                            Icon(
-                              Icons.print_outlined,
-                              size: 23,
+                child: SafeArea(
+                  child: ElevatedButton(
+                    onPressed: _printing ? null : _printImages,
+                    child: _printing
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
-                            SizedBox(width: 10),
-                            Text(
-                              '출력',
-                              style: TextStyle(
-                                fontSize: 16,
-                                height: 1,
+                          )
+                        : const Row(
+                            children: [
+                              Icon(
+                                Icons.print_outlined,
+                                size: 23,
                               ),
-                            ),
-                          ],
-                        ),
+                              SizedBox(width: 10),
+                              Text(
+                                '출력',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  height: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
                 ),
               ),
             ],

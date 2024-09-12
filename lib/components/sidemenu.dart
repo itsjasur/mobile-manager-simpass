@@ -59,6 +59,7 @@ class _SideMenuState extends State<SideMenu> {
         borderRadius: BorderRadius.circular(4),
         onTap: () {
           Navigator.of(context).pushReplacementNamed(menuItems[index]['path']);
+          // Navigator.of(context).pushNamed(menuItems[index]['path']);
         },
         child: Container(
           padding: const EdgeInsets.all(10),

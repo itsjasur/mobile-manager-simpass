@@ -415,6 +415,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                 child: SignaturePadsContainer(
                                   key: const ValueKey('account'),
                                   title: '가입자서명',
+                                  comment: '가입자 이름을 적어주세요',
                                   signData: _accountSignData,
                                   sealData: _accountSealData,
                                   errorText: _getErrorMessageForPad('account'),
@@ -433,6 +434,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                   child: SignaturePadsContainer(
                                     key: const ValueKey('payment'),
                                     title: '자동이체 서명',
+                                    comment: '이체 예금/카드주 이름을 적어주세요',
                                     signData: _payeerSignData,
                                     sealData: _payeerSealData,
                                     errorText: _getErrorMessageForPad('payeer'),
@@ -451,6 +453,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                   child: SignaturePadsContainer(
                                     key: const ValueKey('deputy'),
                                     title: '법정대리인 서명',
+                                    comment: '법정대리인 이름을 적어주세요',
                                     signData: _deputySignData,
                                     sealData: _deputySealData,
                                     errorText: _getErrorMessageForPad('deputy'),
@@ -469,6 +472,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
                                   child: SignaturePadsContainer(
                                     key: const ValueKey('partner'),
                                     title: '판매자 서명',
+                                    comment: '판매자 이름을 적어주세요',
                                     signData: _partnerSignData,
                                     sealData: _partnerSealData,
                                     errorText: _getErrorMessageForPad('partner'),
@@ -728,6 +732,8 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
       request.fields['carrier_cd'] = _serverData['usim_plan_info']['carrier_cd'];
       request.fields['mvno_cd'] = _serverData['usim_plan_info']['mvno_cd'];
       request.fields['usim_plan_id'] = _serverData['usim_plan_info']['id'].toString();
+
+      request.fields['chk_eq_yn'] = _theSameAsPayeerCheck ? 'Y' : "N";
 
       for (var formName in _availableForms) {
         request.fields[formName] = _classForms[formName]!.controller.text;

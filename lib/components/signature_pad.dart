@@ -6,7 +6,8 @@ import 'package:signature/signature.dart';
 
 class SignaturePad extends StatefulWidget {
   final String type;
-  const SignaturePad({super.key, this.type = 'sign'});
+  final String comment;
+  const SignaturePad({super.key, this.type = 'sign', required this.comment});
 
   @override
   State<SignaturePad> createState() => _SignaturePadState();
@@ -112,7 +113,13 @@ class _SignaturePadState extends State<SignaturePad> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 5),
+                    if (widget.type == 'sign')
+                      Text(
+                        widget.comment,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    const SizedBox(height: 5),
                     SizedBox(
                       height: 220,
                       child: ClipRRect(

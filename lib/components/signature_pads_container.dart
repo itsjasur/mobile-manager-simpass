@@ -8,12 +8,13 @@ import 'package:mobile_manager_simpass/components/signature_pad.dart';
 
 class SignaturePadsContainer extends StatefulWidget {
   final String? title;
+  final String comment;
   final String? errorText;
   final String? signData;
   final String? sealData;
   final Function(String?, String?) updateDatas;
 
-  const SignaturePadsContainer({super.key, this.title = 'Sign/Seal', this.signData, this.sealData, required this.updateDatas, this.errorText});
+  const SignaturePadsContainer({super.key, this.title = 'Sign/Seal', this.signData, this.sealData, required this.updateDatas, this.errorText, required this.comment});
 
   @override
   State<SignaturePadsContainer> createState() => _SignaturePadsContainerState();
@@ -164,6 +165,7 @@ class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
             context: context,
             useSafeArea: false,
             builder: (context) => SignaturePad(
+              comment: widget.comment,
               type: type,
             ),
           );
@@ -182,10 +184,26 @@ class _SignaturePadsContainerState extends State<SignaturePadsContainer> {
             widget.updateDatas('data:image/png;base64,$signData', 'data:image/png;base64,$sealData');
           }
         },
-        icon: Icon(
-          Icons.draw_outlined,
-          color: Theme.of(context).colorScheme.primary,
-          size: 22,
+        icon: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (type == 'seal')
+              Icon(
+                Icons.draw_outlined,
+                color: Theme.of(context).colorScheme.primary,
+                size: 22,
+              ),
+            const SizedBox(height: 3),
+            if (type == 'sign')
+              Text(
+                widget.comment,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+          ],
         ),
       ),
     );

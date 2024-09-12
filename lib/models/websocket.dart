@@ -47,22 +47,24 @@ class WebSocketModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
 
-    if (_socket == null) {
-      // developer.log(accessToken.toString());
-      _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
-      // _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/asdaskldjlaksjdl;kas'));
-      _isConnected = true;
+    // If already connected, return early
+    if (_isConnected && _socket != null) {
+      // developer.log('WebSocket already connected. Skipping connection attempt.');
+      return;
     }
 
-    if (_socket != null) {
-      String? fcmToken = prefs.getString('fcmToken');
-      if (fcmToken != null) {
-        _emit({'action': 'update_fcm_token', 'fcmToken': fcmToken});
-        // print('fcm token sent to chatserver');
-      }
+    // developer.log(accessToken.toString());
+    _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
+    // _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/asdaskldjlaksjdl;kas'));
+    _isConnected = true;
+
+    String? fcmToken = prefs.getString('fcmToken');
+    if (fcmToken != null) {
+      _emit({'action': 'update_fcm_token', 'fcmToken': fcmToken});
+      // print('fcm token sent to chatserver');
     }
 
-    _socket!.stream.listen(
+    _socket?.stream.listen(
       (message) => _catchEmits(message),
       onDone: _onDisconnected,
       onError: (error) => developer.log('WebSocket error: $error'),

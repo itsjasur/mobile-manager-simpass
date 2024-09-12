@@ -29,11 +29,9 @@ class _ChatRoomsState extends State<ChatRooms> {
       builder: (context, websocketProvider, child) => Scaffold(
         appBar: AppBar(
           actions: [
-            Text(
-              websocketProvider.isConnected ? 'Connected' : 'Disconnected',
-              style: const TextStyle(
-                color: Colors.orange,
-              ),
+            Icon(
+              websocketProvider.isConnected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined,
+              color: Colors.green,
             ),
             const SizedBox(width: 20),
           ],

@@ -162,6 +162,7 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
                   const SizedBox(height: 30),
                   SignaturePadsContainer(
                     title: '판매자 서명',
+                    comment: '계약자이름을 적어주세요',
                     signData: _signData,
                     sealData: _sealData,
                     updateDatas: (signData, sealData) {

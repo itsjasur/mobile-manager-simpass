@@ -97,11 +97,9 @@ class _ChatPageState extends State<ChatPage> {
         appBar: AppBar(
           title: Text(socketProvider.selectedRoom?['agent_name'] ?? "No agent_name"),
           actions: [
-            Text(
-              socketProvider.isConnected ? 'Connected' : 'Disconnected',
-              style: const TextStyle(
-                color: Colors.orange,
-              ),
+            Icon(
+              socketProvider.isConnected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined,
+              color: Colors.green,
             ),
             const SizedBox(width: 20),
           ],
