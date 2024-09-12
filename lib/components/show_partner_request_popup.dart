@@ -103,7 +103,6 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
   String? _validateForms(type) {
     if (type == 'email') return _submitted ? InputValidator().validateEmail(_data['email']) : null;
     if (type == 'address') return _submitted ? InputValidator().validateForNoneEmpty(_data['address'], '주소') : null;
-    if (type == 'dtl_address') return _submitted ? InputValidator().validateForNoneEmpty(_data['dtl_address'], '상세주소') : null;
     if (type == 'bank_nm') return _submitted ? InputValidator().validateForNoneEmpty(_data['bank_nm'], '은행명') : null;
     if (type == 'bank_num') return _submitted ? InputValidator().validateForNoneEmpty(_data['bank_num'], '계좌번호') : null;
 
@@ -166,7 +165,6 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
         _data['dtl_address'] = newValue;
         setState(() {});
       },
-      errorText: _validateForms('dtl_address'),
     );
 
     Widget accNmW = _fieldBuilder(label: '예급주 명*', initialValue: _data['contractor']);

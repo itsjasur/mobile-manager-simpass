@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
@@ -23,12 +23,12 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    Provider.of<AuthenticationModel>(context, listen: false).setProviderValues();
     Provider.of<WebSocketModel>(context, listen: false).connect();
     print('chats page initiazlied');
   }
 
   final ScrollController _scrollController = ScrollController();
-
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       developer.log('scroll to bottom called');
@@ -104,144 +104,146 @@ class _ChatPageState extends State<ChatPage> {
             const SizedBox(width: 20),
           ],
         ),
-        body: socketProvider.myUsername == null
-            ? const Center(child: Text('Cannot find current user'))
-            : GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: SizedBox(
-                  height: double.infinity,
-                  width: double.infinity,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: CustomScrollView(
-                          reverse: true,
-                          controller: _scrollController,
-                          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                          slivers: [
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                childCount: socketProvider.chats.length,
-                                (BuildContext context, int index) {
-                                  Map chat = socketProvider.chats[index];
+        body: Consumer<AuthenticationModel>(
+          builder: (context, authprovider, child) => authprovider.userName == null
+              ? const Center(child: Text('Cannot find current user'))
+              : GestureDetector(
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: SizedBox(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: CustomScrollView(
+                            reverse: true,
+                            controller: _scrollController,
+                            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                            slivers: [
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate(
+                                  childCount: socketProvider.chats.length,
+                                  (BuildContext context, int index) {
+                                    Map chat = socketProvider.chats[index];
 
-                                  if (socketProvider.myUsername == chat['sender']) {
+                                    if (authprovider.userName == chat['sender']) {
+                                      return Align(
+                                        alignment: Alignment.centerRight,
+                                        child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
+                                      );
+                                    }
                                     return Align(
-                                      alignment: Alignment.centerRight,
-                                      child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
+                                      alignment: Alignment.centerLeft,
+                                      child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], false),
                                     );
-                                  }
-                                  return Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], false),
-                                  );
-                                },
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (_attachedFiles.isNotEmpty)
-                              Container(
-                                height: 100,
-                                width: double.infinity,
-                                color: Colors.black.withOpacity(0.2),
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: _attachedFiles.length,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, imageIndex) => Stack(
-                                    children: [
-                                      Container(
-                                        margin: const EdgeInsets.only(left: 15),
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(6),
-                                          child: Image.file(
-                                            _attachedFiles[imageIndex],
-                                            fit: BoxFit.cover,
-                                            width: 100,
-                                            height: 100,
+                        Container(
+                          margin: const EdgeInsets.only(top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (_attachedFiles.isNotEmpty)
+                                Container(
+                                  height: 100,
+                                  width: double.infinity,
+                                  color: Colors.black.withOpacity(0.2),
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: _attachedFiles.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, imageIndex) => Stack(
+                                      children: [
+                                        Container(
+                                          margin: const EdgeInsets.only(left: 15),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(6),
+                                            child: Image.file(
+                                              _attachedFiles[imageIndex],
+                                              fit: BoxFit.cover,
+                                              width: 100,
+                                              height: 100,
+                                            ),
                                           ),
+                                        ),
+                                        Positioned(
+                                          top: 0,
+                                          right: 0,
+                                          child: IconButton(
+                                            onPressed: () {
+                                              _attachedFiles.removeAt(imageIndex);
+                                              setState(() {});
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.yellow,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              Container(
+                                color: Colors.white,
+                                width: double.infinity,
+                                padding: const EdgeInsets.only(right: 15, left: 15, top: 15, bottom: 7),
+                                child: SafeArea(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey,
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                        ),
+                                        onPressed: pickImagesFromGallery,
+                                        child: const Icon(Icons.attach_file),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: TextField(
+                                          // focusNode: FocusNode(),
+                                          // onSubmitted: (value) => _sendMessage(),
+                                          // textInputAction: TextInputAction.send,
+                                          keyboardType: TextInputType.multiline,
+                                          maxLines: null,
+                                          autocorrect: false,
+                                          enableSuggestions: false,
+                                          controller: _controller,
+                                          decoration: const InputDecoration(constraints: BoxConstraints(maxHeight: 500)),
                                         ),
                                       ),
-                                      Positioned(
-                                        top: 0,
-                                        right: 0,
-                                        child: IconButton(
-                                          onPressed: () {
-                                            _attachedFiles.removeAt(imageIndex);
-                                            setState(() {});
-                                          },
-                                          icon: const Icon(
-                                            Icons.delete,
-                                            color: Colors.yellow,
-                                          ),
+                                      const SizedBox(width: 10),
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.grey,
+                                          padding: const EdgeInsets.symmetric(horizontal: 12),
                                         ),
+                                        onPressed: () {
+                                          if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
+                                            _sendMessage();
+                                          }
+                                        },
+                                        child: const Icon(Icons.send),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                            Container(
-                              color: Colors.white,
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(right: 15, left: 15, top: 15, bottom: 7),
-                              child: SafeArea(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                                      ),
-                                      onPressed: pickImagesFromGallery,
-                                      child: const Icon(Icons.attach_file),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: TextField(
-                                        // focusNode: FocusNode(),
-                                        // onSubmitted: (value) => _sendMessage(),
-                                        // textInputAction: TextInputAction.send,
-                                        keyboardType: TextInputType.multiline,
-                                        maxLines: null,
-                                        autocorrect: false,
-                                        enableSuggestions: false,
-                                        controller: _controller,
-                                        decoration: const InputDecoration(constraints: BoxConstraints(maxHeight: 500)),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                                      ),
-                                      onPressed: () {
-                                        if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
-                                          _sendMessage();
-                                        }
-                                      },
-                                      child: const Icon(Icons.send),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -325,41 +327,41 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-       // onKeyEvent: (value) {
-                                        //   int selectionStart = _controller.selection.start;
-                                        //   int selectionEnd = _controller.selection.end;
-                                        //   String cursorLeftSide = _controller.text.substring(0, selectionStart);
-                                        //   String cursorRightSide = _controller.text.substring(selectionEnd);
+// onKeyEvent: (value) {
+//   int selectionStart = _controller.selection.start;
+//   int selectionEnd = _controller.selection.end;
+//   String cursorLeftSide = _controller.text.substring(0, selectionStart);
+//   String cursorRightSide = _controller.text.substring(selectionEnd);
 
-                                        //   if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
-                                        //     if (HardwareKeyboard.instance.isShiftPressed) {
-                                        //       cursorLeftSide += '\n';
-                                        //       _controller.text = cursorLeftSide + cursorRightSide;
-                                        //       _controller.selection = TextSelection.fromPosition(TextPosition(offset: selectionStart + 1));
-                                        //     } else {
-                                        //       if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
-                                        //         _sendMessage();
-                                        //         // _controller.clear();
-                                        //         // setState(() {});
-                                        //       }
-                                        //     }
-                                        //   }
-                                        // },
+//   if (HardwareKeyboard.instance.isLogicalKeyPressed(LogicalKeyboardKey.enter)) {
+//     if (HardwareKeyboard.instance.isShiftPressed) {
+//       cursorLeftSide += '\n';
+//       _controller.text = cursorLeftSide + cursorRightSide;
+//       _controller.selection = TextSelection.fromPosition(TextPosition(offset: selectionStart + 1));
+//     } else {
+//       if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
+//         _sendMessage();
+//         // _controller.clear();
+//         // setState(() {});
+//       }
+//     }
+//   }
+// },
 
-                                        // onKeyEvent: (KeyEvent value) {
-                                        //   if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.enter) {
-                                        //     if (HardwareKeyboard.instance.isShiftPressed) {
-                                        //       final text = _controller.text;
-                                        //       final selection = _controller.selection;
-                                        //       final newText = text.replaceRange(selection.start, selection.end, '\n');
-                                        //       _controller.value = TextEditingValue(
-                                        //         text: newText,
-                                        //         selection: TextSelection.collapsed(offset: selection.start + 1),
-                                        //       );
-                                        //     } else {
-                                        //       if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
-                                        //         _sendMessage();
-                                        //       }
-                                        //     }
-                                        //   }
-                                        // },
+// onKeyEvent: (KeyEvent value) {
+//   if (value is KeyDownEvent && value.logicalKey == LogicalKeyboardKey.enter) {
+//     if (HardwareKeyboard.instance.isShiftPressed) {
+//       final text = _controller.text;
+//       final selection = _controller.selection;
+//       final newText = text.replaceRange(selection.start, selection.end, '\n');
+//       _controller.value = TextEditingValue(
+//         text: newText,
+//         selection: TextSelection.collapsed(offset: selection.start + 1),
+//       );
+//     } else {
+//       if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
+//         _sendMessage();
+//       }
+//     }
+//   }
+// },

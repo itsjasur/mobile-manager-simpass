@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/auth.dart';
-import 'package:mobile_manager_simpass/models/navigation.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
 import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/pages/chat.dart';
@@ -36,12 +35,14 @@ Future<void> main() async {
     ),
   );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  final webSocketModel = WebSocketModel();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthenticationModel()),
-        ChangeNotifierProvider(create: (_) => SidemenuModel()),
-        ChangeNotifierProvider(create: (_) => WebSocketModel()),
+        ChangeNotifierProvider(create: (_) => AuthenticationModel(webSocketModel)),
+        ChangeNotifierProvider(create: (_) => webSocketModel),
       ],
       child: const MyApp(),
     ),

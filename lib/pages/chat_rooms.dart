@@ -18,7 +18,9 @@ class _ChatRoomsState extends State<ChatRooms> {
   void initState() {
     super.initState();
     Provider.of<WebSocketModel>(context, listen: false).connect();
-    _fetchData();
+
+    _fetchAgentList();
+    // _fetchData();
 
     print('chats room initizlied');
   }
@@ -52,10 +54,12 @@ class _ChatRoomsState extends State<ChatRooms> {
                       borderRadius: BorderRadius.circular(10),
                       onTap: websocketProvider.isConnected
                           ? () async {
+                              websocketProvider.selectRoom(roomDetails);
+                              setState(() {});
+
                               if (roomDetails['room_id'] == null) {
                                 websocketProvider.joinNewRoom(roomDetails['agent_code']);
                               } else {
-                                websocketProvider.selectRoom(roomDetails);
                                 websocketProvider.joinRoom();
                               }
                               await showDialog(
@@ -112,26 +116,26 @@ class _ChatRoomsState extends State<ChatRooms> {
     );
   }
 
-  Future<void> _fetchData() async {
-    // print('fetch data called');
-    try {
-      final response = await Request().requestWithRefreshToken(url: 'agent/userInfo', method: 'GET');
-      Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
+  // Future<void> _fetchData() async {
+  //   // print('fetch data called');
+  //   try {
+  //     final response = await Request().requestWithRefreshToken(url: 'agent/userInfo', method: 'GET');
+  //     Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
 
-      if (response.statusCode != 200) throw decodedRes['message'] ?? "Fetch userInfo error";
+  //     if (response.statusCode != 200) throw decodedRes['message'] ?? "Fetch userInfo error";
 
-      // developer.log(decodedRes.toString());
-      String? username = decodedRes['data']?['info']?['username'];
-      if (username != null && mounted) {
-        Provider.of<WebSocketModel>(context, listen: false).setUsername(username);
-        await _fetchAgentList();
-      }
-      // developer.log(_myUsername.toString());
-      setState(() {});
-    } catch (e) {
-      showCustomSnackBar(e.toString());
-    }
-  }
+  //     // developer.log(decodedRes.toString());
+  //     String? username = decodedRes['data']?['info']?['username'];
+  //     if (username != null && mounted) {
+  //       Provider.of<WebSocketModel>(context, listen: false).setUsername(username);
+  //       await _fetchAgentList();
+  //     }
+  //     // developer.log(_myUsername.toString());
+  //     setState(() {});
+  //   } catch (e) {
+  //     showCustomSnackBar(e.toString());
+  //   }
+  // }
 
   Future<void> _fetchAgentList() async {
     try {

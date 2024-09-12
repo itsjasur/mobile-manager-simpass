@@ -16,24 +16,18 @@ class WebSocketModel extends ChangeNotifier {
   List<dynamic> _chats = [];
 
   List _chatRooms = [];
-  String? _myUsername;
   Map? _selectedRoom;
 
   bool get isConnected => _isConnected;
   int get totalUnreadCount => _totalUnreadCount;
   List get chatRooms => _chatRooms;
   List get chats => _chats;
-  String? get myUsername => _myUsername;
   Map? get selectedRoom => _selectedRoom;
 
   Timer? _reconnectTimer;
 
-  void setUsername(String username) {
-    _myUsername = username;
-    notifyListeners();
-  }
-
   void selectRoom(Map? room) {
+    _chats = [];
     _selectedRoom = room;
     notifyListeners();
   }

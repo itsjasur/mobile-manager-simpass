@@ -132,7 +132,8 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString('password', _passwordCntr.text);
 
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-      if (mounted) await Provider.of<AuthenticationModel>(context, listen: false).login(decodedRes['accessToken'], decodedRes['refreshToken']);
+      print(decodedRes);
+      if (mounted) await Provider.of<AuthenticationModel>(context, listen: false).login(decodedRes['accessToken'], decodedRes['refreshToken'], decodedRes['username']);
       if (mounted) Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       showCustomSnackBar(e.toString());

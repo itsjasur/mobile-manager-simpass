@@ -38,6 +38,8 @@ class _PlansPageState extends State<PlansPage> {
   // bool _mvnosLoading = true;
   // bool _plansLoading = true;
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -46,8 +48,29 @@ class _PlansPageState extends State<PlansPage> {
 
   @override
   void dispose() {
-    super.dispose();
+    _scrollController.dispose();
     _searchTextCntr.dispose();
+    super.dispose();
+  }
+
+  void _animateScroll() {
+    if (_scrollController.hasClients) {
+      _scrollController
+          .animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 1),
+        curve: Curves.linear,
+      )
+          .then((_) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _scrollController.animateTo(
+            0,
+            duration: const Duration(seconds: 1),
+            curve: Curves.easeOut,
+          );
+        });
+      });
+    }
   }
 
   @override
@@ -128,6 +151,7 @@ class _PlansPageState extends State<PlansPage> {
                   itemCount: _mvnos.length,
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
+                  controller: _scrollController,
                   itemBuilder: (BuildContext context, int index) {
                     return Stack(
                       alignment: Alignment.center,
@@ -216,6 +240,11 @@ class _PlansPageState extends State<PlansPage> {
       if (decodedRes['statusCode'] == 200) {
         _mvnos = decodedRes['data']['info'];
         setState(() {});
+
+        // Schedule the scroll animation after the build is complete
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _animateScroll();
+        });
       }
     } catch (e) {
       showCustomSnackBar(e.toString());
