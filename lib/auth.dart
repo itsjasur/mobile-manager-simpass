@@ -22,15 +22,8 @@ class _AuthGuardState extends State<AuthGuard> {
   @override
   void initState() {
     super.initState();
-
     Provider.of<WebSocketModel>(context, listen: false).connect();
   }
-
-  // @override
-  // void dispose() {
-  //   Provider.of<WebSocketModel>(context, listen: false).disconnect();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -38,24 +31,16 @@ class _AuthGuardState extends State<AuthGuard> {
       canPop: _canPopNow,
       onPopInvokedWithResult: (didPop, result) {
         _canPopNow = true;
-        setState(() {});
 
         Timer(const Duration(seconds: 2), () {
           _canPopNow = false;
-          setState(() {});
         });
 
+        setState(() {});
         showCustomSnackBar('앱을 종료하려면 뒤로 버튼을 두 번 누르세요.');
       },
       child: Consumer<AuthenticationModel>(builder: (context, auth, _) {
-        // print('AuthGuard rebuild: isAuthenticated = ${auth.isAuthenticated}');
-
         if (auth.isAuthenticated) {
-          // return Scaffold(
-          //   drawer: const SideMenu(),
-          //   appBar: AppBar(),
-          //   body: widget.child,
-          // );
           return SizedBox(
             height: double.infinity,
             child: Stack(

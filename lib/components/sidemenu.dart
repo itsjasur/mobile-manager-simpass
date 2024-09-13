@@ -99,59 +99,61 @@ class _SideMenuState extends State<SideMenu> {
       backgroundColor: const Color.fromARGB(255, 34, 34, 34),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 70),
-                    Container(
-                      margin: const EdgeInsets.only(left: 10),
-                      child: Image.asset(
-                        'assets/white_logo.png',
-                        width: 130,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    ...List.generate(menuItems.length, (index) => itemBuilder(index)),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(bottom: 20),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(4),
-                onTap: () async {
-                  await Provider.of<AuthenticationModel>(context, listen: false).logout();
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.logout_outlined,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        size: 22,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        '로그 아웃',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                      const SizedBox(height: 70),
+                      Container(
+                        margin: const EdgeInsets.only(left: 10),
+                        child: Image.asset(
+                          'assets/white_logo.png',
+                          width: 130,
                         ),
                       ),
+                      const SizedBox(height: 30),
+                      ...List.generate(menuItems.length, (index) => itemBuilder(index)),
                     ],
                   ),
                 ),
               ),
-            ),
-          ],
+              Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(4),
+                  onTap: () async {
+                    await Provider.of<AuthenticationModel>(context, listen: false).logout();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.logout_outlined,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          '로그 아웃',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

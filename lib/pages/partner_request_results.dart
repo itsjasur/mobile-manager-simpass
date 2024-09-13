@@ -364,7 +364,6 @@ class _PartnerRequestResultsPageState extends State<PartnerRequestResultsPage> {
         "partner_cd": _partnerInfo['partner_cd'],
       });
       Uint8List bytes = response.bodyBytes;
-
       if (bytes.isEmpty) throw 'Empty';
 
       final directory = await getTemporaryDirectory();

@@ -378,7 +378,7 @@ class _HomePageState extends State<HomePage> {
       await _updateDeviceData();
     } catch (e) {
       print('homepage error: $e');
-      showCustomSnackBar(e.toString());
+      // showCustomSnackBar(e.toString());
     }
   }
 
@@ -407,7 +407,7 @@ class _HomePageState extends State<HomePage> {
         }
       }
     } catch (e) {
-      print('homepage error: $e');
+      // print('homepage error: $e');
       showCustomSnackBar(e.toString());
     }
   }

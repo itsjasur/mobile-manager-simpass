@@ -80,7 +80,6 @@ class _LoginPageState extends State<LoginPage> {
                         _submitted = true;
                         setState(() {});
                         if (InputValidator().validatePass(_passwordCntr.text) == null && InputValidator().validateId(_userNameCntr.text) == null) _login();
-                        _login();
                       },
                       child: const Text('로그인'),
                     ),
@@ -132,9 +131,9 @@ class _LoginPageState extends State<LoginPage> {
       await prefs.setString('password', _passwordCntr.text);
 
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
-      print(decodedRes);
       if (mounted) await Provider.of<AuthenticationModel>(context, listen: false).login(decodedRes['accessToken'], decodedRes['refreshToken'], decodedRes['username']);
-      if (mounted) Navigator.of(context).pushReplacementNamed('/home');
+      // print(decodedRes);
+      // if (mounted) Navigator.of(context).pushReplacementNamed('/home');
     } catch (e) {
       showCustomSnackBar(e.toString());
     }
