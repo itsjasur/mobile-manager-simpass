@@ -18,11 +18,7 @@ class _ChatRoomsState extends State<ChatRooms> {
   void initState() {
     super.initState();
     Provider.of<WebSocketModel>(context, listen: false).connect();
-
     _fetchAgentList();
-    // _fetchData();
-
-    print('chats room initizlied');
   }
 
   @override
@@ -33,7 +29,7 @@ class _ChatRoomsState extends State<ChatRooms> {
           actions: [
             Icon(
               websocketProvider.isConnected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined,
-              color: Colors.green,
+              color: websocketProvider.isConnected ? Colors.green : Colors.orange,
             ),
             const SizedBox(width: 20),
           ],
@@ -163,7 +159,7 @@ class _ChatRoomsState extends State<ChatRooms> {
       // developer.log(res.toString());
       // developer.log('agent list $_agentList');
     } catch (e) {
-      print(e);
+      // print(e);
       showCustomSnackBar(e.toString());
     }
   }

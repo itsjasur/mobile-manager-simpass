@@ -1,8 +1,5 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/pages/form_details.dart';

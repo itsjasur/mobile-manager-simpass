@@ -1,8 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/show_html.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:mobile_manager_simpass/utils/request.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -131,8 +138,16 @@ class _SettingsPageState extends State<SettingsPage> {
                                       Expanded(
                                         child: ElevatedButton(
                                           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                          onPressed: () {},
-                                          child: const Text('회원탈퇴'),
+                                          onPressed: _terminating ? null : _terminateAccount,
+                                          child: _terminating
+                                              ? const SizedBox(
+                                                  height: 30,
+                                                  width: 30,
+                                                  child: CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                  ),
+                                                )
+                                              : const Text('회원탈퇴'),
                                         ),
                                       ),
                                     ],
@@ -164,5 +179,42 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
     );
+  }
+
+  bool _terminating = false;
+
+  Future<void> _terminateAccount() async {
+    _terminating = true;
+    setState(() {});
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userName = prefs.getString('username');
+
+    if (userName == null) {
+      showCustomSnackBar('Username is not given');
+      return;
+    }
+
+    try {
+      final response = await Request().requestWithRefreshToken(url: 'admin/memberCancel', method: 'POST', body: {
+        "username": userName,
+        "password": _passwordCntr.text,
+      });
+
+      Map decodedRes = jsonDecode(utf8.decode(response.bodyBytes));
+
+      if (response.statusCode == 200) {
+        showCustomSnackBar(decodedRes['message'] ?? "Account terminated");
+        if (mounted) Navigator.pop(context);
+        if (mounted) Provider.of<AuthenticationModel>(context, listen: false).logout();
+        return;
+      }
+
+      _terminating = false;
+      setState(() {});
+      showCustomSnackBar(decodedRes['message'] ?? "Account terminate request error");
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    }
   }
 }

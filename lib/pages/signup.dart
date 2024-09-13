@@ -393,7 +393,7 @@ class SignupPageState extends State<SignupPage> {
   bool _submitting = false;
 
   void chooseType(String type) {
-    print(type);
+    // print(type);
     _selectedCertType = type;
     setState(() {});
   }

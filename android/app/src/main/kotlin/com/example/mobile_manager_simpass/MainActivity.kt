@@ -1,4 +1,4 @@
-package com.example.mobile_manager_simpass
+package com.baroform.app
 
 import io.flutter.embedding.android.FlutterActivity
 

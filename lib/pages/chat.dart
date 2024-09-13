@@ -25,7 +25,7 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     Provider.of<AuthenticationModel>(context, listen: false).setProviderValues();
     Provider.of<WebSocketModel>(context, listen: false).connect();
-    print('chats page initiazlied');
+    // print('chats page initiazlied');
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -99,7 +99,7 @@ class _ChatPageState extends State<ChatPage> {
           actions: [
             Icon(
               socketProvider.isConnected ? Icons.cloud_done_outlined : Icons.cloud_off_outlined,
-              color: Colors.green,
+              color: socketProvider.isConnected ? Colors.green : Colors.orange,
             ),
             const SizedBox(width: 20),
           ],
@@ -255,7 +255,7 @@ class _ChatPageState extends State<ChatPage> {
     _controller.clear();
     setState(() {});
 
-    print('send message called');
+    // print('send message called');
     List<String> attachmentPaths = await _uploadImages();
 
     if (mounted) {
@@ -293,10 +293,10 @@ class _ChatPageState extends State<ChatPage> {
             uploadedFilePaths.add(respJson['path']);
           }
         } else {
-          print('Failed to send request. Status code: ${response.statusCode}');
+          // print('Failed to send request. Status code: ${response.statusCode}');
         }
       } catch (e) {
-        print('Error uploading file: $e');
+        // print('Error uploading file: $e');
         showCustomSnackBar(e.toString());
       }
     }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
-    Color primaryColor = Color.fromARGB(255, 2, 117, 233);
+    Color primaryColor = const Color.fromARGB(255, 2, 117, 233);
 
     Color backgroundColor = const Color.fromARGB(255, 245, 251, 255);
 
@@ -113,8 +113,8 @@ class AppTheme {
       radioTheme: RadioThemeData(
         visualDensity: VisualDensity.compact,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        fillColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
-          if (states.contains(MaterialState.selected)) return primaryColor; // Color when selected
+        fillColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) return primaryColor; // Color when selected
           return Colors.black38;
         }),
       ),

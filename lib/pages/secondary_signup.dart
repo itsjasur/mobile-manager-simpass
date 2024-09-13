@@ -196,7 +196,7 @@ class _SecondarySignupState extends State<SecondarySignup> {
                             initialSelection: '',
                             onSelected: (newValue) {
                               _selectedEmailOption = newValue ?? "";
-                              print(_selectedEmailOption);
+                              // print(_selectedEmailOption);
                               setState(() {});
                             },
                           ),

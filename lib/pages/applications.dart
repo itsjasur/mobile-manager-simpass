@@ -9,8 +9,7 @@ import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
-
-import 'dart:developer' as developer;
+// import 'dart:developer' as developer;
 
 class ApplicationsPage extends StatefulWidget {
   final String? status;
@@ -494,8 +493,8 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
           "usim_act_status": _selectedStatus,
           "apply_fr_date": _selectedFilterType == 'apply_date' ? _fromDateCntr.text : "", //접수일자 from
           "apply_to_date": _selectedFilterType == 'apply_date' ? _toDateCntr.text : '', //접수일자 to
-          "act_fr_date": _selectedFilterType == 'regis_date' ? _fromDateCntr : '', //개통완료일자 from
-          "act_to_date": _selectedFilterType == 'regis_date' ? _toDateCntr : '', //개통완료일자 to
+          "act_fr_date": _selectedFilterType == 'regis_date' ? _fromDateCntr.text : '', //개통완료일자 from
+          "act_to_date": _selectedFilterType == 'regis_date' ? _toDateCntr.text : '', //개통완료일자 to
           "page": _pageNumber,
           "rowLimit": _perPage,
         },

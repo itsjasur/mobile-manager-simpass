@@ -40,7 +40,7 @@ class _HtmlContentState extends State<HtmlContent> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {
-            print(url);
+            // print(url);
           },
         ),
       )

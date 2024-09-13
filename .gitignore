@@ -47,3 +47,4 @@ google-services.json
 GoogleService-Info.plist
 
 sensitive.dart
+key.properties

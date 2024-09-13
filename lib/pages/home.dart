@@ -363,7 +363,7 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> _dataList = [{}];
 
   Future<void> _fetchData() async {
-    print('home page fetch data called');
+    // print('home page fetch data called');
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/actCntStatus', method: 'GET');
 
@@ -377,7 +377,7 @@ class _HomePageState extends State<HomePage> {
       await _fetchHomeInfo();
       await _updateDeviceData();
     } catch (e) {
-      print('homepage error: $e');
+      // print('homepage error: $e');
       // showCustomSnackBar(e.toString());
     }
   }
@@ -385,7 +385,7 @@ class _HomePageState extends State<HomePage> {
   Map homeInfo = {};
 
   Future<void> _fetchHomeInfo() async {
-    print('home page fetch home info called');
+    // print('home page fetch home info called');
     try {
       final response = await Request().requestWithRefreshToken(url: 'agent/homeInfo', method: 'GET');
 

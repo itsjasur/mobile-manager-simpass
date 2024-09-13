@@ -16,7 +16,7 @@
     <application
         android:usesCleartextTraffic="true" 
 
-        android:label="Simpass Manager"
+        android:label="바로폼"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

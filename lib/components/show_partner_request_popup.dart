@@ -378,8 +378,8 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
 
                                         e.value['new'] = image;
                                         e.value['filename'] = filename;
+                                        // print(e.value['new']);
 
-                                        print(e.value['new']);
                                         setState(() {});
                                       },
                                     ),

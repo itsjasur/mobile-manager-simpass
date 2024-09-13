@@ -279,7 +279,7 @@ class _ProfilePafeState extends State<ProfilePafe> {
         setState(() {});
       }
     } catch (e) {
-      print('profile error: $e');
+      // print('profile error: $e');
       showCustomSnackBar(e.toString());
     }
   }

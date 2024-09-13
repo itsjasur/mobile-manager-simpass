@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
-import 'package:mobile_manager_simpass/pages/chat.dart';
 import 'package:mobile_manager_simpass/pages/chat_rooms.dart';
 import 'package:provider/provider.dart';
 

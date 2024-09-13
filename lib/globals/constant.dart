@@ -5,6 +5,7 @@
 // ignore: non_constant_identifier_names
 import 'package:flutter/services.dart';
 
+// ignore: non_constant_identifier_names
 String BASEURL = "https://ta.simpass.co.kr/api/";
 
 // ignore: non_constant_identifier_names
