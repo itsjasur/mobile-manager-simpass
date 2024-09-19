@@ -7,6 +7,7 @@ import 'package:mobile_manager_simpass/components/show_html.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:mobile_manager_simpass/pages/terms.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +47,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   child: ListTile(
                     onTap: () {
-                      showHtmlContentPopup(context, 'privacy');
+                      // showHtmlContentPopup(context, 'privacy');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsPage(type: 'privacy')));
                     },
                     minLeadingWidth: 200,
                     minTileHeight: 55,
@@ -68,7 +70,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   child: ListTile(
                     onTap: () {
-                      showHtmlContentPopup(context, 'useterms');
+                      // showHtmlContentPopup(context, 'useterms');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsPage(type: 'useterms')));
                     },
                     minLeadingWidth: 200,
                     minTileHeight: 55,

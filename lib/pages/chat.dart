@@ -44,10 +44,10 @@ class _ChatPageState extends State<ChatPage> {
     // developer.log(imagePaths.toString());
     if ((text != null && text.isNotEmpty) || (imagePaths != null && imagePaths.isNotEmpty)) {
       return Container(
-        margin: const EdgeInsets.only(bottom: 10, left: 15, right: 15),
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.7),
         child: IntrinsicWidth(
           child: Column(
+            crossAxisAlignment: mychat ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
               if (text != null && text.isNotEmpty)
                 Container(
@@ -56,7 +56,8 @@ class _ChatPageState extends State<ChatPage> {
                   constraints: const BoxConstraints(minHeight: 45, minWidth: 100),
                   decoration: BoxDecoration(
                     color: mychat ? Theme.of(context).colorScheme.primary : Colors.black54,
-                    borderRadius: BorderRadius.circular(25),
+                    // borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     text,
@@ -129,12 +130,47 @@ class _ChatPageState extends State<ChatPage> {
                                     if (authprovider.userName == chat['sender']) {
                                       return Align(
                                         alignment: Alignment.centerRight,
-                                        child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
+                                        child: Container(
+                                          margin: const EdgeInsets.only(bottom: 10, left: 15, right: 15),
+                                          child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], true),
+                                        ),
                                       );
                                     }
                                     return Align(
                                       alignment: Alignment.centerLeft,
-                                      child: _chatAndImageBubble(chat['text'], chat['attachment_paths'], false),
+                                      child: Container(
+                                        margin: const EdgeInsets.only(bottom: 10, left: 15, right: 15),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              height: 50,
+                                              width: 50,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey,
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 7),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                if (chat['sender_agent_info']?['name'] != null)
+                                                  Text(
+                                                    chat['sender_agent_info']['name'],
+                                                    style: const TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.black54,
+                                                    ),
+                                                  ),
+                                                const SizedBox(height: 3),
+                                                _chatAndImageBubble(chat['text'], chat['attachment_paths'], false),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     );
                                   },
                                 ),
