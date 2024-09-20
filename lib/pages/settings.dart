@@ -47,8 +47,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   child: ListTile(
                     onTap: () {
-                      // showHtmlContentPopup(context, 'privacy');
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsPage(type: 'privacy')));
+                      showHtmlContentPopup(context, 'privacy');
+                      // Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsPage(type: 'privacy')));
                     },
                     minLeadingWidth: 200,
                     minTileHeight: 55,
@@ -70,8 +70,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   child: ListTile(
                     onTap: () {
-                      // showHtmlContentPopup(context, 'useterms');
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsPage(type: 'useterms')));
+                      showHtmlContentPopup(context, 'useterms');
+                      // Navigator.push(context, MaterialPageRoute(builder: (context) => const TermsPage(type: 'useterms')));
                     },
                     minLeadingWidth: 200,
                     minTileHeight: 55,

@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
@@ -52,11 +55,10 @@ class _ChatPageState extends State<ChatPage> {
               if (text != null && text.isNotEmpty)
                 Container(
                   alignment: mychat ? Alignment.centerRight : null,
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   constraints: const BoxConstraints(minHeight: 45, minWidth: 100),
                   decoration: BoxDecoration(
                     color: mychat ? Theme.of(context).colorScheme.primary : Colors.black54,
-                    // borderRadius: BorderRadius.circular(25),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -341,21 +343,45 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   List<File> _attachedFiles = [];
+
   Future<void> pickImagesFromGallery() async {
     final ImagePicker picker = ImagePicker();
+
     try {
       final List<XFile> xFiles = await picker.pickMultiImage();
-      // List<String> originalFilenames = xFiles.map((xFile) => xFile.name).toList();
 
       if (xFiles.isNotEmpty) {
-        // converts XFile list to File list
+        // Convert XFile list to File list
         List<File> files = xFiles.map((xFile) => File(xFile.path)).toList();
 
-        _attachedFiles.addAll(files);
-
-        setState(() {});
+        setState(() {
+          _attachedFiles.addAll(files);
+        });
       } else {
-        showCustomSnackBar('No images selected');
+        // showCustomSnackBar('No images selected');
+      }
+    } on PlatformException catch (e) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('허가가 필요합니다'),
+            content: const Text('이 앱은 이미지를 선택하기 위해 사진 라이브러리에 액세스해야 합니다. 설정에서 권한을 부여해 주세요'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('취소'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              TextButton(
+                child: const Text('설정 열기'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  AppSettings.openAppSettings();
+                },
+              ),
+            ],
+          ),
+        );
       }
     } catch (e) {
       showCustomSnackBar('Error picking images: $e');
