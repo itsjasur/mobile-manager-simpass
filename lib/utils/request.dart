@@ -1,6 +1,6 @@
-import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/main.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;

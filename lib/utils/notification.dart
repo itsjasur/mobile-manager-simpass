@@ -98,7 +98,8 @@ class NotificationService {
 //this recaives payload as string and then converts to map
   void handleNotificationTap(String? payload) {
     // print('handlenotificationtap: $payload');
-    if (payload != null) print(jsonDecode(payload));
+    // if (payload != null) {}
+    // print(jsonDecode(payload));
   }
 }
 

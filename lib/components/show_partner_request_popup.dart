@@ -11,7 +11,7 @@ import 'package:mobile_manager_simpass/components/partners_contract.viewer.dart'
 import 'package:mobile_manager_simpass/components/popup_header.dart';
 import 'package:mobile_manager_simpass/components/show_address_popup.dart';
 import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
-import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:http/http.dart' as http;
@@ -559,13 +559,28 @@ class _PartnerRequestPopupContentState extends State<PartnerRequestPopupContent>
 
       final respStr = await response.stream.bytesToString();
       Map decodedRes = await jsonDecode(respStr);
-
       developer.log(decodedRes.toString());
-
       showCustomSnackBar(decodedRes['message']);
 
       if (decodedRes['result'] == 'SUCCESS') {
-        if (mounted) Navigator.pop(context);
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('접수완료'),
+              content: const Text('정상적으로 거래접수가 완료되었습니다.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('홈으로 가기'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                  },
+                ),
+              ],
+            ),
+          );
+        }
       }
       // print(decodedRes);
     } catch (e) {

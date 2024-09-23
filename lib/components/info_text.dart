@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 
 class InfoText extends StatelessWidget {
   const InfoText({super.key});

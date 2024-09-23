@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
-import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 showHtmlContentPopup(BuildContext context, String type) async {

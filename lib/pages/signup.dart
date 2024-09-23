@@ -5,6 +5,7 @@ import 'package:mobile_manager_simpass/components/custom_text_field.dart';
 import 'package:mobile_manager_simpass/components/show_html.dart';
 import 'package:mobile_manager_simpass/components/sign_up_waiting_popup.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/validators.dart';
 import 'package:http/http.dart' as http;

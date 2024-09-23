@@ -7,7 +7,6 @@ import 'package:mobile_manager_simpass/components/show_html.dart';
 import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/models/authentication.dart';
-import 'package:mobile_manager_simpass/pages/terms.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

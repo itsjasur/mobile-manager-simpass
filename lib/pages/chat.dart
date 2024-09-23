@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
-import 'package:mobile_manager_simpass/globals/constant.dart';
+
 import 'package:mobile_manager_simpass/models/authentication.dart';
 import 'package:mobile_manager_simpass/models/websocket.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
@@ -56,7 +56,7 @@ class _ChatPageState extends State<ChatPage> {
                 Container(
                   alignment: mychat ? Alignment.centerRight : null,
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  constraints: const BoxConstraints(minHeight: 45, minWidth: 100),
+                  constraints: const BoxConstraints(minHeight: 45, minWidth: 0),
                   decoration: BoxDecoration(
                     color: mychat ? Theme.of(context).colorScheme.primary : Colors.black54,
                     borderRadius: BorderRadius.circular(8),
@@ -180,102 +180,99 @@ class _ChatPageState extends State<ChatPage> {
                             ],
                           ),
                         ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (_attachedFiles.isNotEmpty)
-                                Container(
-                                  height: 100,
-                                  width: double.infinity,
-                                  color: Colors.black.withOpacity(0.2),
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: _attachedFiles.length,
-                                    scrollDirection: Axis.horizontal,
-                                    itemBuilder: (context, imageIndex) => Stack(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.only(left: 15),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(6),
-                                            child: Image.file(
-                                              _attachedFiles[imageIndex],
-                                              fit: BoxFit.cover,
-                                              width: 100,
-                                              height: 100,
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 0,
-                                          right: 0,
-                                          child: IconButton(
-                                            onPressed: () {
-                                              _attachedFiles.removeAt(imageIndex);
-                                              setState(() {});
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.yellow,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (_attachedFiles.isNotEmpty)
                               Container(
-                                color: Colors.white,
+                                height: 100,
                                 width: double.infinity,
-                                padding: const EdgeInsets.only(right: 15, left: 15, top: 15, bottom: 7),
-                                child: SafeArea(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
+                                color: Colors.black.withOpacity(0.2),
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: _attachedFiles.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, imageIndex) => Stack(
                                     children: [
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey,
-                                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                                        ),
-                                        onPressed: pickImagesFromGallery,
-                                        child: const Icon(Icons.attach_file),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: TextField(
-                                          // focusNode: FocusNode(),
-                                          // onSubmitted: (value) => _sendMessage(),
-                                          // textInputAction: TextInputAction.send,
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          autocorrect: false,
-                                          enableSuggestions: false,
-                                          controller: _controller,
-                                          decoration: const InputDecoration(constraints: BoxConstraints(maxHeight: 500)),
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 15),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(6),
+                                          child: Image.file(
+                                            _attachedFiles[imageIndex],
+                                            fit: BoxFit.cover,
+                                            width: 100,
+                                            height: 100,
+                                          ),
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
-                                      ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.grey,
-                                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            _attachedFiles.removeAt(imageIndex);
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            color: Colors.yellow,
+                                          ),
                                         ),
-                                        onPressed: () {
-                                          if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
-                                            _sendMessage();
-                                          }
-                                        },
-                                        child: const Icon(Icons.send),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            Container(
+                              color: Colors.white,
+                              width: double.infinity,
+                              padding: const EdgeInsets.only(right: 15, left: 15, top: 15, bottom: 7),
+                              child: SafeArea(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      ),
+                                      onPressed: pickImagesFromGallery,
+                                      child: const Icon(Icons.attach_file),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: TextField(
+                                        // focusNode: FocusNode(),
+                                        // onSubmitted: (value) => _sendMessage(),
+                                        // textInputAction: TextInputAction.send,
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: null,
+                                        autocorrect: false,
+                                        enableSuggestions: false,
+                                        controller: _controller,
+                                        decoration: const InputDecoration(constraints: BoxConstraints(maxHeight: 500)),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      ),
+                                      onPressed: () {
+                                        if (_controller.text.isNotEmpty || _attachedFiles.isNotEmpty) {
+                                          _sendMessage();
+                                        }
+                                      },
+                                      child: const Icon(Icons.send),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -348,19 +345,14 @@ class _ChatPageState extends State<ChatPage> {
     final ImagePicker picker = ImagePicker();
 
     try {
-      final List<XFile> xFiles = await picker.pickMultiImage();
+      final List<XFile> xFiles = await picker.pickMultiImage(
+        requestFullMetadata: false,
+      );
 
-      if (xFiles.isNotEmpty) {
-        // Convert XFile list to File list
-        List<File> files = xFiles.map((xFile) => File(xFile.path)).toList();
-
-        setState(() {
-          _attachedFiles.addAll(files);
-        });
-      } else {
-        // showCustomSnackBar('No images selected');
-      }
-    } on PlatformException catch (e) {
+      // Convert XFile list to File list
+      List<File> files = xFiles.map((xFile) => File(xFile.path)).toList();
+      setState(() => _attachedFiles.addAll(files));
+    } on PlatformException {
       if (mounted) {
         showDialog(
           context: context,
@@ -427,3 +419,29 @@ class _ChatPageState extends State<ChatPage> {
 //     }
 //   }
 // },
+
+
+// on PlatformException {
+//       if (mounted) {
+//         showDialog(
+//           context: context,
+//           builder: (BuildContext context) => AlertDialog(
+//             title: const Text('허가가 필요합니다'),
+//             content: const Text('이 앱은 이미지를 선택하기 위해 사진 라이브러리에 액세스해야 합니다. 설정에서 권한을 부여해 주세요'),
+//             actions: <Widget>[
+//               TextButton(
+//                 child: const Text('취소'),
+//                 onPressed: () => Navigator.of(context).pop(),
+//               ),
+//               TextButton(
+//                 child: const Text('설정 열기'),
+//                 onPressed: () {
+//                   Navigator.of(context).pop();
+//                   AppSettings.openAppSettings();
+//                 },
+//               ),
+//             ],
+//           ),
+//         );
+//       }
+//     }

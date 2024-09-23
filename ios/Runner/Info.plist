@@ -29,7 +29,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera for taking photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the photo library for picking images.</string>
+	<string>This app needs access to select photos from your library.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

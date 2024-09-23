@@ -1,25 +1,5 @@
 // ignore: non_constant_identifier_names
-// String BASEURL = kReleaseMode ? "https://ta.simpass.co.kr/api/" : "http://192.168.0.251:8091/api/";
-// String BASEURL = "http://192.168.0.251:8091/api/";
-
-// ignore: non_constant_identifier_names
 import 'package:flutter/services.dart';
-
-// ignore: non_constant_identifier_names
-String BASEURL = "https://ta.simpass.co.kr/api/";
-
-// ignore: non_constant_identifier_names
-String CHATSERVERURL = "wss://tchat.baroform.com/";
-// String CHATSERVERURL = "ws://127.0.0.1:8000/";
-//android localhost
-// String CHATSERVERURL = "ws://10.0.2.2:8000/";
-
-// ignore: non_constant_identifier_names
-String IMAGEUPLOADURL = "https://tchat.baroform.com/";
-// String IMAGEUPLOADURL = "http://127.0.0.1:8000/";
-
-// ignore: non_constant_identifier_names
-String APPOWNER = "baroform";
 
 // FilteringTextInputFormatter koreanAndEnlishRegexp = FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣ᆞᆢ \- ㆍᆞ]'))
 FilteringTextInputFormatter koreanAndEnlishRegexp = FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z가-힣ㆍᆢㄱ-ㅎㅏ-ㅣ \-]'));

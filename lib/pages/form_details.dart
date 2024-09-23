@@ -16,6 +16,7 @@ import 'package:mobile_manager_simpass/models/form_model.dart';
 import 'package:mobile_manager_simpass/globals/forms_list.dart';
 import 'package:mobile_manager_simpass/globals/plans_forms.dart';
 import 'package:mobile_manager_simpass/pages/base64_image_view.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 import 'package:mobile_manager_simpass/utils/formatters.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'dart:developer' as developer;

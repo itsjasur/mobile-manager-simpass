@@ -3,9 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/warning.dart';
 import 'dart:math' as math;
-import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile_manager_simpass/pages/secondary_signup.dart';
+import 'package:mobile_manager_simpass/sensitive.dart';
 
 class SignUpWaitingPopup extends StatefulWidget {
   final String name;

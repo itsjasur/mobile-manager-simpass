@@ -18,7 +18,7 @@ class ImagePickerContainer extends StatefulWidget {
     this.isRow = false,
     this.radius = 4,
     this.buttonText = '이미지 선택',
-    this.multipleUploable = true,
+    this.multipleUploable = false,
     this.getImage,
   });
 
@@ -77,7 +77,8 @@ class _ImagePickerContainerState extends State<ImagePickerContainer> {
               child: const Text("갤러리"),
               onPressed: () {
                 Navigator.of(context).pop();
-                widget.multipleUploable ? pickImagesFromGallery() : pickImageFromGallery();
+                // widget.multipleUploable ? pickImagesFromGallery() : pickImageFromGallery();
+                pickImageFromGallery();
               },
             ),
             TextButton(
@@ -93,25 +94,30 @@ class _ImagePickerContainerState extends State<ImagePickerContainer> {
     );
   }
 
-  Future<void> pickImagesFromGallery() async {
-    final ImagePicker picker = ImagePicker();
-    try {
-      final List<XFile> xFiles = await picker.pickMultiImage();
-      if (xFiles.isNotEmpty) {
-        List<File> files = xFiles.map((xFile) => File(xFile.path)).toList();
-        widget.getImages?.call(files);
-      } else {
-        showCustomSnackBar('이미지가 선택되지 않았습니다');
-      }
-    } catch (e) {
-      showCustomSnackBar('이미지 선택 중 오류 발생: $e');
-    }
-  }
+  // Future<void> pickImagesFromGallery() async {
+  //   final ImagePicker picker = ImagePicker();
+  //   try {
+  //     final List<XFile> xFiles = await picker.pickMultiImage(
+  //       requestFullMetadata: false,
+  //     );
+  //     if (xFiles.isNotEmpty) {
+  //       List<File> files = xFiles.map((xFile) => File(xFile.path)).toList();
+  //       widget.getImages?.call(files);
+  //     } else {
+  //       showCustomSnackBar('이미지가 선택되지 않았습니다');
+  //     }
+  //   } catch (e) {
+  //     showCustomSnackBar('이미지 선택 중 오류 발생: $e');
+  //   }
+  // }
 
   Future<void> pickImageFromGallery() async {
     final ImagePicker picker = ImagePicker();
     try {
-      final XFile? xFile = await picker.pickImage(source: ImageSource.gallery);
+      final XFile? xFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        requestFullMetadata: false,
+      );
       if (xFile != null) {
         widget.getImage?.call(File(xFile.path), xFile.name);
       } else {
@@ -125,7 +131,10 @@ class _ImagePickerContainerState extends State<ImagePickerContainer> {
   Future<void> pickImageFromCamera() async {
     final ImagePicker picker = ImagePicker();
     try {
-      final XFile? xFile = await picker.pickImage(source: ImageSource.camera);
+      final XFile? xFile = await picker.pickImage(
+        source: ImageSource.camera,
+        requestFullMetadata: false,
+      );
       if (xFile != null) {
         if (widget.multipleUploable) {
           widget.getImages?.call([File(xFile.path)]);
