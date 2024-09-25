@@ -308,7 +308,7 @@ class SignupPageState extends State<SignupPage> {
                               ),
                               const SizedBox(height: 10),
                               const Text(
-                                '카카오 인증서',
+                                'PASS 인증서',
                                 style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                               Transform.scale(

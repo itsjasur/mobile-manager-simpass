@@ -400,8 +400,7 @@ class _HomePageState extends State<HomePage> {
         if (mounted) {
           await showHomePagePopup(
             context,
-            // homeInfo['contract_status'],
-            'N',
+            homeInfo['contract_status'],
             homeInfo['agent_info_list'] ?? [],
           );
         }
