@@ -532,7 +532,7 @@ class _ApplicationsPageState extends State<ApplicationsPage> {
             context,
             MaterialPageRoute(
               builder: (context) => Base64ImageViewPage(
-                base64Images: decodedRes['data']['apply_forms_list'],
+                base64Images: List<String>.from(decodedRes['data']['apply_forms_list']),
                 goHome: false,
               ),
             ),

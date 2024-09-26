@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/components/custom_checkbox.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/custom_text_field.dart';
+import 'package:mobile_manager_simpass/components/partners_contract.viewer.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
 import 'package:mobile_manager_simpass/components/signature_pads_container.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
@@ -130,7 +131,7 @@ class _PartnerSignPopupContentState extends State<PartnerSignPopupContent> {
                       ),
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(visualDensity: VisualDensity.compact),
-                        onPressed: () {},
+                        onPressed: () => showPartnerContract(context, widget.agentCd),
                         child: const Text('계약서 확인'),
                       ),
                     ],

@@ -30,6 +30,13 @@
 	<string>This app requires access to the camera for taking photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to select photos from your library.</string>
+	<key>NSDocumentsUsageDescription</key>
+	<string>This app needs access to documents to save PDF files.</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

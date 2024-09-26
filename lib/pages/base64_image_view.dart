@@ -1,12 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:isolate';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:printing/printing.dart';
 
 class Base64ImageViewPage extends StatefulWidget {
-  final List base64Images;
+  final List<String> base64Images;
   final bool goHome;
   const Base64ImageViewPage({super.key, required this.base64Images, this.goHome = true});
 
@@ -63,33 +70,69 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
                 bottom: 20,
                 right: 20,
                 child: SafeArea(
-                  child: ElevatedButton(
-                    onPressed: _printing ? null : _printImages,
-                    child: _printing
-                        ? SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          )
-                        : const Row(
-                            children: [
-                              Icon(
-                                Icons.print_outlined,
-                                size: 23,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                '출력',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  height: 1,
+                  child: Row(
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                        ),
+                        onPressed: _processing ? null : _convertAndDownloadPdf,
+                        child: _processing
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                 ),
+                              )
+                            : const Row(
+                                children: [
+                                  Icon(
+                                    Icons.file_download_outlined,
+                                    size: 23,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    '다운로드',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      height: 1,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                      ),
+                      const SizedBox(width: 20),
+                      ElevatedButton(
+                        onPressed: _printing ? null : _printImages,
+                        child: _printing
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  color: Theme.of(context).colorScheme.onPrimary,
+                                ),
+                              )
+                            : const Row(
+                                children: [
+                                  Icon(
+                                    Icons.print_outlined,
+                                    size: 23,
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    '출력',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      height: 1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -134,6 +177,72 @@ class _Base64ImageViewPageState extends State<Base64ImageViewPage> {
       setState(() {});
     }
   }
+
+  bool _processing = false;
+
+  Future<void> _convertAndDownloadPdf() async {
+    if (_processing) return; // prevents multiple taps
+    setState(() => _processing = true);
+
+    try {
+      Directory? directory;
+      Uint8List bytes = await _createPdf();
+
+      // Request storage permission (only needed for Android)
+      if (Platform.isAndroid) {
+        var status = await Permission.storage.request();
+
+        if (!status.isGranted) {
+          throw Exception('Storage permission not granted');
+        }
+        directory = await getExternalStorageDirectory();
+      } else if (Platform.isIOS) {
+        // Get app's documents directory
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory == null) {
+        throw Exception('Could not access storage directory');
+      }
+
+      // Construct the file path
+      String fileName = 'form.pdf';
+      final filePath = '${directory.path}/$fileName';
+      final file = File(filePath);
+
+      // Write the PDF to the file
+      await file.writeAsBytes(bytes);
+      await OpenFile.open(filePath);
+    } catch (e) {
+      print(e);
+      showCustomSnackBar('오류가 발생했습니다: ${e.toString()}');
+    } finally {
+      setState(() => _processing = false);
+    }
+  }
+
+  Future<Uint8List> _createPdf() async {
+    final pdf = pw.Document();
+
+    for (String base64Image in widget.base64Images) {
+      final image = pw.MemoryImage(base64Decode(base64Image));
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          margin: pw.EdgeInsets.zero,
+          build: (pw.Context context) {
+            return pw.Center(
+              child: pw.Image(image),
+            );
+          },
+        ),
+      );
+    }
+
+    // performs the CPU-intensive part in an isolate
+    final Uint8List pdfBytes = await Isolate.run(() => pdf.save());
+    return pdfBytes;
+  }
 }
 
 class ZoomableImage extends StatefulWidget {
@@ -147,6 +256,11 @@ class ZoomableImage extends StatefulWidget {
 
 class _ZoomableImageState extends State<ZoomableImage> {
   final TransformationController _controller = TransformationController();
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,11 +282,5 @@ class _ZoomableImageState extends State<ZoomableImage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

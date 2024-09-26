@@ -9,6 +9,7 @@ import 'package:mobile_manager_simpass/globals/constant.dart';
 import 'package:mobile_manager_simpass/utils/request.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:printing/printing.dart';
 
 class DownloadFormsPage extends StatefulWidget {
@@ -223,11 +224,31 @@ class _DownloadFormsPageState extends State<DownloadFormsPage> {
   Future<void> _downloadPdfAndOpen(String filename) async {
     try {
       Uint8List? bytes = await _fetchPdf(filename);
+      Directory? directory;
       if (bytes != null) {
-        final directory = await getTemporaryDirectory();
+        // Request storage permission (only needed for Android)
+        if (Platform.isAndroid) {
+          var status = await Permission.storage.request();
 
-        final filePath = '${directory.path}/$filename.pdf';
+          if (!status.isGranted) {
+            throw Exception('Storage permission not granted');
+          }
+          directory = await getExternalStorageDirectory();
+        } else if (Platform.isIOS) {
+          // Get app's documents directory
+          directory = await getApplicationDocumentsDirectory();
+        }
+
+        if (directory == null) {
+          throw Exception('Could not access storage directory');
+        }
+
+        // Construct the file path
+        String fileName = '$filename.pdf';
+        final filePath = '${directory.path}/$fileName';
         final file = File(filePath);
+
+        // Write the PDF to the file
         await file.writeAsBytes(bytes);
         await OpenFile.open(filePath);
       } else {
