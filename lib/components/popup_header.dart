@@ -16,12 +16,16 @@ class PopupHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (title != null)
-            Text(
-              title!,
-              style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context).colorScheme.secondary,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Text(
+                title!,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           IconButton(

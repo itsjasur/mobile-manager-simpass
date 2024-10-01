@@ -7,6 +7,7 @@ import 'package:mobile_manager_simpass/pages/applications.dart';
 import 'package:mobile_manager_simpass/pages/chat.dart';
 import 'package:mobile_manager_simpass/pages/download_forms.dart';
 import 'package:mobile_manager_simpass/pages/form_details.dart';
+import 'package:mobile_manager_simpass/pages/htmls.dart';
 import 'package:mobile_manager_simpass/pages/partner_request_results.dart';
 import 'package:mobile_manager_simpass/pages/partner_request.dart';
 import 'package:mobile_manager_simpass/pages/plans.dart';
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         // initialRoute: '/test-page',
-        initialRoute: '/home',
+        initialRoute: '/htmls',
         // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
@@ -91,6 +92,7 @@ class MyApp extends StatelessWidget {
           '/partner-request-results': (context) => const AuthGuard(child: PartnerRequestResultsPage()),
 
           '/settings': (context) => const AuthGuard(child: SettingsPage()),
+          '/htmls': (context) => const AuthGuard(child: HtmlsPage()),
         },
         theme: AppTheme.lightTheme,
       ),

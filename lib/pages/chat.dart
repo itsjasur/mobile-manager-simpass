@@ -303,7 +303,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<List<String>> _uploadImages() async {
-    final uri = Uri.parse('${IMAGEUPLOADURL}upload');
+    final uri = Uri.parse('${CHATSERVER_API_URL}upload');
     List<String> uploadedFilePaths = [];
 
     for (var file in _attachedFiles) {

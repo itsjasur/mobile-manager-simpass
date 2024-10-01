@@ -74,7 +74,7 @@ class WebSocketModel extends ChangeNotifier {
     // developer.log(data.toString());
     if (data['type'] == 'total_count') {
       _totalUnreadCount = data?['total_unread_count'] ?? 0;
-      developer.log('total unread count called $_totalUnreadCount');
+      // developer.log('total unread count called $_totalUnreadCount');
       //
     }
     if (data['type'] == 'chat_rooms') {

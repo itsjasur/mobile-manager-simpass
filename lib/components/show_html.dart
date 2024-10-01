@@ -70,7 +70,7 @@ class _HtmlContentState extends State<HtmlContent> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20),
+      padding: const EdgeInsets.only(top: 50),
       child: WebViewWidget(controller: _controller),
     );
   }
