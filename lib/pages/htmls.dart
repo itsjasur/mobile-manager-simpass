@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/html_viewer.dart';
+import 'package:mobile_manager_simpass/components/sidemenu.dart';
 import 'package:mobile_manager_simpass/sensitive.dart';
 
 import 'package:http/http.dart' as http;
@@ -16,7 +17,7 @@ class HtmlsPage extends StatefulWidget {
 }
 
 class _HtmlsPageState extends State<HtmlsPage> {
-  List _dataList = [];
+  final List _dataList = [];
   int _totalCount = 0;
 
   @override
@@ -28,6 +29,7 @@ class _HtmlsPageState extends State<HtmlsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // drawer: const SideMenu(),
       appBar: AppBar(title: const Text('정책')),
       body: ListView.separated(
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 100),

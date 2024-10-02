@@ -59,7 +59,8 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         // initialRoute: '/test-page',
-        initialRoute: '/htmls',
+        // initialRoute: '/htmls',
+        initialRoute: '/home',
         // initialRoute: '/profile',
         // initialRoute: '/login',
         // initialRoute: '/secondary-signup',
@@ -78,6 +79,7 @@ class MyApp extends StatelessWidget {
           // '/test-page': (context) => const TestPage(),
           '/signup': (context) => const SignupPage(),
           '/secondary-signup': (context) => const SecondarySignup(name: 'name', phoneNumber: '01012312312', receiptId: '34523423432', certType: 'KAKAO', birthday: '19950534', employeeCode: 'asd'),
+          '/htmls': (context) => const HtmlsPage(),
 
           //protected
           '/form-details': (context) => const FormDetailsPage(planId: 157, searchText: ''),
@@ -92,7 +94,6 @@ class MyApp extends StatelessWidget {
           '/partner-request-results': (context) => const AuthGuard(child: PartnerRequestResultsPage()),
 
           '/settings': (context) => const AuthGuard(child: SettingsPage()),
-          '/htmls': (context) => const AuthGuard(child: HtmlsPage()),
         },
         theme: AppTheme.lightTheme,
       ),
