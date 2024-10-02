@@ -28,7 +28,7 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     Provider.of<AuthenticationModel>(context, listen: false).setProviderValues();
     Provider.of<WebSocketModel>(context, listen: false).connect();
-    // print('chats page initiazlied');
+    developer.log('chats page initiazlied');
   }
 
   final ScrollController _scrollController = ScrollController();

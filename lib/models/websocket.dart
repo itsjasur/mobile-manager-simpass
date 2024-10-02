@@ -43,13 +43,21 @@ class WebSocketModel extends ChangeNotifier {
 
     // If already connected, return early
     if (_isConnected && _socket != null) {
-      // developer.log('WebSocket already connected. Skipping connection attempt.');
       return;
     }
 
     // developer.log(accessToken.toString());
-    _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
-    // _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/asdaskldjlaksjdl;kas'));
+    // _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
+
+    try {
+      _socket = WebSocketChannel.connect(Uri.parse('${CHATSERVERURL}ws/$accessToken'));
+      _isConnected = true;
+    } catch (e) {
+      developer.log('WebSocket connection error: $e');
+      _isConnected = false;
+      _attemptReconnect();
+    }
+
     _isConnected = true;
 
     String? fcmToken = prefs.getString('fcmToken');
@@ -58,10 +66,20 @@ class WebSocketModel extends ChangeNotifier {
       // print('fcm token sent to chatserver');
     }
 
+    // _socket?.stream.listen(
+    //   (message) => _catchEmits(message),
+    //   onDone: _onDisconnected,
+    //   onError: (error) => developer.log('WebSocket error: $error'),
+    // );
+
     _socket?.stream.listen(
       (message) => _catchEmits(message),
       onDone: _onDisconnected,
-      onError: (error) => developer.log('WebSocket error: $error'),
+      onError: (error) {
+        developer.log('WebSocket error: $error');
+        _isConnected = false;
+        _attemptReconnect();
+      },
     );
 
     _reconnectTimer?.cancel();
@@ -70,8 +88,8 @@ class WebSocketModel extends ChangeNotifier {
 
   void _catchEmits(dynamic message) {
     // print('caught emit');
+    // developer.log(message.toString());
     final data = jsonDecode(message);
-    // developer.log(data.toString());
     if (data['type'] == 'total_count') {
       _totalUnreadCount = data?['total_unread_count'] ?? 0;
       // developer.log('total unread count called $_totalUnreadCount');
@@ -149,6 +167,7 @@ class WebSocketModel extends ChangeNotifier {
 
   void resetRoomUnreadCount() {
     developer.log('reset room count called');
+
     _emit({
       'action': 'reset_room_unread_count',
       'roomId': _selectedRoom!['room_id'],
@@ -167,7 +186,6 @@ class WebSocketModel extends ChangeNotifier {
   void _onDisconnected() {
     developer.log('disconneced on _onDisconnected');
     _isConnected = false;
-    notifyListeners();
     _socket?.sink.close();
     _socket = null;
     notifyListeners();
@@ -178,7 +196,6 @@ class WebSocketModel extends ChangeNotifier {
     _socket?.sink.close();
     _socket = null;
     _isConnected = false;
-
     _reconnectTimer?.cancel();
     notifyListeners();
   }
