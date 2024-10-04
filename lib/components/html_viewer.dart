@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_manager_simpass/components/custom_snackbar.dart';
 import 'package:mobile_manager_simpass/components/popup_header.dart';
@@ -45,6 +47,7 @@ class _HtmlEditorContentState extends State<HtmlEditorContent> {
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..enableZoom(true)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {},
@@ -78,17 +81,14 @@ class _HtmlEditorContentState extends State<HtmlEditorContent> {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({"id": widget.id}),
       );
-
       if (response.statusCode != 200) throw 'Error fetching htmls';
-
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
 
-      // _controller.loadHtmlString(decodedRes['html']['content']);
-
+      // <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
       String wrappedHtml = '''
         <html>
           <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
             <style>
               body { margin: 0; padding: 10px 20px ; width: 100%; box-sizing: border-box; }
               img { max-width: 100%; height: auto; }
