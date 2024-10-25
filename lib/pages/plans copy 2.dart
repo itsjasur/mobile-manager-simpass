@@ -31,11 +31,14 @@ class _PlansPageState extends State<PlansPage> {
   String _selectedType = 'PO';
   String _selectedCarrier = '';
   String _selectedMvno = '';
-  int? _selectedMvnoIndex;
 
-  final TextEditingController _searchTextCntr = TextEditingController();
+  // bool _loading = true;
+  // bool _mvnosLoading = true;
+  // bool _plansLoading = true;
 
   final ScrollController _scrollController = ScrollController();
+
+  bool _onlyFavorites = false;
 
   @override
   void initState() {
@@ -46,7 +49,6 @@ class _PlansPageState extends State<PlansPage> {
   @override
   void dispose() {
     _scrollController.dispose();
-    _searchTextCntr.dispose();
     super.dispose();
   }
 
@@ -93,24 +95,65 @@ class _PlansPageState extends State<PlansPage> {
                 child: Wrap(
                   spacing: 15,
                   runSpacing: 15,
-                  children: _types
-                      .map(
-                        (item) => ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: displayWidth > 600 ? const Size(100, 45) : null,
-                            elevation: 0,
-                            backgroundColor: _selectedType == item['code'] ? null : Theme.of(context).colorScheme.tertiary,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        _onlyFavorites = !_onlyFavorites;
+                        setState(() {});
+                      },
+                      child: Container(
+                        // width: 200,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          // color: Colors.pink,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
                           ),
-                          onPressed: () async {
-                            _selectedType = item['code'];
-
-                            setState(() {});
-                            await _fetchMvnos();
-                          },
-                          child: Text(item['name']),
                         ),
-                      )
-                      .toList(),
+
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(width: 5),
+                            Checkbox(
+                              value: _onlyFavorites,
+                              onChanged: (value) {
+                                _onlyFavorites = value!;
+                                setState(() {});
+                              },
+                            ),
+                            const SizedBox(width: 5),
+                            const Text(
+                              "즐겨착기",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ..._types.map(
+                      (item) => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: displayWidth > 600 ? const Size(100, 45) : null,
+                          elevation: 0,
+                          backgroundColor: _selectedType == item['code'] ? null : Theme.of(context).colorScheme.tertiary,
+                        ),
+                        onPressed: () async {
+                          _selectedType = item['code'];
+
+                          setState(() {});
+                          await _fetchMvnos();
+                        },
+                        child: Text(item['name']),
+                      ),
+                    )
+                  ],
                 ),
               ),
               const SizedBox(height: 20),
@@ -147,58 +190,12 @@ class _PlansPageState extends State<PlansPage> {
                 child: ListView.separated(
                   separatorBuilder: (context, index) => const SizedBox(width: 15),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                  itemCount: _mvnos.length + 1,
+                  itemCount: _mvnos.length,
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   controller: _scrollController,
                   itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Material(
-                          color: Colors.white,
-                          child: InkWell(
-                            onTap: () {
-                              _selectedMvnoIndex = 0;
-                              _selectedMvno = "";
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                border: _selectedMvnoIndex == index
-                                    ? Border.all(
-                                        color: Theme.of(context).colorScheme.primary,
-                                        width: 2,
-                                      )
-                                    : null,
-                              ),
-                              height: 200,
-                              width: 200,
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.star_rounded,
-                                    color: Colors.orange,
-                                    size: 40,
-                                  ),
-                                  Text(
-                                    '즐겨찾기',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                    Map mvno = _mvnos[index - 1];
+                    Map mvno = _mvnos[index];
                     return Stack(
                       alignment: Alignment.center,
                       children: [
@@ -211,7 +208,6 @@ class _PlansPageState extends State<PlansPage> {
                               onTap: () async {
                                 _selectedMvno = mvno['mvno_cd'];
                                 _selectedCarrier = mvno['carrier_cd'];
-                                _selectedMvnoIndex = null;
                                 setState(() {});
                                 // await _fetchPlans();
                               },
@@ -256,11 +252,12 @@ class _PlansPageState extends State<PlansPage> {
               ),
               const SizedBox(height: 20),
               PlansListWidget(
-                key: ValueKey(_selectedType + _selectedCarrier + _selectedMvno + _selectedMvnoIndex.toString()),
+                key: ValueKey(_selectedType + _selectedCarrier + _selectedMvno),
                 typeCd: _selectedType,
                 carrierCd: _selectedCarrier,
                 mvnoCd: _selectedMvno,
-                onlyFavorites: _selectedMvnoIndex == 0,
+                // onlyFavorites: _onlyFAvorites,
+                onlyFavorites: false,
               ),
             ],
           ),
@@ -272,8 +269,6 @@ class _PlansPageState extends State<PlansPage> {
   Future<void> _fetchMvnos() async {
     _mvnos.clear();
     _selectedMvno = "";
-
-    setState(() {});
 
     // print('fetch data called');
     try {

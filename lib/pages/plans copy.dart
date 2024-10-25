@@ -35,6 +35,10 @@ class _PlansPageState extends State<PlansPage> {
 
   final TextEditingController _searchTextCntr = TextEditingController();
 
+  // bool _loading = true;
+  // bool _mvnosLoading = true;
+  // bool _plansLoading = true;
+
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -159,8 +163,8 @@ class _PlansPageState extends State<PlansPage> {
                           color: Colors.white,
                           child: InkWell(
                             onTap: () {
-                              _selectedMvnoIndex = 0;
                               _selectedMvno = "";
+                              _selectedMvnoIndex = 0;
                               setState(() {});
                             },
                             child: Container(
@@ -209,9 +213,9 @@ class _PlansPageState extends State<PlansPage> {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(8),
                               onTap: () async {
+                                _selectedMvnoIndex = index;
                                 _selectedMvno = mvno['mvno_cd'];
                                 _selectedCarrier = mvno['carrier_cd'];
-                                _selectedMvnoIndex = null;
                                 setState(() {});
                                 // await _fetchPlans();
                               },
@@ -219,8 +223,8 @@ class _PlansPageState extends State<PlansPage> {
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  border: _selectedMvno == mvno['mvno_cd']
-                                      // border: _selectedMvnoIndex == index
+                                  // border: _selectedMvno == mvno['mvno_cd']
+                                  border: _selectedMvnoIndex == index
                                       ? Border.all(
                                           color: Theme.of(context).colorScheme.primary,
                                           width: 2,
@@ -256,7 +260,7 @@ class _PlansPageState extends State<PlansPage> {
               ),
               const SizedBox(height: 20),
               PlansListWidget(
-                key: ValueKey(_selectedType + _selectedCarrier + _selectedMvno + _selectedMvnoIndex.toString()),
+                key: ValueKey(_selectedType + _selectedCarrier + _selectedMvno),
                 typeCd: _selectedType,
                 carrierCd: _selectedCarrier,
                 mvnoCd: _selectedMvno,
@@ -272,8 +276,6 @@ class _PlansPageState extends State<PlansPage> {
   Future<void> _fetchMvnos() async {
     _mvnos.clear();
     _selectedMvno = "";
-
-    setState(() {});
 
     // print('fetch data called');
     try {

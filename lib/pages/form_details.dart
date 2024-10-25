@@ -718,8 +718,7 @@ class _FormDetailsPageState extends State<FormDetailsPage> {
           return;
         }
       }
-
-      developer.log('reached the end');
+      // developer.log('reached the end');
 
       //submission
       final url = Uri.parse('${BASEURL}agent/actApply');

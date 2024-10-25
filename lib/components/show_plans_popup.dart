@@ -23,6 +23,7 @@ Future<int?> showPlansPopup(BuildContext context, typeCd, carrierCd, mvnoCd, sea
                     mvnoCd: mvnoCd,
                     searchText: searchText,
                     asPopup: true,
+                    onlyFavorites: false,
                   ),
                 ),
               ),

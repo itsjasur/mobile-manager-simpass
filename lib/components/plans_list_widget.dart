@@ -11,8 +11,9 @@ class PlansListWidget extends StatefulWidget {
   final String carrierCd;
   final String mvnoCd;
   final String searchText;
+  final bool onlyFavorites;
   final bool asPopup;
-  const PlansListWidget({super.key, required this.typeCd, required this.carrierCd, required this.mvnoCd, this.searchText = '', this.asPopup = false});
+  const PlansListWidget({super.key, required this.typeCd, required this.carrierCd, required this.mvnoCd, this.searchText = '', this.asPopup = false, required this.onlyFavorites});
 
   @override
   State<PlansListWidget> createState() => _PlansListWidgetState();
@@ -73,6 +74,23 @@ class _PlansListWidgetState extends State<PlansListWidget> {
 
   Widget _buildCardWwidget(item) {
     double displayWidth = MediaQuery.of(context).size.width;
+
+    Widget favIcon = InkWell(
+      onTap: () async {
+        if (item['favorites'] == 'Y') {
+          item['favorites'] = 'N';
+        } else {
+          item['favorites'] = 'Y';
+        }
+        await _updateFavorite(item);
+        setState(() {});
+      },
+      child: Icon(
+        Icons.star_rounded,
+        color: item['favorites'] == 'Y' ? Colors.orange : Colors.grey,
+        size: 32,
+      ),
+    );
 
     Widget planNameW = Text(
       item['usim_plan_nm'],
@@ -183,10 +201,17 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Flexible(child: planNameW),
-                          Flexible(child: priceRow),
+                          favIcon,
+                          const SizedBox(width: 5),
+                          Expanded(
+                            flex: 2,
+                            child: planNameW,
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: priceRow,
+                          ),
                           // Flexible(child: discountFee),
                         ],
                       ),
@@ -200,8 +225,12 @@ class _PlansListWidgetState extends State<PlansListWidget> {
                     ],
                   )
                 : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      Expanded(
+                        flex: 3,
+                        child: favIcon,
+                      ),
                       Expanded(
                         flex: 10,
                         child: planNameW,
@@ -248,6 +277,7 @@ class _PlansListWidgetState extends State<PlansListWidget> {
         "carrier_cd": widget.carrierCd, // SKT : SK ,KT : KT,LG U+ : LG
         "mvno_cd": widget.mvnoCd,
         "usim_plan_nm": _searchTextCntr.text,
+        "favorites": widget.onlyFavorites,
       });
       Map decodedRes = await jsonDecode(utf8.decode(response.bodyBytes));
 
@@ -259,6 +289,17 @@ class _PlansListWidgetState extends State<PlansListWidget> {
         _plans = decodedRes['data']['info'];
         setState(() {});
       }
+    } catch (e) {
+      showCustomSnackBar(e.toString());
+    }
+  }
+
+  Future<void> _updateFavorite(Map plan) async {
+    try {
+      await Request().requestWithRefreshToken(url: 'agent/setMyPlan', method: 'POST', body: {
+        "usim_plan_id": plan['id'],
+        "favorites": plan['favorites'],
+      });
     } catch (e) {
       showCustomSnackBar(e.toString());
     }
