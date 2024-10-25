@@ -2,7 +2,8 @@
 import 'package:flutter/foundation.dart';
 
 // ignore: non_constant_identifier_names
-String BASEURL = kReleaseMode ? "https://admin.simpass.co.kr/api/" : "https://ta.simpass.co.kr/api/";
+// String BASEURL = kReleaseMode ? "https://admin.simpass.co.kr/api/" : "https://ta.simpass.co.kr/api/";
+String BASEURL = kReleaseMode ? "https://admin.simpass.co.kr/api/" : "http://192.168.0.251:8091/api/";
 
 // ignore: non_constant_identifier_names
 String CHATSERVERURL = kReleaseMode ? "wss://chat.baroform.com/" : "wss://tchat.baroform.com/";

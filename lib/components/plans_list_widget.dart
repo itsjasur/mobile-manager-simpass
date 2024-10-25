@@ -298,7 +298,7 @@ class _PlansListWidgetState extends State<PlansListWidget> {
     try {
       await Request().requestWithRefreshToken(url: 'agent/setMyPlan', method: 'POST', body: {
         "usim_plan_id": plan['id'],
-        "favorites": plan['favorites'],
+        "favorites": plan['favorites'] == "Y",
       });
     } catch (e) {
       showCustomSnackBar(e.toString());
